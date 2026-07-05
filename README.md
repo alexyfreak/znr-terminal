@@ -2,14 +2,17 @@
 
 Offline-first desktop application that automates school document workflows for Uzbekistan teachers. A teacher logs in, selects a template, fills in the fields (many auto-filled from their profile), and gets a professionally formatted `.docx` document.
 
+> **Test Windows version here:** [Zunoora-Setup-1.0.0.exe](https://github.com/alexyfreak/znr-terminal/releases/latest/download/Zunoora-Setup-1.0.0.exe)
+
 ## Tech Stack
 
-- **Runtime:** Node.js (ESM), targeting Electron desktop
+- **Runtime:** Node.js (ESM), Electron v43 desktop
+- **GUI:** React 19
 - **Language:** TypeScript (strict mode)
 - **CLI:** `inquirer` v10 for interactive prompts
 - **Database:** Supabase (Postgres) — auth, template storage, teacher/director data
 - **Document Generation:** `docx` v8 — generates `.docx` files compatible with Word 2010+
-- **Build:** `tsx` for dev execution, `tsc` for production build
+- **Build:** `electron-vite` v5, `electron-builder` v26 for packaging
 - **Auth:** Login ID (8 symbols) + SHA256 PIN hash against `teachers`/`directors` tables
 
 ## Project Structure
@@ -17,19 +20,38 @@ Offline-first desktop application that automates school document workflows for U
 ```
 zunoora-cli/
 ├── src/
-│   ├── index.ts          # Entry point — orchestrates the full flow
+│   ├── index.ts          # CLI entry point — orchestrates the full flow
 │   ├── auth.ts           # Login ID + PIN authentication
 │   ├── db.ts             # Supabase client, type definitions
 │   ├── menu.ts           # Template selection menu
 │   ├── templates.ts      # Template loading from Supabase with local cache
 │   ├── renderer.ts       # {{placeholder}} template rendering engine
 │   ├── docx.ts           # DOCX generation with government-standard formatting
-│   └── assets/
-│       └── gerb.png      # Uzbekistan state emblem for document headers
+│   ├── assets/
+│   │   └── gerb.png      # Uzbekistan state emblem for document headers
+│   └── renderer/         # React frontend for Electron desktop app
+│       └── src/
+│           ├── App.tsx
+│           ├── components/
+│           │   ├── LoginScreen.tsx
+│           │   ├── Sidebar.tsx
+│           │   ├── ContentPanel.tsx
+│           │   ├── FieldCollector.tsx
+│           │   ├── Preview.tsx
+│           │   └── ExportButton.tsx
+│           ├── hooks/
+│           └── types/
+├── electron/
+│   ├── main/
+│   │   ├── index.ts       # Electron main process entry
+│   │   └── ipc-handlers.ts # IPC bridge (auth, templates, docx generation)
+│   └── preload/
+│       └── index.ts       # contextBridge API
 ├── Blanks/
 │   └── shablons.json     # Local cache of downloaded templates
 ├── output/               # Generated .docx files (gitignored)
 ├── .env                  # Supabase credentials (gitignored)
+├── electron.vite.config.ts
 └── supabase/migrations/  # Database schema migrations
 ```
 
@@ -43,12 +65,49 @@ npm install
 cp .env.example .env
 # Edit .env with your SUPABASE_URL and SUPABASE_ANON_KEY
 
-# Run in development
-npm start        # or: npm run dev (watch mode)
+# Run CLI version
+npm start
 
-# Build for production
-npm run build
+# Run Electron desktop app (development mode with hot reload)
+npm run dev:electron
+
+# Build Electron for production
+npm run build:electron
+
+# Package as Windows installer
+npm run package:win
 ```
+
+## Electron Desktop App
+
+The Electron desktop app provides a graphical user interface alongside the original CLI. It uses React for the renderer and communicates with the main process via IPC (contextBridge pattern).
+
+### Features
+- **Login screen** — PIN authentication against Supabase
+- **Template sidebar** — role-filtered list with user info header
+- **Field collection** — step-by-step form with auto-fill, validation, and multi-step wizards for complex documents
+- **Live preview** — rendered template shown before export
+- **Native save dialog** — Windows save dialog for DOCX export
+
+### Running the Desktop App
+
+```bash
+# Development (hot reload)
+npm run dev:electron
+
+# Build then run production
+npm run build:electron
+npm run preview:electron
+
+# Package as installer
+npm run package:win
+```
+
+### Download
+
+| Version | Platform | Link |
+|---------|----------|------|
+| v1.0.0 (beta-v2) | Windows 64-bit | [Zunoora-Setup-1.0.0.exe](https://github.com/alexyfreak/znr-terminal/releases/latest/download/Zunoora-Setup-1.0.0.exe) |
 
 ## Workflow
 
@@ -66,7 +125,7 @@ On success, the app loads:
 
 ### 2. Template Selection
 
-A numbered menu shows all available templates filtered by role:
+A numbered menu (CLI) or sidebar (Electron) shows all available templates filtered by role:
 - **Teachers** see only templates with `teacher_visible = true`
 - **Directors** see all templates
 
@@ -118,7 +177,7 @@ Plus extended types: buyruq_asosiy, buyruq_kadr, tarif_malaka, pedagogik_kengash
 
 ### 4. Preview & Confirmation
 
-The filled template is rendered (substituting `{{placeholder}}` values) and displayed in the terminal. The user can confirm or cancel generation.
+The filled template is rendered (substituting `{{placeholder}}` values) and displayed in the terminal (CLI) or in a preview panel (Electron). The user can confirm or cancel generation.
 
 ### 5. DOCX Generation
 
@@ -201,8 +260,17 @@ The app expects these tables:
 ## Commands
 
 ```bash
-npm start        # Run the app (tsx)
-npm run dev      # Run with file watch
-npm run build    # Compile TypeScript
-npm test         # Run tests
+# CLI
+npm start              # Run CLI app (tsx)
+npm run dev            # CLI watch mode
+npm run build          # Compile TypeScript (CLI)
+
+# Electron Desktop
+npm run dev:electron   # Run with hot reload
+npm run build:electron # Build for production
+npm run preview:electron # Run production build
+npm run package:win    # Package as Windows installer
+
+# Tests
+npm test               # Run tests
 ```

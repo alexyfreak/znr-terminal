@@ -1,7 +1,12 @@
 node_modules/
 dist/
+out/
 output/
+release/
 .env
 *.log
 .planning/
+.plan/
+.opencode/
 AGENTS.md
+tsconfig.tsbuildinfo
