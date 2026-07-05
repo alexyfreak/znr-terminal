@@ -1,0 +1,24 @@
+{
+  "name": "zunoora-cli",
+  "version": "1.0.0",
+  "description": "Uzbekistan teacher document assistant — CLI tool for automating school document workflows",
+  "type": "module",
+  "main": "dist/index.js",
+  "scripts": {
+    "start": "tsx src/index.ts",
+    "build": "tsc",
+    "dev": "tsx watch src/index.ts"
+  },
+  "dependencies": {
+    "@supabase/supabase-js": "^2.45.0",
+    "docx": "^8.5.0",
+    "dotenv": "^16.4.5",
+    "inquirer": "^10.2.0"
+  },
+  "devDependencies": {
+    "@types/inquirer": "^9.0.7",
+    "@types/node": "^22.0.0",
+    "tsx": "^4.19.0",
+    "typescript": "^5.5.0"
+  }
+}

@@ -1,0 +1,658 @@
+[
+  {
+    "id": "ef1827d8-2b8c-4358-aefd-02bc88c6a20b",
+    "type": "ariza",
+    "label": "Ariza (formal murojaat)",
+    "description": "Rasmiy ariza yozish uchun shablon.",
+    "keywords": [
+      "ariza",
+      "murojaat",
+      "iltimos",
+      "so'rov"
+    ],
+    "schema": {
+      "optional": [
+        "school",
+        "reference_number"
+      ],
+      "required": [
+        "recipient_title",
+        "recipient_name",
+        "sender_name",
+        "sender_position",
+        "reason",
+        "date"
+      ]
+    },
+    "template": "Sana: {{date}} || {{sender_name}}, {{sender_position}}\nARIZA\n{{reason}}\nImzo: __________",
+    "created_at": "2026-07-05T05:18:18.897403+00:00",
+    "teacher_visible": true
+  },
+  {
+    "id": "53453acf-5735-4989-99f9-0e5a415453a4",
+    "type": "bsb_chb",
+    "label": "BSB/CHB (summativ baholash)",
+    "description": "BSB va CHB natijalari.",
+    "keywords": [
+      "bsb",
+      "chb",
+      "summativ",
+      "baholash"
+    ],
+    "schema": {
+      "optional": [
+        "school",
+        "academic_year",
+        "quality_percent",
+        "mastery_percent"
+      ],
+      "required": [
+        "teacher_name",
+        "subject",
+        "class_name",
+        "quarter"
+      ]
+    },
+    "template": "{{teacher_name}}ning {{subject}} fanidan {{class_name}} sinfi uchun\n{{quarter}} chorak BSB/CHB (summativ baholash) natijalari\n\nO'quv yili: {{academic_year}}\nSifat foizi: {{quality_percent}}%\nO'zlashtirish foizi: {{mastery_percent}}%\n\nO'qituvchi: {{teacher_name}}\nImzo: __________",
+    "created_at": "2026-07-05T05:18:18.897403+00:00",
+    "teacher_visible": true
+  },
+  {
+    "id": "8b4bcb2b-201c-48cd-8e50-676f65c02515",
+    "type": "buyruq_asosiy",
+    "label": "Buyruq (asosiy faoliyat bo'yicha)",
+    "description": "Maktab direktori tomonidan asosiy faoliyatga oid chiqariladigan buyruq.",
+    "keywords": [
+      "buyruq",
+      "asosiy faoliyat",
+      "direktor buyrug'i",
+      "xizmat buyrug'i"
+    ],
+    "schema": {
+      "optional": [
+        "basis",
+        "appendix"
+      ],
+      "required": [
+        "school",
+        "order_number",
+        "order_title",
+        "order_text",
+        "date"
+      ]
+    },
+    "template": "BUYRUG'I\n\n{{date}}                                    №{{order_number}}\n\n{{order_title}}\n\n{{order_text}}\n\nAsos: {{basis}}\nIlova: {{appendix}}\n\nDirektor: __________",
+    "created_at": "2026-07-05T05:18:18.897403+00:00",
+    "teacher_visible": false
+  },
+  {
+    "id": "3ee7bb16-4fd9-48b0-b14f-918698c86b08",
+    "type": "buyruq_kadr",
+    "label": "Buyruq (kadrlar bo'yicha)",
+    "description": "Xodimlarni ishga qabul qilish, lavozimga tayinlash, o'zgartirish va ishdan bo'shatish to'g'risidagi buyruq.",
+    "keywords": [
+      "buyruq kadr",
+      "ishga qabul",
+      "lavozim",
+      "bo'shatish",
+      "tayinlash"
+    ],
+    "schema": {
+      "optional": [
+        "salary",
+        "trial_period",
+        "notes"
+      ],
+      "required": [
+        "school",
+        "order_number",
+        "date",
+        "action_type",
+        "employee_name",
+        "position",
+        "basis"
+      ]
+    },
+    "template": "BUYRUG'I\n\n{{date}}                                    №{{order_number}}\n\n{{action_type}}\n\n{{employee_name}} – {{position}}\n\nIsh haqi: {{salary}}\nSinov muddati: {{trial_period}}\nIzoh: {{notes}}\n\nAsos: {{basis}}\n\nDirektor: __________",
+    "created_at": "2026-07-05T05:18:18.897403+00:00",
+    "teacher_visible": false
+  },
+  {
+    "id": "03f79025-97ed-47c2-97dc-49a9e7bb2d39",
+    "type": "dalolatnoma",
+    "label": "Dalolatnoma (hisobdan chiqarish)",
+    "description": "Maktab mulkini (darslik, jihoz, inventar) hisobdan chiqarish dalolatnomasi.",
+    "keywords": [
+      "dalolatnoma",
+      "hisobdan chiqarish",
+      "darslik",
+      "inventar",
+      "komissiya"
+    ],
+    "schema": {
+      "optional": [
+        "chairman"
+      ],
+      "required": [
+        "school",
+        "act_number",
+        "date",
+        "commission_members",
+        "item_list",
+        "reason",
+        "conclusion"
+      ]
+    },
+    "template": "DALOLATNOMA\n\n{{date}}                                    №{{act_number}}\n\nKomissiya a'zolari: {{commission_members}}\nRais: {{chairman}}\n\nHisobdan chiqariladigan mulklar:\n{{item_list}}\n\nHisobdan chiqarish sababi: {{reason}}\n\nXulosa: {{conclusion}}\n\nImzolar:\n1. __________\n2. __________\n3. __________",
+    "created_at": "2026-07-05T05:18:18.897403+00:00",
+    "teacher_visible": false
+  },
+  {
+    "id": "856272ba-694a-40d2-9ace-acaccf343f11",
+    "type": "dars_jadvali",
+    "label": "Dars jadvali (haftalik)",
+    "description": "Maktabning haftalik dars jadvali (sinflar va fanlar bo'yicha).",
+    "keywords": [
+      "dars jadvali",
+      "haftalik jadval",
+      "darslar",
+      "soatlar"
+    ],
+    "schema": {
+      "optional": [
+        "academic_year",
+        "effective_date"
+      ],
+      "required": [
+        "school",
+        "weekday_schedule"
+      ]
+    },
+    "template": "HAFTALIK DARS JADVALI\n\nO'quv yili: {{academic_year}}\nAmaldagi sana: {{effective_date}}\n\n{{weekday_schedule}}\n\nTasdiqlayman:\nDirektor: __________",
+    "created_at": "2026-07-05T05:18:18.897403+00:00",
+    "teacher_visible": true
+  },
+  {
+    "id": "e410c0f5-28f3-42c8-9a0f-b6aa5c852a0a",
+    "type": "sinf_jurnali",
+    "label": "Elektron sinf jurnali (EMaktab)",
+    "description": "EMaktab.uz platformasi orqali yuritiladigan elektron sinf jurnali namunasi.",
+    "keywords": [
+      "sinf jurnali",
+      "elektron jurnal",
+      "emaktab",
+      "dars",
+      "baho"
+    ],
+    "schema": {
+      "optional": [
+        "students_list",
+        "grading_period",
+        "total_hours"
+      ],
+      "required": [
+        "school",
+        "class_name",
+        "subject",
+        "teacher_name",
+        "academic_year"
+      ]
+    },
+    "template": "ELEKTRON SINF JURNALI\n\nSinf: {{class_name}}\nFan: {{subject}}\nO'qituvchi: {{teacher_name}}\nO'quv yili: {{academic_year}}\nBaholash davri: {{grading_period}}\nJami soatlar: {{total_hours}}\n\nO'quvchilar ro'yxati:\n{{students_list}}",
+    "created_at": "2026-07-05T05:18:18.897403+00:00",
+    "teacher_visible": false
+  },
+  {
+    "id": "cf6cb192-2a92-4af1-8a2d-3b1030592806",
+    "type": "hisobot_choraklik",
+    "label": "Hisobot (choraklik/yillik)",
+    "description": "Choraklik va yillik hisobot.",
+    "keywords": [
+      "hisobot",
+      "yillik hisobot",
+      "choraklik hisobot"
+    ],
+    "schema": {
+      "optional": [
+        "school",
+        "mastery",
+        "quality",
+        "conclusions"
+      ],
+      "required": [
+        "teacher_name",
+        "subject",
+        "period",
+        "academic_year"
+      ]
+    },
+    "template": "{{teacher_name}}ning {{subject}} fanidan {{period}} hisoboti\n\nO'quv yili: {{academic_year}}\nO'zlashtirish: {{mastery}}\nSifat: {{quality}}\nXulosa: {{conclusions}}\n\nO'qituvchi: {{teacher_name}}\nImzo: __________",
+    "created_at": "2026-07-05T05:18:18.897403+00:00",
+    "teacher_visible": true
+  },
+  {
+    "id": "b5e9539a-4eed-438f-aa32-93f7995d7094",
+    "type": "ish_tabeli",
+    "label": "Ish Tabeli (work schedule)",
+    "description": "O'qituvchining haftalik ish vaqti tabeli.",
+    "keywords": [
+      "ish tabeli",
+      "tabel",
+      "dars jadvali"
+    ],
+    "schema": {
+      "optional": [
+        "school",
+        "total_hours"
+      ],
+      "required": [
+        "teacher_name",
+        "subject",
+        "classes",
+        "week_start",
+        "week_end"
+      ]
+    },
+    "template": "ISH TABELI\n\nO'qituvchi: {{teacher_name}}\nFan: {{subject}}\nSinf: {{classes}}\nHafta: {{week_start}} - {{week_end}}\nJami soatlar: {{total_hours}}\n\n   | Dushanba | Seshanba | Chorshanba | Payshanba | Juma | Shanba\n---|----------|----------|------------|-----------|------|-------\n1  |          |          |            |           |      |\n2  |          |          |            |           |      |\n3  |          |          |            |           |      |\n\nO'qituvchi: __________",
+    "created_at": "2026-07-05T05:18:18.897403+00:00",
+    "teacher_visible": true
+  },
+  {
+    "id": "e8439847-cf5d-4e64-afa3-33f480ecf6c7",
+    "type": "ktp",
+    "label": "Kalendar-tematik plan (KTP)",
+    "description": "Yillik kalendar-tematik plan.",
+    "keywords": [
+      "ktp",
+      "kalendar",
+      "tematik plan"
+    ],
+    "schema": {
+      "optional": [
+        "school",
+        "hours_total",
+        "hours_week"
+      ],
+      "required": [
+        "teacher_name",
+        "subject",
+        "class_name",
+        "academic_year"
+      ]
+    },
+    "template": "KALENDAR-TEMATIK PLAN\n\nO'qituvchi: {{teacher_name}}\nFan: {{subject}}\nSinf: {{class_name}}\nO'quv yili: {{academic_year}}\nJami soatlar: {{hours_total}}\nHaftalik soatlar: {{hours_week}}\n\nTasdiqlayman:\nDirektor: __________",
+    "created_at": "2026-07-05T05:18:18.897403+00:00",
+    "teacher_visible": true
+  },
+  {
+    "id": "456e0b39-e721-4099-9d82-b6687e59070a",
+    "type": "mehnat_shartnomasi",
+    "label": "Mehnat shartnomasi",
+    "description": "O'qituvchi va maktab o'rtasidagi mehnat shartnomasi (Mehnat Kodeksiga muvofiq).",
+    "keywords": [
+      "mehnat shartnomasi",
+      "shartnoma",
+      "ish haqi",
+      "o'qituvchi"
+    ],
+    "schema": {
+      "optional": [
+        "duration",
+        "trial_period",
+        "additional_terms"
+      ],
+      "required": [
+        "school",
+        "employee_name",
+        "position",
+        "salary",
+        "start_date",
+        "working_hours",
+        "responsibilities"
+      ]
+    },
+    "template": "MEHNAT SHARTNOMASI\n\n{{school}}\n\nXodim: {{employee_name}}\nLavozim: {{position}}\nIsh haqi: {{salary}}\nIsh boshlash sanasi: {{start_date}}\nIsh vaqti: {{working_hours}}\nVazifalar: {{responsibilities}}\nMuddat: {{duration}}\nSinov muddati: {{trial_period}}\nQo'shimcha shartlar: {{additional_terms}}\n\nDirektor: __________\nXodim: {{employee_name}}",
+    "created_at": "2026-07-05T05:18:18.897403+00:00",
+    "teacher_visible": false
+  },
+  {
+    "id": "6905fe45-54db-4351-a0cb-f1b0befb0f95",
+    "type": "oum",
+    "label": "O'quv-uslubiy majmua (O'UM)",
+    "description": "O'quv-uslubiy majmua.",
+    "keywords": [
+      "oum",
+      "o'quv uslubiy",
+      "majmua"
+    ],
+    "schema": {
+      "optional": [
+        "school"
+      ],
+      "required": [
+        "teacher_name",
+        "subject",
+        "class_name",
+        "academic_year"
+      ]
+    },
+    "template": "O'QUV-USLUBIY MAJMUA\n\nO'qituvchi: {{teacher_name}}\nFan: {{subject}}\nSinf: {{class_name}}\nO'quv yili: {{academic_year}}\n\nTasdiqlayman:\nDirektor: __________",
+    "created_at": "2026-07-05T05:18:18.897403+00:00",
+    "teacher_visible": true
+  },
+  {
+    "id": "aac43146-0f47-4979-9216-0308c16153b5",
+    "type": "shaxsiy_delo",
+    "label": "O'quvchining shaxsiy delosi",
+    "description": "O'quvchining shaxsiy hujjatlar to'plami (ariza, tug'ilganlik haqida guvohnoma nusxasi, baholar ko'chirmasi).",
+    "keywords": [
+      "shaxsiy delo",
+      "o'quvchi hujjati",
+      "ariza",
+      "shaxsiy varaqa"
+    ],
+    "schema": {
+      "optional": [
+        "address",
+        "health_info",
+        "notes"
+      ],
+      "required": [
+        "school",
+        "student_full_name",
+        "birth_date",
+        "class_name",
+        "parent_info",
+        "documents_list"
+      ]
+    },
+    "template": "O'QUVCHINING SHAXSIY DELOSI\n\nFamiliya, ism, sharifi: {{student_full_name}}\nTug'ilgan sanasi: {{birth_date}}\nSinfi: {{class_name}}\nManzili: {{address}}\nOta-onasi: {{parent_info}}\nSog'lig'i haqida: {{health_info}}\nIlova qilingan hujjatlar: {{documents_list}}\nQo'shimcha izohlar: {{notes}}\n\nSinf rahbari: __________",
+    "created_at": "2026-07-05T05:18:18.897403+00:00",
+    "teacher_visible": false
+  },
+  {
+    "id": "ff4b4c41-73c7-4d60-b5aa-08953153622d",
+    "type": "ota_ona_majlis_bayoni",
+    "label": "Ota-onalar majlisi bayonnomasi",
+    "description": "Sinf yoki umumiy ota-onalar majlisi bayonnomasi.",
+    "keywords": [
+      "ota-onalar majlisi",
+      "bayonnoma",
+      "sinf",
+      "tarbiya"
+    ],
+    "schema": {
+      "optional": [
+        "present_count",
+        "absent_list"
+      ],
+      "required": [
+        "school",
+        "class_or_general",
+        "meeting_date",
+        "agenda",
+        "speeches",
+        "decisions"
+      ]
+    },
+    "template": "OTA-ONALAR MAJLISI BAYONNOMASI\n\nSinf/Umumiy: {{class_or_general}}\nSana: {{meeting_date}}\nQatnashganlar: {{present_count}}\nQatnashmaganlar: {{absent_list}}\n\nKUN TARTIBI:\n{{agenda}}\n\nSO'ZLAGANLAR:\n{{speeches}}\n\nQARORLAR:\n{{decisions}}\n\nMajlis raisi: __________\nMajlis kotibi: __________",
+    "created_at": "2026-07-05T05:18:18.897403+00:00",
+    "teacher_visible": true
+  },
+  {
+    "id": "b9080f04-1ea5-4886-9cf6-4712ea6e8232",
+    "type": "pedagogik_kengash_bayoni",
+    "label": "Pedagogik kengash bayonnomasi",
+    "description": "Vazirlikning 163-son buyrug'iga asosan har chorakda kamida bir marta o'tkaziladigan pedagogik kengash majlisi bayonnomasi.",
+    "keywords": [
+      "pedagogik kengash",
+      "bayonnoma",
+      "majlis",
+      "o'qituvchilar kengashi"
+    ],
+    "schema": {
+      "optional": [
+        "absent_list",
+        "invited_guests"
+      ],
+      "required": [
+        "school",
+        "meeting_number",
+        "date",
+        "chairman",
+        "secretary",
+        "present_count",
+        "agenda_items",
+        "decisions"
+      ]
+    },
+    "template": "PEDAGOGIK KENGASH BAYONNOMASI\n\n{{date}}                                    №{{meeting_number}}\n\nRais: {{chairman}}\nKotib: {{secretary}}\nQatnashganlar: {{present_count}}\nQatnashmaganlar: {{absent_list}}\nTaklif etilgan mehmonlar: {{invited_guests}}\n\nKUN TARTIBI:\n{{agenda_items}}\n\nQARORLAR:\n{{decisions}}\n\nRais: __________\nKotib: __________",
+    "created_at": "2026-07-05T05:18:18.897403+00:00",
+    "teacher_visible": false
+  },
+  {
+    "id": "211b0898-ab01-4941-8e7d-b4f6e0a0da2d",
+    "type": "dars_ozini_toldirish",
+    "label": "Qoldirilgan va o'rni to'ldirilgan darslar reyestri",
+    "description": "Vazirlikning 163-son buyrug'iga asosan elektron shaklda yuritiladigan qoldirilgan va o'rni to'ldirilgan darslarni hisobga olish reyestri.",
+    "keywords": [
+      "qoldirilgan dars",
+      "o'rni to'ldirilgan",
+      "reyestr",
+      "o'rinbosarlik"
+    ],
+    "schema": {
+      "optional": [
+        "total_missed",
+        "total_replaced"
+      ],
+      "required": [
+        "school",
+        "academic_year",
+        "entries"
+      ]
+    },
+    "template": "QOLDIRILGAN VA O'RNI TO'LDIRILGAN DARSLAR REYESTRI\n\nO'quv yili: {{academic_year}}\nJami qoldirilgan darslar: {{total_missed}}\nJami o'rni to'ldirilgan darslar: {{total_replaced}}\n\nQaydnomalar:\n{{entries}}\n\nMas'ul shaxs: __________",
+    "created_at": "2026-07-05T05:18:18.897403+00:00",
+    "teacher_visible": true
+  },
+  {
+    "id": "292ff142-9b6e-4871-974a-43ab2b254c52",
+    "type": "shahodatnoma_reyestri",
+    "label": "Shahodatnoma berish reyestri",
+    "description": "Bitiruvchilarga berilgan shahodatnomalarni hisobga olish reyestri (9- va 11-sinflar uchun).",
+    "keywords": [
+      "shahodatnoma",
+      "reyestr",
+      "bitiruvchi",
+      "sertifikat",
+      "9-sinf",
+      "11-sinf"
+    ],
+    "schema": {
+      "optional": [
+        "medal_list",
+        "notes"
+      ],
+      "required": [
+        "school",
+        "academic_year",
+        "graduates_list"
+      ]
+    },
+    "template": "SHAHODATNOMA BERISH REYESTRI\n\nO'quv yili: {{academic_year}}\nMedalchilar: {{medal_list}}\n\nBitiruvchilar ro'yxati:\n{{graduates_list}}\n\nIzohlar: {{notes}}\n\nMas'ul shaxs: __________",
+    "created_at": "2026-07-05T05:18:18.897403+00:00",
+    "teacher_visible": false
+  },
+  {
+    "id": "81d08df2-aac2-4629-a86c-7191c472be2f",
+    "type": "sillabus",
+    "label": "Sillabus (o'quv dasturi)",
+    "description": "Fanning to'liq sillabusi.",
+    "keywords": [
+      "sillabus",
+      "o'quv dasturi"
+    ],
+    "schema": {
+      "optional": [
+        "school"
+      ],
+      "required": [
+        "teacher_name",
+        "subject",
+        "class_name",
+        "academic_year",
+        "goals"
+      ]
+    },
+    "template": "SILLABUS\n\nO'qituvchi: {{teacher_name}}\nFan: {{subject}}\nSinf: {{class_name}}\nO'quv yili: {{academic_year}}\n\nMaqsadlar:\n{{goals}}\n\nTasdiqlayman:\nDirektor: __________",
+    "created_at": "2026-07-05T05:18:18.897403+00:00",
+    "teacher_visible": true
+  },
+  {
+    "id": "912822db-b221-4db8-b276-0dfa90fc1043",
+    "type": "tarif_malaka",
+    "label": "Tarif-malaka varaqasi",
+    "description": "O'qituvchilarning tarif-malaka (razryad) varaqasi - yillik hisob-kitob uchun.",
+    "keywords": [
+      "tarif",
+      "malaka",
+      "razryad",
+      "stavka",
+      "ish haqi"
+    ],
+    "schema": {
+      "optional": [
+        "total_salary_fund",
+        "director_name"
+      ],
+      "required": [
+        "school",
+        "academic_year",
+        "teachers_list"
+      ]
+    },
+    "template": "TARIF-MALAKA VARAQASI\n\nO'quv yili: {{academic_year}}\nJami ish haqi fondi: {{total_salary_fund}}\n\nO'qituvchilar ro'yxati:\n{{teachers_list}}\n\nDirektor: {{director_name}}",
+    "created_at": "2026-07-05T05:18:18.897403+00:00",
+    "teacher_visible": false
+  },
+  {
+    "id": "b0e137f0-355c-4888-9f8e-e967790c9cee",
+    "type": "tavsifnoma",
+    "label": "Tavsifnoma (o'qituvchi/ o'quvchi)",
+    "description": "O'qituvchi yoki o'quvchiga beriladigan rasmiy tavsifnoma.",
+    "keywords": [
+      "tavsifnoma",
+      "xarakteristika",
+      "o'qituvchi",
+      "o'quvchi"
+    ],
+    "schema": {
+      "optional": [
+        "achievements",
+        "awards"
+      ],
+      "required": [
+        "school",
+        "subject_name",
+        "subject_position",
+        "education",
+        "work_period",
+        "qualities",
+        "conclusion"
+      ]
+    },
+    "template": "TAVSIFNOMA\n\n{{subject_name}}\n{{subject_position}}\nMa'lumoti: {{education}}\nIsh faoliyati davri: {{work_period}}\n\nSifatlari:\n{{qualities}}\n\nYutuqlari:\n{{achievements}}\n\nMukofotlari:\n{{awards}}\n\nXulosa:\n{{conclusion}}\n\nDirektor: __________",
+    "created_at": "2026-07-05T05:18:18.897403+00:00",
+    "teacher_visible": true
+  },
+  {
+    "id": "59a52956-bb7c-4424-ade6-310112a238f3",
+    "type": "tushuntirish_xati",
+    "label": "Tushuntirish xati",
+    "description": "Tushuntirish xati.",
+    "keywords": [
+      "tushuntirish",
+      "xat",
+      "izoh"
+    ],
+    "schema": {
+      "optional": [
+        "school"
+      ],
+      "required": [
+        "recipient_title",
+        "recipient_name",
+        "sender_name",
+        "sender_position",
+        "letter_topic",
+        "explanation",
+        "date"
+      ]
+    },
+    "template": "{{school}} direktori {{recipient_title}} {{recipient_name}}ga\n\n{{sender_name}}, {{sender_position}}dan\n\nTUSHUNTIRISH XATI\n\nMavzu: {{letter_topic}}\n\n{{explanation}}\n\nSana: {{date}}\n\nImzo: {{sender_name}}",
+    "created_at": "2026-07-05T05:18:18.897403+00:00",
+    "teacher_visible": true
+  },
+  {
+    "id": "ccf97d40-77d3-4776-b3f7-7700a11f9684",
+    "type": "ustama_buyrugi",
+    "label": "Ustama va qo'shimcha to'lovlar buyrug'i",
+    "description": "O'qituvchilarga ustama, qo'shimcha to'lov va rag'batlantirish belgilash to'g'risidagi buyruq (VMQ-823 asosida).",
+    "keywords": [
+      "ustama",
+      "qo'shimcha to'lov",
+      "rag'batlantirish",
+      "VMQ-823",
+      "sinf rahbarligi"
+    ],
+    "schema": {
+      "optional": [
+        "total_amount",
+        "basis"
+      ],
+      "required": [
+        "school",
+        "order_number",
+        "date",
+        "bonus_type",
+        "employees_list"
+      ]
+    },
+    "template": "BUYRUG'I\n\n{{date}}                                    №{{order_number}}\n\n{{bonus_type}}\n\n{{employees_list}}\n\nJami summa: {{total_amount}}\nAsos: {{basis}}\n\nDirektor: __________",
+    "created_at": "2026-07-05T05:18:18.897403+00:00",
+    "teacher_visible": false
+  },
+  {
+    "id": "cc9e934f-a8ca-4943-b61f-c0f5014fd814",
+    "type": "yillik_hisobot",
+    "label": "Yillik o'quv-tarbiya hisoboti",
+    "description": "Maktabning yillik o'quv-tarbiya ishlari bo'yicha statistik hisoboti (Maktabgacha va maktab ta'limi vazirligiga topshiriladi).",
+    "keywords": [
+      "yillik hisobot",
+      "statistika",
+      "o'quv yili",
+      "o'zlashtirish",
+      "sifat"
+    ],
+    "schema": {
+      "optional": [
+        "gold_medals",
+        "silver_medals",
+        "olympiad_winners",
+        "conclusions"
+      ],
+      "required": [
+        "school",
+        "academic_year",
+        "total_students",
+        "total_teachers",
+        "mastery_percent",
+        "quality_percent"
+      ]
+    },
+    "template": "YILLIK O'QUV-TARBIYA HISOBOTI\n\nO'quv yili: {{academic_year}}\n\nJami o'quvchilar: {{total_students}}\nJami o'qituvchilar: {{total_teachers}}\nO'zlashtirish foizi: {{mastery_percent}}%\nSifat foizi: {{quality_percent}}%\n\nOltin medal: {{gold_medals}}\nKumush medal: {{silver_medals}}\nOlimpiada g'oliblari: {{olympiad_winners}}\nXulosa: {{conclusions}}\n\nDirektor: __________",
+    "created_at": "2026-07-05T05:18:18.897403+00:00",
+    "teacher_visible": false
+  }
+]
