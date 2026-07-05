@@ -18,6 +18,12 @@
     "appId": "uz.zunoora.app",
     "productName": "Zunoora",
     "copyright": "Copyright © 2026",
+    "extraResources": [
+      {
+        "from": ".env",
+        "to": ".env"
+      }
+    ],
     "directories": {
       "output": "release",
       "buildResources": "build"

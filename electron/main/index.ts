@@ -1,8 +1,17 @@
 import { app, BrowserWindow } from 'electron';
 import { config } from 'dotenv';
 import { resolve } from 'path';
+import { existsSync } from 'fs';
 
-config({ path: resolve(app.getAppPath(), '.env') });
+const envPath = resolve(app.getAppPath(), '.env');
+if (existsSync(envPath)) {
+  config({ path: envPath });
+} else if (process.resourcesPath) {
+  const resourceEnv = resolve(process.resourcesPath, '.env');
+  if (existsSync(resourceEnv)) {
+    config({ path: resourceEnv });
+  }
+}
 
 let mainWindow: BrowserWindow | null = null;
 
