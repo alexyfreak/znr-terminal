@@ -1,0 +1,41 @@
+{
+  "app": { "title": "Zunoora" },
+  "sidebar": {
+    "history": "History",
+    "settings": "Settings",
+    "account": "Account",
+    "newChat": "New chat",
+    "credits": "Credits"
+  },
+  "search": {
+    "placeholder": "Ask Zunoora...",
+    "newShablon": "New shablon",
+    "noResults": "No results found"
+  },
+  "settings": {
+    "title": "Settings",
+    "theme": "Theme",
+    "language": "Language",
+    "dark": "Dark",
+    "light": "Light",
+    "uzbek": "Uzbek",
+    "russian": "Russian",
+    "english": "English"
+  },
+  "account": {
+    "title": "Account",
+    "login": "Login",
+    "password": "Password",
+    "logout": "Log out",
+    "role": "Role",
+    "school": "School",
+    "profile": "Profile"
+  },
+  "common": {
+    "cancel": "Cancel",
+    "save": "Save",
+    "delete": "Delete",
+    "confirm": "Confirm",
+    "loading": "Loading..."
+  }
+}

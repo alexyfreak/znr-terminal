@@ -1,0 +1,41 @@
+{
+  "app": { "title": "Zunoora" },
+  "sidebar": {
+    "history": "Tarix",
+    "settings": "Sozlamalar",
+    "account": "Hisob",
+    "newChat": "Yangi suhbat",
+    "credits": "Kreditlar"
+  },
+  "search": {
+    "placeholder": "Zunooradan so'rang...",
+    "newShablon": "Yangi shablon",
+    "noResults": "Natija topilmadi"
+  },
+  "settings": {
+    "title": "Sozlamalar",
+    "theme": "Mavzu",
+    "language": "Til",
+    "dark": "Qorong'i",
+    "light": "Yorug'",
+    "uzbek": "O'zbek",
+    "russian": "Rus",
+    "english": "Ingliz"
+  },
+  "account": {
+    "title": "Hisob",
+    "login": "Kirish",
+    "password": "Parol",
+    "logout": "Chiqish",
+    "role": "Lavozim",
+    "school": "Maktab",
+    "profile": "Profil"
+  },
+  "common": {
+    "cancel": "Bekor qilish",
+    "save": "Saqlash",
+    "delete": "O'chirish",
+    "confirm": "Tasdiqlash",
+    "loading": "Yuklanmoqda..."
+  }
+}

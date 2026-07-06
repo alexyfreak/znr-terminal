@@ -1,0 +1,41 @@
+{
+  "app": { "title": "Zunoora" },
+  "sidebar": {
+    "history": "История",
+    "settings": "Настройки",
+    "account": "Аккаунт",
+    "newChat": "Новый чат",
+    "credits": "Кредиты"
+  },
+  "search": {
+    "placeholder": "Спросите Zunoora...",
+    "newShablon": "Новый шаблон",
+    "noResults": "Результатов не найдено"
+  },
+  "settings": {
+    "title": "Настройки",
+    "theme": "Тема",
+    "language": "Язык",
+    "dark": "Тёмная",
+    "light": "Светлая",
+    "uzbek": "Узбекский",
+    "russian": "Русский",
+    "english": "Английский"
+  },
+  "account": {
+    "title": "Аккаунт",
+    "login": "Логин",
+    "password": "Пароль",
+    "logout": "Выйти",
+    "role": "Должность",
+    "school": "Школа",
+    "profile": "Профиль"
+  },
+  "common": {
+    "cancel": "Отмена",
+    "save": "Сохранить",
+    "delete": "Удалить",
+    "confirm": "Подтвердить",
+    "loading": "Загрузка..."
+  }
+}

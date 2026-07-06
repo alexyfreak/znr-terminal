@@ -41,8 +41,14 @@
     }
   },
   "dependencies": {
+    "@fontsource/inter": "^5.2.8",
+    "framer-motion": "^12.42.2",
+    "i18next": "^26.3.4",
+    "lucide-react": "^1.23.0",
     "react": "^19.2.7",
-    "react-dom": "^19.2.7"
+    "react-dom": "^19.2.7",
+    "react-i18next": "^17.0.8",
+    "zustand": "^5.0.14"
   },
   "devDependencies": {
     "@tailwindcss/vite": "^4.3.2",
