@@ -15,6 +15,11 @@ const App = () => {
     setDocked(true)
   }
 
+  const handleReset = () => {
+    setSelectedResult(null)
+    setDocked(false)
+  }
+
   return (
     <div className="flex h-screen w-full overflow-hidden bg-carbon text-foreground">
       <Sidebar />
@@ -37,7 +42,7 @@ const App = () => {
               transition={{ duration: 0.25, delay: 0.15 }}
               className="flex-1 flex items-start justify-center pt-16 pb-8 px-4"
             >
-              <DocumentFulfillmentCard isVisible={true} />
+              <DocumentFulfillmentCard isVisible={true} onReset={handleReset} />
             </motion.div>
           )}
         </AnimatePresence>

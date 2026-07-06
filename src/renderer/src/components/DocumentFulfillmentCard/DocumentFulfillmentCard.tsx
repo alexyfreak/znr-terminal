@@ -1,17 +1,20 @@
 import { useState } from 'react'
 import { motion } from 'framer-motion'
+import { Check, Download } from 'lucide-react'
 import { VersionPicker } from '../VersionPicker'
 import { FieldCollector } from '../FieldCollector'
 
 interface DocumentFulfillmentCardProps {
   isVisible: boolean
+  onReset: () => void
 }
 
 type View = 'fields' | 'done'
 
-export const DocumentFulfillmentCard = ({ isVisible }: DocumentFulfillmentCardProps) => {
+export const DocumentFulfillmentCard = ({ isVisible, onReset }: DocumentFulfillmentCardProps) => {
   const [view, setView] = useState<View>('fields')
   const [fieldValues, setFieldValues] = useState<Record<string, string> | null>(null)
+  const [exported, setExported] = useState(false)
 
   if (!isVisible) return null
 
@@ -45,25 +48,43 @@ export const DocumentFulfillmentCard = ({ isVisible }: DocumentFulfillmentCardPr
               setFieldValues(values)
               setView('done')
             }}
-            onBack={() => {}}
+            onBack={onReset}
           />
         )}
 
         {view === 'done' && fieldValues && (
           <div className="p-7 text-center">
             <div className="w-10 h-10 rounded-full bg-[var(--warm)]/20 flex items-center justify-center mx-auto mb-4">
-              <span className="text-warm text-lg">✓</span>
+              <Check className="h-5 w-5 text-warm" strokeWidth={2} />
             </div>
             <h3 className="text-lg font-serif font-semibold mb-2">Hujjat tayyor</h3>
             <p className="text-sm text-[var(--paper-text)]/60 mb-6">
               Barcha ma'lumotlar to'ldirildi. Hujjatni yuklab olishingiz mumkin.
             </p>
+
+            {exported && (
+              <motion.div
+                initial={{ opacity: 0, y: -4 }}
+                animate={{ opacity: 1, y: 0 }}
+                className="mb-4 px-4 py-2.5 rounded-md bg-[var(--warm)]/10 border border-[var(--hairline)] text-xs text-[var(--paper-text)]"
+              >
+                Hujjat saqlandi: ~/Documents/Zunoora/hujjat.docx
+              </motion.div>
+            )}
+
             <div className="space-y-3">
-              <button className="w-full px-4 py-2.5 text-sm font-medium bg-[var(--warm)]/10 hover:bg-[var(--warm)]/20 border border-[var(--hairline)] rounded-md transition-colors">
+              <button
+                onClick={() => setExported(true)}
+                className="w-full flex items-center justify-center gap-2 px-4 py-2.5 text-sm font-medium bg-[var(--warm)]/10 hover:bg-[var(--warm)]/20 border border-[var(--hairline)] rounded-md transition-colors"
+              >
+                <Download className="h-4 w-4" strokeWidth={1.5} />
                 Yuklab olish (.docx)
               </button>
-              <button className="w-full px-4 py-2 text-xs text-[var(--paper-text)]/40 hover:text-[var(--paper-text)]/60 transition-colors">
-                Ortga qaytish
+              <button
+                onClick={onReset}
+                className="w-full px-4 py-2 text-xs text-[var(--paper-text)]/40 hover:text-[var(--paper-text)]/60 transition-colors"
+              >
+                Yangi hujjat yaratish
               </button>
             </div>
           </div>
