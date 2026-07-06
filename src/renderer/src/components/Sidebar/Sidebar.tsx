@@ -15,7 +15,12 @@ const seedData = [
   { id: '3', title: 'Ochiq Dars Konspekti', type: 'konspekt', date: '1d ago', docCount: 2 },
 ]
 
-export const Sidebar = () => {
+interface SidebarProps {
+  onSettingsOpen: () => void
+  onAccountOpen: () => void
+}
+
+export const Sidebar = ({ onSettingsOpen, onAccountOpen }: SidebarProps) => {
   const { t } = useTranslation()
   const { isExpanded, toggle } = useSidebarStore()
   const { setItems, items } = useHistoryStore()
@@ -89,11 +94,17 @@ export const Sidebar = () => {
           <Plus className="h-3.5 w-3.5 shrink-0" strokeWidth={1.5} />
           {isExpanded && <span className="whitespace-nowrap">{t('sidebar.newChat')}</span>}
         </button>
-        <button className="flex w-full items-center gap-2.5 rounded-md px-2.5 py-2 text-xs text-muted-foreground transition-colors hover:bg-[var(--surface-hover)] hover:text-foreground">
+        <button
+          onClick={onSettingsOpen}
+          className="flex w-full items-center gap-2.5 rounded-md px-2.5 py-2 text-xs text-muted-foreground transition-colors hover:bg-[var(--surface-hover)] hover:text-foreground"
+        >
           <Settings className="h-3.5 w-3.5 shrink-0" strokeWidth={1.5} />
           {isExpanded && <span className="whitespace-nowrap">{t('sidebar.settings')}</span>}
         </button>
-        <button className="flex w-full items-center gap-2.5 rounded-md px-2.5 py-2 text-xs text-muted-foreground transition-colors hover:bg-[var(--surface-hover)] hover:text-foreground">
+        <button
+          onClick={onAccountOpen}
+          className="flex w-full items-center gap-2.5 rounded-md px-2.5 py-2 text-xs text-muted-foreground transition-colors hover:bg-[var(--surface-hover)] hover:text-foreground"
+        >
           <User className="h-3.5 w-3.5 shrink-0" strokeWidth={1.5} />
           {isExpanded && <span className="whitespace-nowrap">{t('sidebar.account')}</span>}
         </button>

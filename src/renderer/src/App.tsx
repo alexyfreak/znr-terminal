@@ -4,10 +4,14 @@ import { Sidebar } from './components/Sidebar'
 import { MainStage } from './components/Stage'
 import { SpotlightSearchBar } from './components/Search'
 import { DocumentFulfillmentCard } from './components/DocumentFulfillmentCard'
+import { SettingsPanel } from './components/SettingsPanel'
+import { AccountMenu } from './components/AccountMenu'
 import { useSearchStore } from './store/useSearchStore'
 
 const App = () => {
   const [selectedResult, setSelectedResult] = useState<string | null>(null)
+  const [showSettings, setShowSettings] = useState(false)
+  const [showAccount, setShowAccount] = useState(false)
   const { isDocked, setDocked } = useSearchStore()
 
   const handleSelect = (result: string) => {
@@ -22,7 +26,10 @@ const App = () => {
 
   return (
     <div className="flex h-screen w-full overflow-hidden bg-carbon text-foreground">
-      <Sidebar />
+      <Sidebar
+        onSettingsOpen={() => setShowSettings(true)}
+        onAccountOpen={() => setShowAccount(true)}
+      />
       <div className="relative flex flex-1 flex-col min-h-0">
         <div className="absolute inset-0 z-0">
           <MainStage showBrand={!isDocked} />
@@ -47,6 +54,9 @@ const App = () => {
           )}
         </AnimatePresence>
       </div>
+
+      <SettingsPanel isOpen={showSettings} onClose={() => setShowSettings(false)} />
+      <AccountMenu isOpen={showAccount} onClose={() => setShowAccount(false)} />
     </div>
   )
 }
