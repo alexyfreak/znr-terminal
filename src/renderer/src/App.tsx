@@ -23,7 +23,9 @@ const App = () => {
           <MainStage showBrand={!isDocked} />
         </div>
 
-        <SpotlightSearchBar onSelect={handleSelect} />
+        <div className="absolute inset-0 z-10 flex items-center justify-center px-6">
+          <SpotlightSearchBar onSelect={handleSelect} />
+        </div>
 
         <AnimatePresence mode="wait">
           {isDocked && selectedResult && (
