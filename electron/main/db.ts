@@ -1,19 +1,7 @@
 import { createClient } from '@supabase/supabase-js'
-import dotenv from 'dotenv'
-import { existsSync } from 'fs'
-import { resolve } from 'path'
-
-const envPath = resolve(__dirname, '..', '..', '.env')
-if (existsSync(envPath)) {
-  dotenv.config({ path: envPath })
-}
 
 const supabaseUrl = process.env.SUPABASE_URL
 const supabaseKey = process.env.SUPABASE_ANON_KEY
-
-if (!supabaseUrl || !supabaseKey) {
-  console.error('SUPABASE_URL and SUPABASE_ANON_KEY must be set in .env')
-}
 
 export const supabase = supabaseUrl && supabaseKey ? createClient(supabaseUrl, supabaseKey) : null
 
