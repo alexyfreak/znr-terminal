@@ -1,13 +1,37 @@
+import { useEffect, useRef } from 'react'
 import { useSidebarStore } from '@renderer/store/useSidebarStore'
+import { useHistoryStore } from '@renderer/store/useHistoryStore'
+import { useSearchStore } from '@renderer/store/useSearchStore'
 import { useTranslation } from 'react-i18next'
 import { motion } from 'framer-motion'
 import { Settings, User, Plus, Clock } from 'lucide-react'
+import { HistoryList } from './HistoryList'
 
 const spring = { type: 'spring' as const, stiffness: 180, damping: 26 }
+
+const seedData = [
+  { id: '1', title: 'Yillik Taqvim-Mavzu Reja', type: 'reja', date: '2m ago', docCount: 1 },
+  { id: '2', title: 'Dars Ishlanmasi — 5-sinf', type: 'dars', date: '5h ago', docCount: 1 },
+  { id: '3', title: 'Ochiq Dars Konspekti', type: 'konspekt', date: '1d ago', docCount: 2 },
+]
 
 export const Sidebar = () => {
   const { t } = useTranslation()
   const { isExpanded, toggle } = useSidebarStore()
+  const { setItems, items } = useHistoryStore()
+  const { clear } = useSearchStore()
+  const seeded = useRef(false)
+
+  useEffect(() => {
+    if (!seeded.current && items.length === 0) {
+      setItems(seedData)
+      seeded.current = true
+    }
+  }, [items, setItems])
+
+  const handleNewChat = () => {
+    clear()
+  }
 
   return (
     <motion.aside
@@ -16,25 +40,32 @@ export const Sidebar = () => {
       transition={spring}
       className="flex flex-col h-screen bg-[var(--sidebar)] border-r border-[var(--hairline)] overflow-hidden shrink-0"
     >
-      <div className="flex items-center gap-2 px-5 h-14 border-b border-[var(--hairline)]">
+      <div className="flex items-center gap-2.5 px-5 h-14 border-b border-[var(--hairline)] shrink-0">
         <button
           onClick={toggle}
-          className="flex items-center justify-center w-[18px] h-[18px] text-warm shrink-0"
+          className="flex items-center justify-center w-4 h-4 text-warm shrink-0"
         >
-          <span
-            className="block w-[10px] h-[10px] border border-warm rotate-45"
+          <motion.span
+            animate={{ rotate: isExpanded ? 45 : 0 }}
+            transition={{ duration: 0.3, ease: 'easeOut' }}
+            className="block w-[10px] h-[10px] border border-current"
             style={{ borderWidth: 1.5 }}
           />
         </button>
         {isExpanded && (
-          <span className="text-xs font-medium tracking-[0.2em] text-warm uppercase whitespace-nowrap">
+          <motion.span
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="text-xs font-medium tracking-[0.2em] text-warm uppercase whitespace-nowrap"
+          >
             Zunoora
-          </span>
+          </motion.span>
         )}
       </div>
 
       <div className="flex flex-col flex-1 min-h-0">
-        <div className="px-2.5 pt-4 pb-2">
+        <div className="px-2.5 pt-4 pb-1 shrink-0">
           {isExpanded && (
             <p className="serif-italic text-[10px] tracking-[0.3em] text-muted-foreground mb-2 px-1.5">
               {t('sidebar.history')}
@@ -46,10 +77,15 @@ export const Sidebar = () => {
             </div>
           )}
         </div>
+
+        <HistoryList isExpanded={isExpanded} />
       </div>
 
-      <div className="border-t border-[var(--hairline)] py-2 px-2.5 flex flex-col gap-0.5">
-        <button className="flex w-full items-center gap-2.5 rounded-md px-2.5 py-2 text-xs text-muted-foreground transition-colors hover:bg-[var(--surface-hover)] hover:text-foreground">
+      <div className="border-t border-[var(--hairline)] py-2 px-2.5 flex flex-col gap-0.5 shrink-0">
+        <button
+          onClick={handleNewChat}
+          className="flex w-full items-center gap-2.5 rounded-md px-2.5 py-2 text-xs text-muted-foreground transition-colors hover:bg-[var(--surface-hover)] hover:text-foreground"
+        >
           <Plus className="h-3.5 w-3.5 shrink-0" strokeWidth={1.5} />
           {isExpanded && <span className="whitespace-nowrap">{t('sidebar.newChat')}</span>}
         </button>
