@@ -39,6 +39,11 @@ export const Sidebar = ({ onSettingsOpen, onAccountOpen }: SidebarProps) => {
     setDocked(false)
   }
 
+  const handleHistorySelect = (title: string) => {
+    clear()
+    setDocked(true)
+  }
+
   return (
     <motion.aside
       layout
@@ -84,7 +89,7 @@ export const Sidebar = ({ onSettingsOpen, onAccountOpen }: SidebarProps) => {
           )}
         </div>
 
-        <HistoryList isExpanded={isExpanded} />
+        <HistoryList isExpanded={isExpanded} onSelect={handleHistorySelect} />
       </div>
 
       <div className="border-t border-[var(--hairline)] py-2 px-2.5 flex flex-col gap-0.5 shrink-0">

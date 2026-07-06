@@ -11,20 +11,16 @@ export const SearchResultsList = ({ onSelect }: SearchResultsListProps) => {
   const { t } = useTranslation()
   const { query, results, recentSuggestions } = useSearchStore()
 
-  const items = query.length > 0
-    ? results
-    : recentSuggestions
+  const items = query.length > 0 ? results : recentSuggestions
 
-  const showResults = query.length > 0 || (query.length === 0 && items.length > 0)
-
-  if (!showResults && query.length === 0) return null
+  if (query.length === 0) return null
 
   return (
     <div className="rounded-b-2xl border border-t-0 border-[var(--hairline)] bg-[var(--surface)]">
       <NewShablonAction onSelect={() => onSelect('new-shablon')} />
 
       <AnimatePresence mode="popLayout">
-        {query.length > 0 && results.length === 0 && (
+        {results.length === 0 && (
           <motion.div
             key="no-results"
             initial={{ opacity: 0 }}

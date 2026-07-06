@@ -3,9 +3,10 @@ import { useHistoryStore } from '@renderer/store/useHistoryStore'
 
 interface HistoryListProps {
   isExpanded: boolean
+  onSelect: (title: string) => void
 }
 
-export const HistoryList = ({ isExpanded }: HistoryListProps) => {
+export const HistoryList = ({ isExpanded, onSelect }: HistoryListProps) => {
   const { items } = useHistoryStore()
 
   if (!isExpanded) return null
@@ -26,6 +27,7 @@ export const HistoryList = ({ isExpanded }: HistoryListProps) => {
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, height: 0 }}
             transition={{ duration: 0.15 }}
+            onClick={() => onSelect(item.title)}
             className="group flex items-center justify-between rounded-md px-2.5 py-2 text-xs text-muted-foreground transition-colors hover:bg-[var(--surface-hover)] hover:text-foreground cursor-pointer"
           >
             <div className="flex flex-col min-w-0">

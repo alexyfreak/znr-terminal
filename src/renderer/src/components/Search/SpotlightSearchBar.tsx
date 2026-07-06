@@ -1,6 +1,6 @@
 import { useEffect, useRef, useCallback } from 'react'
 import { useTranslation } from 'react-i18next'
-import { motion } from 'framer-motion'
+import { AnimatePresence, motion } from 'framer-motion'
 import { Search } from 'lucide-react'
 import { useSearchStore } from '@renderer/store/useSearchStore'
 import { SearchResultsList } from './SearchResultsList'
@@ -43,49 +43,63 @@ export const SpotlightSearchBar = ({ onSelect }: SpotlightSearchBarProps) => {
   }, [])
 
   return (
-    <motion.div
-      layout
-      layoutId="search-bar"
-      transition={{ type: 'spring', stiffness: 180, damping: 26 }}
-      className={isDocked
-        ? 'fixed top-3 left-[72px] z-30'
-        : 'w-full max-w-xl'
-      }
-      style={isDocked ? { width: 320 } : undefined}
-    >
-      <div
-        className={`flex items-center border bg-[var(--surface)] backdrop-blur-sm transition-all duration-200 ease-out
-          ${isDocked
-            ? 'gap-2 px-3 h-9 rounded-lg border-[var(--hairline)]'
-            : `gap-3 px-4 h-12
-               ${isFocused || query.length > 0
-                  ? 'border-[var(--hairline)] bg-[var(--surface)]'
-                  : 'border-[var(--input-border)]'
-               }
-               ${isFocused || query.length > 0 ? 'rounded-t-2xl rounded-b-none' : 'rounded-2xl'}
-             `
-          }
-        `}
-        style={!isDocked && isFocused ? { boxShadow: '0 8px 30px -12px rgba(0,0,0,0.6)' } : undefined}
-      >
-        <Search className="h-4 w-4 text-muted-foreground shrink-0" strokeWidth={1.5} />
-        <input
-          ref={inputRef}
-          type="text"
-          value={query}
-          onChange={(e) => handleChange(e.target.value)}
-          onFocus={() => setFocused(true)}
-          onBlur={() => setTimeout(() => setFocused(false), 200)}
-          placeholder={t('search.placeholder')}
-          className={`flex-1 bg-transparent outline-none placeholder:text-muted-foreground ${
-            isDocked ? 'text-xs text-muted-foreground' : 'text-sm text-foreground'
-          }`}
-        />
-      </div>
+    <>
+      {isDocked ? (
+        <motion.div
+          key="docked-search"
+          initial={{ opacity: 0, y: -8 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ type: 'spring', stiffness: 180, damping: 26 }}
+          className="fixed top-3 left-[72px] z-30"
+          style={{ width: 320 }}
+        >
+          <div className="flex items-center gap-2 px-3 h-9 rounded-lg border border-[var(--hairline)] bg-[var(--surface)] backdrop-blur-sm">
+            <Search className="h-4 w-4 text-muted-foreground shrink-0" strokeWidth={1.5} />
+            <input
+              ref={inputRef}
+              type="text"
+              value={query}
+              onChange={(e) => handleChange(e.target.value)}
+              onFocus={() => setFocused(true)}
+              onBlur={() => setTimeout(() => setFocused(false), 200)}
+              placeholder={t('search.placeholder')}
+              className="flex-1 bg-transparent outline-none text-xs text-muted-foreground placeholder:text-muted-foreground"
+            />
+          </div>
+        </motion.div>
+      ) : (
+        <motion.div
+          key="centered-search"
+          initial={{ opacity: 0, y: 8 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ type: 'spring', stiffness: 180, damping: 26 }}
+          className="w-full max-w-xl"
+        >
+          <div
+            className={`flex items-center gap-3 px-4 h-12 border bg-[var(--surface)] backdrop-blur-sm transition-all duration-300 ease-out ${
+              isFocused || query.length > 0
+                ? 'border-[var(--hairline)] bg-[var(--surface)] rounded-t-2xl rounded-b-none shadow-[0_8px_30px_-12px_rgba(0,0,0,0.6)]'
+                : 'border-[var(--input-border)] rounded-2xl'
+            }`}
+          >
+            <Search className="h-4 w-4 text-muted-foreground shrink-0" strokeWidth={1.5} />
+            <input
+              ref={inputRef}
+              type="text"
+              value={query}
+              onChange={(e) => handleChange(e.target.value)}
+              onFocus={() => setFocused(true)}
+              onBlur={() => setTimeout(() => setFocused(false), 200)}
+              placeholder={t('search.placeholder')}
+              className="flex-1 bg-transparent outline-none text-sm text-foreground placeholder:text-muted-foreground"
+            />
+          </div>
 
-      {!isDocked && (isFocused || query.length > 0) && (
-        <SearchResultsList onSelect={onSelect} />
+          {isFocused && (
+            <SearchResultsList onSelect={onSelect} />
+          )}
+        </motion.div>
       )}
-    </motion.div>
+    </>
   )
 }

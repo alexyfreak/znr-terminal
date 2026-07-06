@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useCallback } from 'react'
 import { AnimatePresence, motion } from 'framer-motion'
 import { Sidebar } from './components/Sidebar'
 import { MainStage } from './components/Stage'
@@ -9,10 +9,21 @@ import { AccountMenu } from './components/AccountMenu'
 import { useSearchStore } from './store/useSearchStore'
 import { useThemeStore } from './store/useThemeStore'
 
+interface Template {
+  type: string
+  label: string
+  description: string | null
+  teacher_visible: boolean
+  schema: { required: string[]; optional: string[] }
+  template: string
+  keywords: string[]
+}
+
 const App = () => {
   const [selectedResult, setSelectedResult] = useState<string | null>(null)
   const [showSettings, setShowSettings] = useState(false)
   const [showAccount, setShowAccount] = useState(false)
+  const [templates, setTemplates] = useState<Template[]>([])
   const { isDocked, isFocused, setDocked } = useSearchStore()
   const { theme } = useThemeStore()
 
@@ -20,15 +31,29 @@ const App = () => {
     document.documentElement.setAttribute('data-theme', theme)
   }, [theme])
 
-  const handleSelect = (result: string) => {
+  useEffect(() => {
+    if (window.electronAPI?.loadTemplates) {
+      window.electronAPI.loadTemplates().then(res => {
+        if (res.success && res.data) {
+          setTemplates(res.data as Template[])
+        }
+      })
+    }
+  }, [])
+
+  const selectedTemplate = selectedResult
+    ? templates.find(t => t.type === selectedResult || t.label === selectedResult)
+    : null
+
+  const handleSelect = useCallback((result: string) => {
     setSelectedResult(result)
     setDocked(true)
-  }
+  }, [setDocked])
 
-  const handleReset = () => {
+  const handleReset = useCallback(() => {
     setSelectedResult(null)
     setDocked(false)
-  }
+  }, [setDocked])
 
   return (
     <div className="flex h-screen w-full overflow-hidden bg-carbon text-foreground">
@@ -55,7 +80,11 @@ const App = () => {
               transition={{ duration: 0.25, delay: 0.15 }}
               className="flex-1 flex items-start justify-center pt-20 pb-8 px-4 relative z-20"
             >
-              <DocumentFulfillmentCard isVisible={true} onReset={handleReset} />
+              <DocumentFulfillmentCard
+                isVisible={true}
+                onReset={handleReset}
+                template={selectedTemplate || undefined}
+              />
             </motion.div>
           )}
         </AnimatePresence>
