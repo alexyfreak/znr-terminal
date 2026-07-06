@@ -12,7 +12,7 @@ const App = () => {
   const [selectedResult, setSelectedResult] = useState<string | null>(null)
   const [showSettings, setShowSettings] = useState(false)
   const [showAccount, setShowAccount] = useState(false)
-  const { isDocked, setDocked } = useSearchStore()
+  const { isDocked, isFocused, setDocked } = useSearchStore()
 
   const handleSelect = (result: string) => {
     setSelectedResult(result)
@@ -32,7 +32,7 @@ const App = () => {
       />
       <div className="relative flex flex-1 flex-col min-h-0">
         <div className="absolute inset-0 z-0">
-          <MainStage showBrand={!isDocked} />
+          <MainStage showBrand={!isDocked && !isFocused} />
         </div>
 
         <div className="absolute inset-0 z-10 flex items-center justify-center px-6">
@@ -47,7 +47,7 @@ const App = () => {
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: -10 }}
               transition={{ duration: 0.25, delay: 0.15 }}
-              className="flex-1 flex items-start justify-center pt-16 pb-8 px-4"
+              className="flex-1 flex items-start justify-center pt-20 pb-8 px-4 z-20"
             >
               <DocumentFulfillmentCard isVisible={true} onReset={handleReset} />
             </motion.div>
