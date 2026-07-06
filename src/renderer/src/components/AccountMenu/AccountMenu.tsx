@@ -1,8 +1,9 @@
-import { useState } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { User, LogOut } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
 import { useAccountStore } from '@renderer/store/useAccountStore'
+import { useSidebarStore } from '@renderer/store/useSidebarStore'
 
 interface AccountMenuProps {
   isOpen: boolean
@@ -14,17 +15,68 @@ export const AccountMenu = ({ isOpen, onClose }: AccountMenuProps) => {
   const { isLoggedIn, userName, schoolName, role, login, logout } = useAccountStore()
   const [loginName, setLoginName] = useState('')
   const [password, setPassword] = useState('')
+  const [loginError, setLoginError] = useState('')
+  const panelRef = useRef<HTMLDivElement>(null)
+  const { isExpanded } = useSidebarStore()
 
-  const handleLogin = () => {
-    if (!loginName.trim()) return
-    login(loginName.trim(), 'Maktab №1', 'O\'qituvchi')
-    setLoginName('')
-    setPassword('')
+  useEffect(() => {
+    if (!isOpen) return
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') onClose()
+      if (e.key === 'Tab') {
+        const panel = panelRef.current
+        if (!panel) return
+        const focusable = panel.querySelectorAll<HTMLElement>(
+          'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])'
+        )
+        if (focusable.length === 0) return
+        const first = focusable[0]
+        const last = focusable[focusable.length - 1]
+        if (e.shiftKey && document.activeElement === first) {
+          e.preventDefault()
+          last.focus()
+        } else if (!e.shiftKey && document.activeElement === last) {
+          e.preventDefault()
+          first.focus()
+        }
+      }
+    }
+    document.addEventListener('keydown', handleKeyDown)
+    setTimeout(() => panelRef.current?.querySelector<HTMLElement>('input')?.focus(), 50)
+    return () => document.removeEventListener('keydown', handleKeyDown)
+  }, [isOpen, onClose])
+
+  const handleLogin = async () => {
+    if (!loginName.trim() || !password.trim()) return
+    setLoginError('')
+
+    try {
+      if (window.electronAPI?.login) {
+        const res = await window.electronAPI.login(loginName.trim(), password.trim())
+        if (res.success && res.data) {
+          const ctx = res.data as { user: { full_name: string }; school: { name: string }; role: string }
+          login(ctx.user.full_name, ctx.school.name, ctx.role)
+          setLoginName('')
+          setPassword('')
+        } else {
+          setLoginError(res.error || 'Kirish muvaffaqiyatsiz')
+        }
+      } else {
+        login(loginName.trim(), 'Maktab №1', "O'qituvchi")
+        setLoginName('')
+        setPassword('')
+      }
+    } catch (err) {
+      setLoginError((err as Error).message || 'Kirish muvaffaqiyatsiz')
+    }
   }
+
+  const [confirmLogout, setConfirmLogout] = useState(false)
 
   const handleLogout = () => {
     logout()
     onClose()
+    setConfirmLogout(false)
   }
 
   return (
@@ -39,11 +91,16 @@ export const AccountMenu = ({ isOpen, onClose }: AccountMenuProps) => {
             onClick={onClose}
           />
           <motion.div
+            ref={panelRef}
+            role="dialog"
+            aria-modal="true"
+            aria-label={isLoggedIn ? userName : t('account.title')}
             initial={{ opacity: 0, scale: 0.95, y: -8 }}
             animate={{ opacity: 1, scale: 1, y: 0 }}
             exit={{ opacity: 0, scale: 0.95, y: -8 }}
             transition={{ duration: 0.15, ease: 'easeOut' }}
-            className="fixed bottom-20 left-[72px] z-50 w-full max-w-[320px] p-5 rounded-xl bg-[var(--surface)] border border-[var(--hairline)] shadow-2xl"
+            className="fixed bottom-20 z-50 w-full max-w-[320px] max-h-[70vh] overflow-y-auto p-5 rounded-xl bg-[var(--surface)] border border-[var(--hairline)] shadow-2xl"
+            style={{ left: isExpanded ? 276 : 72 }}
           >
             {isLoggedIn ? (
               <>
@@ -79,13 +136,30 @@ export const AccountMenu = ({ isOpen, onClose }: AccountMenuProps) => {
                 </div>
 
                 <div className="pt-3 border-t border-[var(--hairline)]">
-                  <button
-                    onClick={handleLogout}
-                    className="flex items-center justify-center gap-2 w-full py-2 text-xs text-destructive hover:text-red-400 transition-colors"
-                  >
-                    <LogOut className="h-3.5 w-3.5" strokeWidth={1.5} />
-                    {t('account.logout')}
-                  </button>
+                  {confirmLogout ? (
+                    <div className="flex gap-2">
+                      <button
+                        onClick={() => setConfirmLogout(false)}
+                        className="flex-1 py-2 text-xs text-muted-foreground hover:text-foreground border border-[var(--hairline)] rounded-md transition-colors"
+                      >
+                        Bekor qilish
+                      </button>
+                      <button
+                        onClick={handleLogout}
+                        className="flex-1 py-2 text-xs font-medium text-carbon bg-destructive hover:bg-red-600 rounded-md transition-colors"
+                      >
+                        Chiqish
+                      </button>
+                    </div>
+                  ) : (
+                    <button
+                      onClick={() => setConfirmLogout(true)}
+                      className="flex items-center justify-center gap-2 w-full py-2 text-xs text-destructive hover:text-red-400 transition-colors"
+                    >
+                      <LogOut className="h-3.5 w-3.5" strokeWidth={1.5} />
+                      {t('account.logout')}
+                    </button>
+                  )}
                 </div>
               </>
             ) : (
@@ -99,7 +173,7 @@ export const AccountMenu = ({ isOpen, onClose }: AccountMenuProps) => {
                       value={loginName}
                       onChange={(e) => setLoginName(e.target.value)}
                       className="w-full h-9 px-3 text-xs bg-transparent border border-[var(--input-border)] rounded-md text-foreground outline-none focus:border-[var(--hairline)] transition-colors"
-                      placeholder="F.I.O"
+                      placeholder="TCH00001"
                     />
                   </div>
                   <div>
@@ -111,6 +185,9 @@ export const AccountMenu = ({ isOpen, onClose }: AccountMenuProps) => {
                       className="w-full h-9 px-3 text-xs bg-transparent border border-[var(--input-border)] rounded-md text-foreground outline-none focus:border-[var(--hairline)] transition-colors"
                     />
                   </div>
+                  {loginError && (
+                    <p className="text-[11px] text-destructive">{loginError}</p>
+                  )}
                 </div>
                 <button
                   onClick={handleLogin}

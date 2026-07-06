@@ -15,13 +15,13 @@ const PAGE_MARGINS = {
 
 const SPDelimiter = ' || '
 
-function isAllCaps(s: string): boolean {
+export function isAllCaps(s: string): boolean {
   const letters = s.replace(/[^a-zA-Z\u0400-\u04FF\u0500-\u052Fʻ'ʼ`‘’]/g, '')
   if (letters.length < 3) return false
   return letters === letters.toUpperCase()
 }
 
-function hasSignature(s: string): boolean {
+export function hasSignature(s: string): boolean {
   return s.includes('__________') || /^Imzo/i.test(s.trim()) || /^Direktor/i.test(s.trim())
 }
 
@@ -44,7 +44,7 @@ interface SplitLine {
 
 type ParsedLine = SimpleLine | SplitLine
 
-function buildHeaderParagraphs(school?: { name: string; address?: string | null; phone?: string | null }): Paragraph[] {
+export function buildHeaderParagraphs(school?: { name: string; address?: string | null; phone?: string | null }): Paragraph[] {
   const result: Paragraph[] = []
 
   let gerbBuffer: Buffer | null = null
@@ -86,7 +86,7 @@ function buildHeaderParagraphs(school?: { name: string; address?: string | null;
   return result
 }
 
-function parseRenderedText(text: string): ParsedLine[] {
+export function parseRenderedText(text: string): ParsedLine[] {
   const lines = text.split('\n')
   const result: ParsedLine[] = []
   let isFirstContentLine = true

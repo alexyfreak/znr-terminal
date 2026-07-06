@@ -1,13 +1,19 @@
 import { Plus } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
 import { motion } from 'framer-motion'
+import { useSearchStore } from '@renderer/store/useSearchStore'
+import { useShablonBuilderStore } from '@renderer/store/useShablonBuilderStore'
 
-interface NewShablonActionProps {
-  onSelect: () => void
-}
-
-export const NewShablonAction = ({ onSelect }: NewShablonActionProps) => {
+export const NewShablonAction = () => {
   const { t } = useTranslation()
+  const { setQuery, setFocused } = useSearchStore()
+  const { open } = useShablonBuilderStore()
+
+  const handleClick = () => {
+    setQuery('')
+    setFocused(false)
+    open()
+  }
 
   return (
     <motion.div
@@ -17,7 +23,7 @@ export const NewShablonAction = ({ onSelect }: NewShablonActionProps) => {
       transition={{ duration: 0.15 }}
     >
       <button
-        onClick={onSelect}
+        onClick={handleClick}
         className="flex w-full items-center gap-3 px-3 py-2.5 text-xs text-foreground transition-colors hover:bg-[var(--surface-hover)] border-b border-[var(--hairline)]"
       >
         <Plus className="h-4 w-4 shrink-0 text-warm" strokeWidth={1.5} />

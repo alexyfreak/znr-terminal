@@ -5,7 +5,7 @@ import uz from '../locales/uz.json'
 import ru from '../locales/ru.json'
 import en from '../locales/en.json'
 
-const getSystemLanguage = (): 'uz' | 'ru' | 'en' => {
+export const getSystemLanguage = (): 'uz' | 'ru' | 'en' => {
   const lang = navigator.language?.split('-')[0] || 'uz'
   if (lang === 'uz' || lang === 'ru' || lang === 'en') return lang
   return 'uz'

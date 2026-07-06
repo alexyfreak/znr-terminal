@@ -1,47 +1,29 @@
-import { useEffect, useRef } from 'react'
 import { useSidebarStore } from '@renderer/store/useSidebarStore'
 import { useHistoryStore } from '@renderer/store/useHistoryStore'
 import { useSearchStore } from '@renderer/store/useSearchStore'
 import { useTranslation } from 'react-i18next'
 import { motion } from 'framer-motion'
-import { Settings, User, Plus, Clock } from 'lucide-react'
+import { Settings, User, Plus, Clock, ArrowUpDown } from 'lucide-react'
 import { HistoryList } from './HistoryList'
+import type { HistoryItem } from '@renderer/store/useHistoryStore'
 
 const spring = { type: 'spring' as const, stiffness: 180, damping: 26 }
-
-const seedData = [
-  { id: '1', title: 'Yillik Taqvim-Mavzu Reja', type: 'reja', date: '2m ago', docCount: 1 },
-  { id: '2', title: 'Dars Ishlanmasi — 5-sinf', type: 'dars', date: '5h ago', docCount: 1 },
-  { id: '3', title: 'Ochiq Dars Konspekti', type: 'konspekt', date: '1d ago', docCount: 2 },
-]
 
 interface SidebarProps {
   onSettingsOpen: () => void
   onAccountOpen: () => void
+  onHistorySelect: (item: HistoryItem) => void
 }
 
-export const Sidebar = ({ onSettingsOpen, onAccountOpen }: SidebarProps) => {
+export const Sidebar = ({ onSettingsOpen, onAccountOpen, onHistorySelect }: SidebarProps) => {
   const { t } = useTranslation()
   const { isExpanded, toggle } = useSidebarStore()
-  const { setItems, items } = useHistoryStore()
+  const { items, sortOrder, setSortOrder } = useHistoryStore()
   const { clear, setDocked } = useSearchStore()
-  const seeded = useRef(false)
-
-  useEffect(() => {
-    if (!seeded.current && items.length === 0) {
-      setItems(seedData)
-      seeded.current = true
-    }
-  }, [items, setItems])
 
   const handleNewChat = () => {
     clear()
     setDocked(false)
-  }
-
-  const handleHistorySelect = (title: string) => {
-    clear()
-    setDocked(true)
   }
 
   return (
@@ -78,9 +60,18 @@ export const Sidebar = ({ onSettingsOpen, onAccountOpen }: SidebarProps) => {
       <div className="flex flex-col flex-1 min-h-0">
         <div className="px-2.5 pt-4 pb-1 shrink-0">
           {isExpanded && (
-            <p className="serif-italic text-[10px] tracking-[0.3em] text-muted-foreground mb-2 px-1.5">
-              {t('sidebar.history')}
-            </p>
+            <div className="flex items-center justify-between mb-2 px-1.5">
+              <p className="serif-italic text-[10px] tracking-[0.3em] text-muted-foreground">
+                {t('sidebar.history')}
+              </p>
+              <button
+                onClick={() => setSortOrder(sortOrder === 'newest' ? 'oldest' : 'newest')}
+                className="flex items-center gap-1 text-[10px] text-muted-foreground hover:text-foreground transition-colors"
+              >
+                <ArrowUpDown className="h-3 w-3" strokeWidth={1.5} />
+                {sortOrder === 'newest' ? 'Yangi' : 'Eski'}
+              </button>
+            </div>
           )}
           {!isExpanded && (
             <div className="flex justify-center py-2">
@@ -89,7 +80,7 @@ export const Sidebar = ({ onSettingsOpen, onAccountOpen }: SidebarProps) => {
           )}
         </div>
 
-        <HistoryList isExpanded={isExpanded} onSelect={handleHistorySelect} />
+        <HistoryList isExpanded={isExpanded} onSelect={onHistorySelect} sortOrder={sortOrder} />
       </div>
 
       <div className="border-t border-[var(--hairline)] py-2 px-2.5 flex flex-col gap-0.5 shrink-0">

@@ -1,3 +1,4 @@
+import { useEffect, useRef } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { X } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
@@ -20,6 +21,34 @@ export const SettingsPanel = ({ isOpen, onClose }: SettingsPanelProps) => {
   const { t } = useTranslation()
   const { theme, toggle } = useThemeStore()
   const { language, setLanguage } = useLanguageStore()
+  const panelRef = useRef<HTMLDivElement>(null)
+
+  useEffect(() => {
+    if (!isOpen) return
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') onClose()
+      if (e.key === 'Tab') {
+        const panel = panelRef.current
+        if (!panel) return
+        const focusable = panel.querySelectorAll<HTMLElement>(
+          'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])'
+        )
+        if (focusable.length === 0) return
+        const first = focusable[0]
+        const last = focusable[focusable.length - 1]
+        if (e.shiftKey && document.activeElement === first) {
+          e.preventDefault()
+          last.focus()
+        } else if (!e.shiftKey && document.activeElement === last) {
+          e.preventDefault()
+          first.focus()
+        }
+      }
+    }
+    document.addEventListener('keydown', handleKeyDown)
+    panelRef.current?.querySelector<HTMLElement>('button')?.focus()
+    return () => document.removeEventListener('keydown', handleKeyDown)
+  }, [isOpen, onClose])
 
   const handleLanguageChange = (lang: Language) => {
     setLanguage(lang)
@@ -38,11 +67,15 @@ export const SettingsPanel = ({ isOpen, onClose }: SettingsPanelProps) => {
             onClick={onClose}
           />
           <motion.div
+            ref={panelRef}
+            role="dialog"
+            aria-modal="true"
+            aria-label={t('settings.title')}
             initial={{ opacity: 0, scale: 0.95, y: -10 }}
             animate={{ opacity: 1, scale: 1, y: 0 }}
             exit={{ opacity: 0, scale: 0.95, y: -10 }}
             transition={{ duration: 0.15, ease: 'easeOut' }}
-            className="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-50 w-full max-w-[420px] p-6 rounded-xl bg-[var(--surface)] border border-[var(--hairline)] shadow-2xl"
+            className="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-50 w-full max-w-[420px] max-h-[80vh] overflow-y-auto p-6 rounded-xl bg-[var(--surface)] border border-[var(--hairline)] shadow-2xl"
           >
             <div className="flex items-center justify-between mb-5">
               <h2 className="serif-italic text-lg text-warm">{t('settings.title')}</h2>

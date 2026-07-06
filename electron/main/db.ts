@@ -34,6 +34,30 @@ export interface Director {
   school_data?: School
 }
 
+export interface ShablonField {
+  key: string
+  label: string
+  type: 'text' | 'textarea' | 'date' | 'number' | 'percent' | 'select'
+    | 'multi-select' | 'teacher_select' | 'class_select' | 'subject_select'
+    | 'director_select' | 'signature'
+  required: boolean
+  defaultValue?: string
+  options?: { value: string; label: string }[]
+  placeholder?: string
+  validation?: {
+    min?: number
+    max?: number
+    pattern?: string
+    message?: string
+  }
+  autoFill?: string
+}
+
+export interface ShablonStep {
+  header: string
+  fields: string[]
+}
+
 export interface Shablon {
   id: string
   type: string
@@ -43,6 +67,14 @@ export interface Shablon {
   teacher_visible: boolean
   schema: { required: string[]; optional: string[] }
   template: string
+  fields?: ShablonField[]
+  steps?: ShablonStep[]
+  category?: string | null
+  author_id?: string | null
+  published?: boolean
+  version?: number
+  created_at?: string
+  updated_at?: string
 }
 
 export interface Class {

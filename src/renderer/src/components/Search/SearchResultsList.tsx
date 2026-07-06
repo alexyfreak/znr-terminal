@@ -3,24 +3,31 @@ import { AnimatePresence, motion } from 'framer-motion'
 import { NewShablonAction } from './NewShablonAction'
 import { useSearchStore } from '@renderer/store/useSearchStore'
 
-interface SearchResultsListProps {
-  onSelect: (result: string) => void
+interface Template {
+  type: string
+  label: string
+  description: string | null
+  teacher_visible: boolean
+  schema: { required: string[]; optional: string[] }
+  template: string
+  keywords: string[]
 }
 
-export const SearchResultsList = ({ onSelect }: SearchResultsListProps) => {
+interface SearchResultsListProps {
+  onSelect: (result: string) => void
+  templates: Template[]
+}
+
+export const SearchResultsList = ({ onSelect, templates }: SearchResultsListProps) => {
   const { t } = useTranslation()
-  const { query, results, recentSuggestions } = useSearchStore()
-
-  const items = query.length > 0 ? results : recentSuggestions
-
-  if (query.length === 0) return null
+  const { query, results } = useSearchStore()
 
   return (
     <div className="rounded-b-2xl border border-t-0 border-[var(--hairline)] bg-[var(--surface)]">
-      <NewShablonAction onSelect={() => onSelect('new-shablon')} />
+      <NewShablonAction />
 
       <AnimatePresence mode="popLayout">
-        {results.length === 0 && (
+        {results.length === 0 && query.length > 0 && (
           <motion.div
             key="no-results"
             initial={{ opacity: 0 }}
@@ -32,20 +39,30 @@ export const SearchResultsList = ({ onSelect }: SearchResultsListProps) => {
           </motion.div>
         )}
 
-        {items.map((item, i) => (
-          <motion.button
-            key={`${item}-${i}`}
-            layout
-            initial={{ opacity: 0, y: -4 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -4 }}
-            transition={{ duration: 0.15, delay: i * 0.02 }}
-            onClick={() => onSelect(item)}
-            className="flex w-full items-center px-3 py-2.5 text-xs text-muted-foreground transition-colors hover:bg-[var(--surface-hover)] hover:text-foreground text-left"
-          >
-            {item}
-          </motion.button>
-        ))}
+        {results.map((type, i) => {
+          const tmpl = templates.find(t => t.type === type)
+          return (
+            <motion.button
+              key={type}
+              layout
+              initial={{ opacity: 0, y: -4 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -4 }}
+              transition={{ duration: 0.15, delay: i * 0.02 }}
+              onClick={() => onSelect(type)}
+              className="flex w-full flex-col px-3 py-2.5 text-left transition-colors hover:bg-[var(--surface-hover)]"
+            >
+              <span className="text-xs text-foreground font-medium">
+                {tmpl?.label || type}
+              </span>
+              {tmpl?.description && (
+                <span className="text-[11px] text-muted-foreground mt-0.5">
+                  {tmpl.description}
+                </span>
+              )}
+            </motion.button>
+          )
+        })}
       </AnimatePresence>
     </div>
   )

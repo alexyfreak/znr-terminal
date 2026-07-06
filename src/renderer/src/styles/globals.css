@@ -17,6 +17,9 @@
   --destructive: #C84A4A;
   --paper-bg: #FAFAF7;
   --paper-text: #1A1A1A;
+  --date-picker-scheme: dark;
+  --shadow-panel: 0 8px 30px -12px rgba(0, 0, 0, 0.6);
+  --shadow-card: 0 40px 80px -20px rgba(0, 0, 0, 0.7), 0 8px 20px rgba(0, 0, 0, 0.4);
 }
 
 [data-theme="light"] {
@@ -33,6 +36,9 @@
   --destructive: #C84A4A;
   --paper-bg: #FFFFFF;
   --paper-text: #1A1A1A;
+  --date-picker-scheme: light;
+  --shadow-panel: 0 4px 20px -8px rgba(0, 0, 0, 0.12);
+  --shadow-card: 0 8px 30px -12px rgba(0, 0, 0, 0.15), 0 2px 8px rgba(0, 0, 0, 0.06);
 }
 
 @theme inline {
@@ -57,6 +63,9 @@
   --radius-md: 8px;
   --radius-lg: 10px;
   --radius-xl: 14px;
+
+  --shadow-panel: var(--shadow-panel);
+  --shadow-card: var(--shadow-card);
 }
 
 .serif-italic {
