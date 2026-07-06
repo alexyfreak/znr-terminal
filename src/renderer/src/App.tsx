@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { AnimatePresence, motion } from 'framer-motion'
 import { Sidebar } from './components/Sidebar'
 import { MainStage } from './components/Stage'
@@ -7,12 +7,18 @@ import { DocumentFulfillmentCard } from './components/DocumentFulfillmentCard'
 import { SettingsPanel } from './components/SettingsPanel'
 import { AccountMenu } from './components/AccountMenu'
 import { useSearchStore } from './store/useSearchStore'
+import { useThemeStore } from './store/useThemeStore'
 
 const App = () => {
   const [selectedResult, setSelectedResult] = useState<string | null>(null)
   const [showSettings, setShowSettings] = useState(false)
   const [showAccount, setShowAccount] = useState(false)
   const { isDocked, isFocused, setDocked } = useSearchStore()
+  const { theme } = useThemeStore()
+
+  useEffect(() => {
+    document.documentElement.setAttribute('data-theme', theme)
+  }, [theme])
 
   const handleSelect = (result: string) => {
     setSelectedResult(result)
@@ -47,7 +53,7 @@ const App = () => {
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: -10 }}
               transition={{ duration: 0.25, delay: 0.15 }}
-              className="flex-1 flex items-start justify-center pt-20 pb-8 px-4 z-20"
+              className="flex-1 flex items-start justify-center pt-20 pb-8 px-4 relative z-20"
             >
               <DocumentFulfillmentCard isVisible={true} onReset={handleReset} />
             </motion.div>

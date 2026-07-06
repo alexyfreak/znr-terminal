@@ -19,6 +19,22 @@
   --paper-text: #1A1A1A;
 }
 
+[data-theme="light"] {
+  --carbon: #F5F5F0;
+  --surface: #FFFFFF;
+  --surface-hover: #F0F0EB;
+  --hairline: rgba(0, 0, 0, 0.08);
+  --warm: #2C2C2C;
+  --foreground: #1A1A1A;
+  --muted-foreground: #7A7A7A;
+  --sidebar: #EDEDE8;
+  --popover: #FAFAF7;
+  --input-border: rgba(0, 0, 0, 0.1);
+  --destructive: #C84A4A;
+  --paper-bg: #FFFFFF;
+  --paper-text: #1A1A1A;
+}
+
 @theme inline {
   --color-carbon: var(--carbon);
   --color-surface: var(--surface);

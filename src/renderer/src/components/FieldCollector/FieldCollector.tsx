@@ -149,7 +149,13 @@ export const FieldCollector = ({ onComplete, onBack }: FieldCollectorProps) => {
 
       <div className="flex gap-3 mt-6 pt-4 border-t border-[var(--hairline)]">
         <button
-          onClick={onBack}
+          onClick={() => {
+            if (currentStep > 0) {
+              setCurrentStep(s => s - 1)
+            } else {
+              onBack()
+            }
+          }}
           className="flex items-center gap-1.5 px-3 py-2 text-xs text-[var(--paper-text)]/60 hover:text-[var(--paper-text)] transition-colors"
         >
           <ChevronLeft className="h-3.5 w-3.5" strokeWidth={1.5} />

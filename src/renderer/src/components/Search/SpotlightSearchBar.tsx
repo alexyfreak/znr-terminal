@@ -69,22 +69,18 @@ export const SpotlightSearchBar = ({ onSelect }: SpotlightSearchBarProps) => {
         style={!isDocked && isFocused ? { boxShadow: '0 8px 30px -12px rgba(0,0,0,0.6)' } : undefined}
       >
         <Search className="h-4 w-4 text-muted-foreground shrink-0" strokeWidth={1.5} />
-        {isDocked ? (
-          <span className="text-xs text-muted-foreground truncate">
-            {query || t('search.placeholder')}
-          </span>
-        ) : (
-          <input
-            ref={inputRef}
-            type="text"
-            value={query}
-            onChange={(e) => handleChange(e.target.value)}
-            onFocus={() => setFocused(true)}
-            onBlur={() => setTimeout(() => setFocused(false), 200)}
-            placeholder={t('search.placeholder')}
-            className="flex-1 bg-transparent outline-none text-sm text-foreground placeholder:text-muted-foreground"
-          />
-        )}
+        <input
+          ref={inputRef}
+          type="text"
+          value={query}
+          onChange={(e) => handleChange(e.target.value)}
+          onFocus={() => setFocused(true)}
+          onBlur={() => setTimeout(() => setFocused(false), 200)}
+          placeholder={t('search.placeholder')}
+          className={`flex-1 bg-transparent outline-none placeholder:text-muted-foreground ${
+            isDocked ? 'text-xs text-muted-foreground' : 'text-sm text-foreground'
+          }`}
+        />
       </div>
 
       {!isDocked && (isFocused || query.length > 0) && (

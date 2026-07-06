@@ -73,7 +73,7 @@ export const AccountMenu = ({ isOpen, onClose }: AccountMenuProps) => {
                       type="password"
                       value="········"
                       readOnly
-                      className="w-full h-9 px-3 text-xs bg-transparent border border-[var(--input-border)] rounded-md text-foreground"
+                      className="w-full h-9 px-3 text-xs bg-transparent border border-[var(--input-border)] rounded-md text-muted-foreground opacity-60"
                     />
                   </div>
                 </div>

@@ -54,18 +54,23 @@ export const SettingsPanel = ({ isOpen, onClose }: SettingsPanelProps) => {
             <div className="space-y-4">
               <div className="flex items-center justify-between py-2">
                 <span className="text-sm text-foreground">{t('settings.theme')}</span>
-                <button
-                  onClick={toggle}
-                  className={`relative w-9 h-5 rounded-full transition-colors duration-200 ${
-                    theme === 'dark' ? 'bg-warm' : 'bg-[var(--hairline)]'
-                  }`}
-                >
-                  <span
-                    className={`absolute top-0.5 left-0.5 w-4 h-4 rounded-full bg-carbon shadow-md transition-transform duration-200 ${
-                      theme === 'dark' ? 'translate-x-4' : 'translate-x-0'
+                <div className="flex items-center gap-2">
+                  <span className="text-xs text-muted-foreground">
+                    {theme === 'dark' ? t('settings.dark') : t('settings.light')}
+                  </span>
+                  <button
+                    onClick={toggle}
+                    className={`relative w-9 h-5 rounded-full transition-colors duration-200 ${
+                      theme === 'dark' ? 'bg-warm' : 'bg-[var(--hairline)]'
                     }`}
-                  />
-                </button>
+                  >
+                    <span
+                      className={`absolute top-0.5 left-0.5 w-4 h-4 rounded-full bg-carbon shadow-md transition-transform duration-200 ${
+                        theme === 'dark' ? 'translate-x-4' : 'translate-x-0'
+                      }`}
+                    />
+                  </button>
+                </div>
               </div>
 
               <div className="flex items-center justify-between py-2">

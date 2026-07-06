@@ -24,7 +24,7 @@ export const Sidebar = ({ onSettingsOpen, onAccountOpen }: SidebarProps) => {
   const { t } = useTranslation()
   const { isExpanded, toggle } = useSidebarStore()
   const { setItems, items } = useHistoryStore()
-  const { clear } = useSearchStore()
+  const { clear, setDocked } = useSearchStore()
   const seeded = useRef(false)
 
   useEffect(() => {
@@ -36,6 +36,7 @@ export const Sidebar = ({ onSettingsOpen, onAccountOpen }: SidebarProps) => {
 
   const handleNewChat = () => {
     clear()
+    setDocked(false)
   }
 
   return (

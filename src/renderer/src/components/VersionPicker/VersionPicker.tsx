@@ -10,6 +10,9 @@ const versions = [
 
 export const VersionPicker = () => {
   const [isOpen, setIsOpen] = useState(false)
+  const [activeVersion, setActiveVersion] = useState(versions[0].id)
+
+  const activeLabel = versions.find(v => v.id === activeVersion)?.label || versions[0].label
 
   return (
     <div className="relative">
@@ -18,7 +21,8 @@ export const VersionPicker = () => {
         className="flex items-center gap-1.5 text-[11px] text-muted-foreground hover:text-foreground transition-colors"
       >
         <History className="h-3 w-3" strokeWidth={1.5} />
-        Versiyalar
+        <span className="hidden sm:inline truncate max-w-[160px]">{activeLabel}</span>
+        <span className="sm:hidden">Versiyalar</span>
         <ChevronDown className="h-3 w-3" strokeWidth={1.5} />
       </button>
 
@@ -34,8 +38,15 @@ export const VersionPicker = () => {
             {versions.map((v) => (
               <button
                 key={v.id}
-                onClick={() => setIsOpen(false)}
-                className="w-full text-left px-3 py-1.5 text-xs text-muted-foreground hover:text-foreground hover:bg-[var(--surface-hover)] transition-colors"
+                onClick={() => {
+                  setActiveVersion(v.id)
+                  setIsOpen(false)
+                }}
+                className={`w-full text-left px-3 py-1.5 text-xs transition-colors ${
+                  v.id === activeVersion
+                    ? 'text-warm bg-warm/10'
+                    : 'text-muted-foreground hover:text-foreground hover:bg-[var(--surface-hover)]'
+                }`}
               >
                 {v.label}
               </button>
