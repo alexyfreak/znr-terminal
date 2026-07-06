@@ -124,16 +124,27 @@ npm install
 
 3. **Set up environment variables**
 
-Create a `.env` file in the root directory:
+Create a `.env` file in the root directory (see `.env.example` for reference):
 
 ```env
 SUPABASE_URL=your_supabase_project_url
 SUPABASE_ANON_KEY=your_supabase_anon_key
 ```
 
-4. **Configure Supabase** (Important!)
+> **Note**: Get these values from your Supabase project dashboard at:  
+> `https://supabase.com/dashboard/project/YOUR_PROJECT/settings/api`
 
-Follow the instructions in [`SUPABASE_RLS_FIX.md`](./SUPABASE_RLS_FIX.md) to set up Row Level Security policies for the database.
+4. **Configure Supabase Database**
+
+You'll need to set up the following tables in your Supabase project:
+- `schools` - School information
+- `teachers` - Teacher accounts
+- `directors` - Director accounts
+- `classes` - Class information
+- `shablons` - Document templates
+- `user_shablons` - User-installed templates
+
+See the [Database Schema](#database-schema) section below for details.
 
 5. **Run in development mode**
 
@@ -218,14 +229,85 @@ npm run dev
 
 The application uses Supabase with the following main tables:
 
-- **`schools`** - School information
-- **`teachers`** - Teacher accounts
-- **`directors`** - Director accounts  
-- **`classes`** - Class information
-- **`shablons`** - Document templates
-- **`user_shablons`** - Installed templates per user
+**`schools`**
+```sql
+CREATE TABLE schools (
+  id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+  name TEXT NOT NULL,
+  address TEXT,
+  phone TEXT
+);
+```
 
-See [`SUPABASE_RLS_FIX.md`](./SUPABASE_RLS_FIX.md) for RLS policy setup.
+**`teachers`**
+```sql
+CREATE TABLE teachers (
+  id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+  full_name TEXT NOT NULL,
+  login_id TEXT UNIQUE NOT NULL,
+  pin_hash TEXT,
+  position TEXT,
+  subject TEXT,
+  school_id UUID REFERENCES schools(id),
+  phone TEXT
+);
+```
+
+**`directors`**
+```sql
+CREATE TABLE directors (
+  id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+  full_name TEXT NOT NULL,
+  login_id TEXT UNIQUE NOT NULL,
+  pin_hash TEXT,
+  school_id UUID REFERENCES schools(id),
+  position TEXT
+);
+```
+
+**`classes`**
+```sql
+CREATE TABLE classes (
+  id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+  name TEXT NOT NULL,
+  school_id UUID REFERENCES schools(id),
+  form_teacher_id UUID REFERENCES teachers(id),
+  academic_year TEXT
+);
+```
+
+**`shablons`** (Document Templates)
+```sql
+CREATE TABLE shablons (
+  id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+  type TEXT NOT NULL,
+  label TEXT NOT NULL,
+  description TEXT,
+  keywords TEXT[],
+  teacher_visible BOOLEAN DEFAULT true,
+  schema JSONB NOT NULL,
+  template TEXT NOT NULL,
+  fields JSONB,
+  steps JSONB,
+  category TEXT,
+  author_id UUID,
+  published BOOLEAN DEFAULT false,
+  version INTEGER DEFAULT 1,
+  created_at TIMESTAMPTZ DEFAULT NOW(),
+  updated_at TIMESTAMPTZ DEFAULT NOW()
+);
+```
+
+**`user_shablons`**
+```sql
+CREATE TABLE user_shablons (
+  user_id UUID NOT NULL,
+  shablon_id UUID REFERENCES shablons(id),
+  PRIMARY KEY (user_id, shablon_id)
+);
+```
+
+**Important**: Remember to set up Row Level Security (RLS) policies for these tables to control access appropriately.
 
 ---
 
@@ -252,21 +334,20 @@ Edit `electron-builder.json` to customize:
 
 ## 🐛 Known Issues & Fixes
 
-### Issue: "Shablon yaratishda xatolik" when publishing templates
+### Issue: Templates not appearing in document creator
 
-**Cause**: Supabase Row Level Security (RLS) policies blocking INSERT operations.
+**Cause**: Templates in database need proper field definitions.
 
-**Solution**: Follow the guide in [`SUPABASE_RLS_FIX.md`](./SUPABASE_RLS_FIX.md) to configure RLS policies.
+**Solution**: Ensure your templates have either populated `fields` arrays or `schema.required/optional` arrays in the database.
 
-### Issue: No input fields showing in document creator
+### Issue: Authentication errors
 
-**Cause**: Templates in database have empty `fields` arrays.
+**Cause**: Missing or incorrect Supabase credentials.
 
-**Status**: ✅ Fixed in beta-v3. The app now falls back to `schema.required/optional` when `fields` is empty.
-
-### Issue: Black screen on startup
-
-**Status**: ✅ Fixed in beta-v3. React hooks ordering issue resolved.
+**Solution**: 
+1. Check your `.env` file has correct `SUPABASE_URL` and `SUPABASE_ANON_KEY`
+2. Verify your Supabase project is active
+3. Ensure RLS policies allow the operations you're trying to perform
 
 ---
 
