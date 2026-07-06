@@ -2,6 +2,7 @@
   "name": "zunoora-desktop",
   "version": "1.0.0",
   "description": "Uzbekistan teacher document assistant — Electron desktop app for generating official school documents",
+  "author": "Zunoora Team <info@zunoora.uz>",
   "type": "module",
   "main": "./out/main/index.js",
   "scripts": {

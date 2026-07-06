@@ -5,6 +5,7 @@ interface SearchState {
   isFocused: boolean
   isDocked: boolean
   results: string[]
+  recentSuggestions: string[]
   setQuery: (query: string) => void
   setFocused: (focused: boolean) => void
   setDocked: (docked: boolean) => void
@@ -12,11 +13,20 @@ interface SearchState {
   clear: () => void
 }
 
+const defaultSuggestions = [
+  'Yillik Taqvim-Mavzu Reja',
+  'Dars Ishlanmasi',
+  'Ochiq Dars Konspekti',
+  'Sinflar Kesimida Hisobot',
+  'O\'quvchilar Ro\'yxati',
+]
+
 export const useSearchStore = create<SearchState>()((set) => ({
   query: '',
   isFocused: false,
   isDocked: false,
   results: [],
+  recentSuggestions: defaultSuggestions,
   setQuery: (query) => set({ query }),
   setFocused: (isFocused) => set({ isFocused }),
   setDocked: (isDocked) => set({ isDocked }),
