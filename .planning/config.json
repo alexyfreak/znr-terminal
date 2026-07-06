@@ -1,0 +1,16 @@
+{
+  "project": "zunoora-desktop",
+  "version": "1.0.0",
+  "mode": "interactive",
+  "granularity": "standard",
+  "execution": "sequential",
+  "commit_docs": true,
+  "model_profile": "inherit",
+  "workflow": {
+    "research": true,
+    "plan_check": true,
+    "verifier": true,
+    "nyquist_validation": true,
+    "auto_advance": false
+  }
+}
