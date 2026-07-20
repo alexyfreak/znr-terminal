@@ -8,15 +8,31 @@ This guide will help you set up Zunoora Desktop from scratch.
 - A Supabase account
 - Git (for cloning)
 
-## Step 1: Clone and Install
+## Quick Start (Recommended)
 
 ```bash
-git clone https://github.com/alexyfreak/znr-terminal.git
-cd znr-terminal
+git clone https://github.com/alexyfreak/zunoora.git
+cd zunoora
+npm install
+npm run setup
+npm run dev
+```
+
+The `setup` script handles everything: creates tables, seeds data, and configures `.env`.
+
+---
+
+## Manual Setup (Alternative to `npm run setup`)
+
+### Step 1: Clone and Install
+
+```bash
+git clone https://github.com/alexyfreak/zunoora.git
+cd zunoora
 npm install
 ```
 
-## Step 2: Set Up Supabase
+### Step 2: Set Up Supabase
 
 ### 2.1 Create a Supabase Project
 

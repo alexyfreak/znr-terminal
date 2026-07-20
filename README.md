@@ -105,52 +105,34 @@ znr-terminal/
 
 - **Node.js** >= 18.x
 - **npm** >= 9.x or **yarn** >= 1.22
-- **Supabase Account** (for backend database)
+- **Supabase Account** (free at [supabase.com](https://supabase.com))
 
 ### Installation
 
-1. **Clone the repository**
-
 ```bash
-git clone https://github.com/alexyfreak/znr-terminal.git
-cd znr-terminal
-```
-
-2. **Install dependencies**
-
-```bash
+git clone https://github.com/alexyfreak/zunoora.git
+cd zunoora
 npm install
-```
-
-3. **Set up environment variables**
-
-Create a `.env` file in the root directory (see `.env.example` for reference):
-
-```env
-SUPABASE_URL=your_supabase_project_url
-SUPABASE_ANON_KEY=your_supabase_anon_key
-```
-
-> **Note**: Get these values from your Supabase project dashboard at:  
-> `https://supabase.com/dashboard/project/YOUR_PROJECT/settings/api`
-
-4. **Configure Supabase Database**
-
-You'll need to set up the following tables in your Supabase project:
-- `schools` - School information
-- `teachers` - Teacher accounts
-- `directors` - Director accounts
-- `classes` - Class information
-- `shablons` - Document templates
-- `user_shablons` - User-installed templates
-
-See the [Database Schema](#database-schema) section below for details.
-
-5. **Run in development mode**
-
-```bash
+npm run setup
 npm run dev
 ```
+
+The `setup` script will prompt you for your Supabase credentials, then:
+- Create all required database tables (`schools`, `teachers`, `directors`, `classes`, `shablons`, `user_shablons`)
+- Enable Row Level Security with default policies
+- Insert sample data (school, director, teacher, classes)
+- Seed 50+ document templates
+- Save your credentials to `.env`
+
+> **Need a Supabase account?** Create one free at [supabase.com](https://supabase.com) and start a new project.  
+> Get your API credentials from: `https://supabase.com/dashboard/project/YOUR_PROJECT/settings/api`
+
+> **For automated setup** (no manual SQL pasting), generate a Personal Access Token at:  
+> `https://supabase.com/dashboard/account/tokens`
+
+### Manual Setup (Alternative)
+
+If you prefer to set up the database manually, follow [SETUP.md](./SETUP.md) instead of running `npm run setup`.
 
 ---
 
@@ -160,6 +142,7 @@ npm run dev
 
 | Command | Description |
 |---------|-------------|
+| `npm run setup` | One-command Supabase setup (tables, seed data, .env) |
 | `npm run dev` | Start development server with hot reload |
 | `npm run build` | Build the application for production |
 | `npm run preview` | Preview the production build |
@@ -391,7 +374,7 @@ This project is licensed under the MIT License - see the [LICENSE.md](LICENSE.md
 
 **Zunoora Team** - info@zunoora.uz
 
-**Project Repository**: [https://github.com/alexyfreak/znr-terminal](https://github.com/alexyfreak/znr-terminal)
+**Project Repository**: [https://github.com/alexyfreak/zunoora](https://github.com/alexyfreak/zunoora)
 
 ---
 
