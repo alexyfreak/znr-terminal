@@ -372,7 +372,7 @@ This project is licensed under the MIT License - see the [LICENSE.md](LICENSE.md
 
 ## 📧 Contact
 
-**Zunoora Team** - info@zunoora.uz
+**Zunoora Team** - matritsah4cker@gmail.com
 
 **Project Repository**: [https://github.com/alexyfreak/zunoora](https://github.com/alexyfreak/zunoora)
 
