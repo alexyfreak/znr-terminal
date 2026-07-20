@@ -51,3 +51,6 @@ reference-beta/
 
 # App design files
 app design/
+
+# Temporary Vite config (Electron project uses electron.vite.config.ts)
+vite.config.ts
