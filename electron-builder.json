@@ -1,0 +1,20 @@
+{
+  "appId": "uz.zunoora.app",
+  "productName": "Zunoora",
+  "directories": {
+    "output": "release",
+    "buildResources": "build"
+  },
+  "win": {
+    "target": ["nsis"]
+  },
+  "nsis": {
+    "oneClick": false,
+    "perMachine": false,
+    "allowToChangeInstallationDirectory": true,
+    "createDesktopShortcut": true,
+    "createStartMenuShortcut": true,
+    "shortcutName": "Zunoora",
+    "artifactName": "Zunoora-Setup-${version}.${ext}"
+  }
+}
