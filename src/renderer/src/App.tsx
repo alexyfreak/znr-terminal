@@ -44,7 +44,7 @@ const App = () => {
   } | null>(null)
   const { isDocked, isFocused, setDocked } = useSearchStore()
   const { theme } = useThemeStore()
-  const { isLoggedIn, setContext, setTeachers, setSubjects } = useAccountStore()
+  const { isLoggedIn, setContext, setTeachers, setSubjects, role } = useAccountStore()
   const { activeId, setActiveId, items } = useHistoryStore()
   const { isOpen: isBuilderOpen, close: closeBuilder, open: openBuilder } = useShablonBuilderStore()
 
@@ -140,16 +140,6 @@ const App = () => {
     ? templates.find(t => t.type === resolvedType)
     : null
 
-  const { role } = useAccountStore()
-
-  if (role === 'admin') {
-    return (
-      <ErrorBoundary>
-        <AdminLayout />
-      </ErrorBoundary>
-    )
-  }
-
   const handleSelect = useCallback((result: string) => {
     const id = `doc-${Date.now()}`
     setPendingType(result)
@@ -183,6 +173,14 @@ const App = () => {
 
   if (!isLoggedIn) {
     return <AuthScreen />
+  }
+
+  if (role === 'admin') {
+    return (
+      <ErrorBoundary>
+        <AdminLayout />
+      </ErrorBoundary>
+    )
   }
 
   return (
