@@ -343,6 +343,25 @@
     "title": "Настройки администратора",
     "reportRecipient": "Email для отчётов об ошибках",
     "reportRecipientHint": "Все отчёты об ошибках будут отправлены на этот адрес.",
-    "saved": "Сохранено!"
+    "saved": "Сохранено!",
+    "dashboard": "Панель управления",
+    "database": "База данных",
+    "reports": "Отчёты",
+    "settings": "Настройки",
+    "totalSchools": "Школы",
+    "totalUsers": "Пользователи",
+    "weeklyActive": "Активные за неделю",
+    "monthlyActive": "Активные за месяц",
+    "activeNow": "Сейчас активны",
+    "usersBySchool": "Пользователи по школам",
+    "recentActivity": "Последние входы",
+    "schoolsOverview": "Список школ",
+    "school": "Школа",
+    "address": "Адрес",
+    "users": "Пользователи",
+    "lastLogin": "Последний вход",
+    "teachers": "Учителя",
+    "directors": "Директора",
+    "comingSoon": "Этот раздел скоро появится."
   }
 }

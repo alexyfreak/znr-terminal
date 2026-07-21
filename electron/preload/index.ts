@@ -110,6 +110,13 @@ const electronAPI = {
 
   setAdminConfig: (config: { reportRecipientEmail: string }): Promise<{ success: boolean; data?: boolean; error?: string }> =>
     ipcRenderer.invoke('admin:set-config', config),
+
+  // Admin Dashboard
+  getAdminDashboard: (): Promise<{ success: boolean; data?: Record<string, unknown>; error?: string }> =>
+    ipcRenderer.invoke('admin:dashboard'),
+
+  getAdminSchoolDetail: (schoolId: string): Promise<{ success: boolean; data?: Record<string, unknown>; error?: string }> =>
+    ipcRenderer.invoke('admin:school-detail', schoolId),
 }
 
 contextBridge.exposeInMainWorld('electronAPI', electronAPI)

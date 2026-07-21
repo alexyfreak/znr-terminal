@@ -9,6 +9,7 @@ import { BuyCreditsPage } from './components/BuyCreditsPage'
 import { PaymentCheckout } from './components/PaymentCheckout'
 import { SettingsPanel } from './components/SettingsPanel'
 import { AdminPanel } from './components/AdminPanel/AdminPanel'
+import { AdminLayout } from './components/AdminPanel/AdminLayout'
 import { AccountMenu } from './components/AccountMenu'
 import { AuthScreen } from './components/AuthScreen'
 import { ShablonBuilderPanel } from './components/ShablonBuilder'
@@ -138,6 +139,16 @@ const App = () => {
   const activeTemplate = resolvedType
     ? templates.find(t => t.type === resolvedType)
     : null
+
+  const { role } = useAccountStore()
+
+  if (role === 'admin') {
+    return (
+      <ErrorBoundary>
+        <AdminLayout />
+      </ErrorBoundary>
+    )
+  }
 
   const handleSelect = useCallback((result: string) => {
     const id = `doc-${Date.now()}`

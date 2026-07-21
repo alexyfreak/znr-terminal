@@ -343,6 +343,25 @@
     "title": "Admin Settings",
     "reportRecipient": "Bug Report Recipient",
     "reportRecipientHint": "All bug reports will be sent to this email address.",
-    "saved": "Saved!"
+    "saved": "Saved!",
+    "dashboard": "Dashboard",
+    "database": "Database",
+    "reports": "Reports",
+    "settings": "Settings",
+    "totalSchools": "Schools",
+    "totalUsers": "Users",
+    "weeklyActive": "Weekly Active",
+    "monthlyActive": "Monthly Active",
+    "activeNow": "Active Now",
+    "usersBySchool": "Users by School",
+    "recentActivity": "Recent Logins",
+    "schoolsOverview": "Schools Overview",
+    "school": "School",
+    "address": "Address",
+    "users": "Users",
+    "lastLogin": "Last Login",
+    "teachers": "Teachers",
+    "directors": "Directors",
+    "comingSoon": "This section is coming soon."
   }
 }

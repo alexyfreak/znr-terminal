@@ -343,6 +343,25 @@
     "title": "Admin sozlamalari",
     "reportRecipient": "Xabar qabul qiluvchi email",
     "reportRecipientHint": "Barcha xatolar shu manzilga yuboriladi.",
-    "saved": "Saqlangan!"
+    "saved": "Saqlangan!",
+    "dashboard": "Boshqaruv paneli",
+    "database": "Ma'lumotlar bazasi",
+    "reports": "Hisobotlar",
+    "settings": "Sozlamalar",
+    "totalSchools": "Maktablar",
+    "totalUsers": "Foydalanuvchilar",
+    "weeklyActive": "Haftalik faol",
+    "monthlyActive": "Oylik faol",
+    "activeNow": "Hozir faol",
+    "usersBySchool": "Maktablar bo'yicha foydalanuvchilar",
+    "recentActivity": "Oxirgi kirishlar",
+    "schoolsOverview": "Maktablar ro'yxati",
+    "school": "Maktab",
+    "address": "Manzil",
+    "users": "Foydalanuvchilar",
+    "lastLogin": "Oxirgi kirish",
+    "teachers": "O'qituvchilar",
+    "directors": "Direktorlar",
+    "comingSoon": "Ushbu bo'lim tez orada."
   }
 }

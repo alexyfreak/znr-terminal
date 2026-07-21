@@ -180,6 +180,9 @@ export async function verifyCredentials(loginId: string, password: string): Prom
   }
 
   if (loginId === DEFAULT_USER.loginId && password === DEFAULT_USER.password) {
+    if (supabase) {
+      await supabase.from('teachers').update({ last_login: new Date().toISOString() }).eq('login_id', loginId).maybeSingle()
+    }
     return {
       user: { id: 'default-001', full_name: DEFAULT_USER.name, email: '', phone: '', subject: 'General', login_id: DEFAULT_USER.loginId } as any,
       school: { id: 'default-school', name: DEFAULT_USER.school, address: '' } as any,
@@ -200,6 +203,10 @@ export async function verifyCredentials(loginId: string, password: string): Prom
   if (teacher) {
     if (!teacher.school_data) return null
     if (teacher.pin_hash && !verifyPassword(password, teacher.pin_hash)) return null
+
+    if (supabase) {
+      await supabase.from('teachers').update({ last_login: new Date().toISOString() }).eq('id', teacher.id).maybeSingle()
+    }
 
     const { data: director } = await supabase
       .from('directors')
@@ -230,6 +237,10 @@ export async function verifyCredentials(loginId: string, password: string): Prom
   if (director) {
     if (!director.school_data) return null
     if (director.pin_hash && !verifyPassword(password, director.pin_hash)) return null
+
+    if (supabase) {
+      await supabase.from('directors').update({ last_login: new Date().toISOString() }).eq('id', director.id).maybeSingle()
+    }
 
     const { data: classes } = await supabase
       .from('classes')

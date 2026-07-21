@@ -120,6 +120,22 @@ export function registerIpcHandlers(_win: BrowserWindow): void {
     })
     if (canceled || !filePath) throw new Error('Saqlash bekor qilindi')
     await generateDocx(rendered, filePath, data.school)
+
+    try {
+      const activity = existsSync(ACTIVITY_LOG_PATH)
+        ? JSON.parse(readFileSync(ACTIVITY_LOG_PATH, 'utf-8'))
+        : []
+      activity.push({
+        type: 'doc_generated',
+        userName: data.userName,
+        shablonType: data.shablonType,
+        schoolName: data.school?.name || '—',
+        timestamp: new Date().toISOString(),
+      })
+      const recent = activity.slice(-500)
+      writeFileSync(ACTIVITY_LOG_PATH, JSON.stringify(recent, null, 2), 'utf-8')
+    } catch { /* ignore */ }
+
     return filePath
   })
 
@@ -165,6 +181,7 @@ export function registerIpcHandlers(_win: BrowserWindow): void {
   })
 
   const ADMIN_CONFIG_PATH = resolve(app.getPath('userData'), 'admin-config.json')
+  const ACTIVITY_LOG_PATH = resolve(app.getPath('userData'), 'activity-log.json')
 
   function readAdminConfig(): AdminConfig {
     try {
@@ -188,6 +205,90 @@ export function registerIpcHandlers(_win: BrowserWindow): void {
   registerSafeHandler('admin:set-config', async (_event, config: AdminConfig) => {
     writeAdminConfig(config)
     return true
+  })
+
+  registerSafeHandler('admin:dashboard', async () => {
+    if (!supabase) return { error: 'Database not connected' }
+
+    const now = new Date()
+    const day = 86400000
+    const weekAgo = new Date(now.getTime() - 7 * day).toISOString()
+    const monthAgo = new Date(now.getTime() - 30 * day).toISOString()
+
+    const [schoolsRes, teachersRes, directorsRes] = await Promise.all([
+      supabase.from('schools').select('id, name, address, created_at'),
+      supabase.from('teachers').select('id, full_name, school_id, last_login, created_at'),
+      supabase.from('directors').select('id, full_name, school_id, last_login, created_at'),
+    ])
+
+    const schools = (schoolsRes.data || []) as { id: string; name: string; address: string | null; created_at: string | null }[]
+    const teachers = (teachersRes.data || []) as { id: string; full_name: string; school_id: string; last_login: string | null; created_at: string | null }[]
+    const directors = (directorsRes.data || []) as { id: string; full_name: string; school_id: string; last_login: string | null; created_at: string | null }[]
+    const allUsers = [...teachers, ...directors]
+
+    const weeklyActive = allUsers.filter(u => u.last_login && u.last_login >= weekAgo).length
+    const monthlyActive = allUsers.filter(u => u.last_login && u.last_login >= monthAgo).length
+    const activeNow = allUsers.filter(u => {
+      if (!u.last_login) return false
+      return now.getTime() - new Date(u.last_login).getTime() < 15 * 60000
+    }).length
+
+    const usersBySchool = schools.map(s => ({
+      id: s.id,
+      name: s.name,
+      address: s.address || '',
+      userCount: allUsers.filter(u => u.school_id === s.id).length,
+      teacherCount: teachers.filter(t => t.school_id === s.id).length,
+      directorCount: directors.filter(d => d.school_id === s.id).length,
+      weeklyActive: allUsers.filter(u => u.school_id === s.id && u.last_login && u.last_login >= weekAgo).length,
+      monthlyActive: allUsers.filter(u => u.school_id === s.id && u.last_login && u.last_login >= monthAgo).length,
+    }))
+
+    const recentActivity = allUsers
+      .filter(u => u.last_login)
+      .sort((a, b) => new Date(b.last_login!).getTime() - new Date(a.last_login!).getTime())
+      .slice(0, 50)
+      .map(u => ({
+        id: u.id,
+        name: u.full_name,
+        schoolId: u.school_id,
+        lastLogin: u.last_login,
+        schoolName: schools.find(s => s.id === u.school_id)?.name || '—',
+      }))
+
+    return {
+      stats: {
+        totalSchools: schools.length,
+        totalUsers: allUsers.length,
+        totalTeachers: teachers.length,
+        totalDirectors: directors.length,
+        weeklyActive,
+        monthlyActive,
+        activeNow,
+      },
+      schools: usersBySchool,
+      recentActivity,
+    }
+  })
+
+  registerSafeHandler('admin:school-detail', async (_event, schoolId: string) => {
+    if (!supabase) return { error: 'Database not connected' }
+
+    const [schoolRes, teachersRes, directorsRes] = await Promise.all([
+      supabase.from('schools').select('*').eq('id', schoolId).maybeSingle(),
+      supabase.from('teachers').select('id, full_name, email, phone, subject, last_login, created_at').eq('school_id', schoolId),
+      supabase.from('directors').select('id, full_name, email, phone, last_login, created_at').eq('school_id', schoolId),
+    ])
+
+    const school = schoolRes.data as { id: string; name: string; address: string | null; phone: string | null; created_at: string | null } | null
+    const teachers = (teachersRes.data || []) as { id: string; full_name: string; email: string | null; phone: string | null; subject: string | null; last_login: string | null; created_at: string | null }[]
+    const directors = (directorsRes.data || []) as { id: string; full_name: string; email: string | null; phone: string | null; last_login: string | null; created_at: string | null }[]
+
+    return {
+      school,
+      teachers,
+      directors,
+    }
   })
 
   registerSafeHandler('data:context', async () => {

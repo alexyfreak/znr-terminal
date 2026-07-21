@@ -60,6 +60,8 @@ declare global {
       // Admin API
       getAdminConfig: () => Promise<{ success: boolean; data?: { reportRecipientEmail: string }; error?: string }>
       setAdminConfig: (config: { reportRecipientEmail: string }) => Promise<{ success: boolean; data?: boolean; error?: string }>
+      getAdminDashboard: () => Promise<{ success: boolean; data?: Record<string, unknown>; error?: string }>
+      getAdminSchoolDetail: (schoolId: string) => Promise<{ success: boolean; data?: Record<string, unknown>; error?: string }>
     }
   }
 }
