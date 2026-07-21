@@ -43,6 +43,12 @@ declare global {
         billing?: string
       }) => Promise<{ success: boolean; data?: { transactionId: string; paymentUrl: string }; error?: string }>
       openPaymentUrl: (url: string) => Promise<{ success: boolean; data?: unknown; error?: string }>
+      submitBugReport: (data: {
+        mode: string
+        description: string
+        stackTrace?: string
+        userAgent?: string
+      }) => Promise<{ success: boolean; data?: { savedPath: string }; error?: string }>
     }
   }
 }

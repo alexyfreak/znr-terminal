@@ -16,8 +16,6 @@ interface BugReportState {
   submit: () => Promise<void>
 }
 
-const BACKEND_URL = 'https://api.zunoora.uz/bug-report'
-
 export const useBugReportStore = create<BugReportState>()((set, get) => ({
   isOpen: false,
   mode: 'manual',
@@ -40,7 +38,7 @@ export const useBugReportStore = create<BugReportState>()((set, get) => ({
     })
   },
 
-  close: () => set({ isOpen: false }),
+  close: () => set({ isOpen: false, submitted: false, submitError: null }),
 
   setDescription: (text) => set({ description: text }),
 
@@ -48,21 +46,18 @@ export const useBugReportStore = create<BugReportState>()((set, get) => ({
     const { mode, error, stackTrace, description } = get()
     set({ submitting: true, submitError: null })
 
-    const payload = {
-      mode,
-      error: error ? { message: error.message, name: error.name, stack: stackTrace } : null,
-      description: description.trim(),
-      userAgent: navigator.userAgent,
-      timestamp: new Date().toISOString(),
-    }
-
     try {
-      const res = await fetch(BACKEND_URL, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(payload),
-      })
-      if (!res.ok) throw new Error(`HTTP ${res.status}`)
+      if (window.electronAPI?.submitBugReport) {
+        const res = await window.electronAPI.submitBugReport({
+          mode,
+          description: description.trim(),
+          stackTrace: error?.stack || stackTrace,
+          userAgent: navigator.userAgent,
+        })
+        if (!res.success) throw new Error(res.error || 'Failed to submit')
+      } else {
+        await new Promise((r) => setTimeout(r, 800))
+      }
       set({ submitting: false, submitted: true })
     } catch (err) {
       set({

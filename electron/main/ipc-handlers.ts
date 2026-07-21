@@ -1,5 +1,6 @@
 import { ipcMain, BrowserWindow, dialog, app, shell } from 'electron'
-import { readFileSync, writeFileSync, existsSync } from 'fs'
+import { readFileSync, writeFileSync, existsSync, mkdirSync } from 'fs'
+import nodemailer from 'nodemailer'
 import { resolve } from 'path'
 import { verifyCredentials, registerUser, generateUniqueId } from './auth'
 import type { RegisterInput } from './auth'
@@ -287,5 +288,53 @@ export function registerIpcHandlers(_win: BrowserWindow): void {
 
   registerSafeHandler('payment:open-url', async (_event, url: string) => {
     shell.openExternal(url)
+  })
+
+  registerSafeHandler('bug:report', async (_event, payload: {
+    mode: string
+    description: string
+    stackTrace?: string
+    userAgent?: string
+  }) => {
+    const reportsDir = resolve(app.getPath('userData'), 'bug-reports')
+    if (!existsSync(reportsDir)) mkdirSync(reportsDir, { recursive: true })
+
+    const timestamp = new Date().toISOString().replace(/[:.]/g, '-')
+    const bodyText =
+      `Description: ${payload.description}\n\n` +
+      (payload.stackTrace ? `Stack Trace:\n${payload.stackTrace}\n\n` : '') +
+      `User Agent: ${payload.userAgent || 'N/A'}\n` +
+      `Platform: ${process.platform}\n` +
+      `App Version: ${app.getVersion()}`
+
+    const report = {
+      ...payload,
+      timestamp: new Date().toISOString(),
+      appVersion: app.getVersion(),
+      platform: process.platform,
+    }
+    const filePath = resolve(reportsDir, `bug-report-${timestamp}.json`)
+    writeFileSync(filePath, JSON.stringify(report, null, 2), 'utf-8')
+
+    const gmailUser = process.env.GMAIL_USER
+    const gmailPass = process.env.GMAIL_APP_PASSWORD
+
+    if (gmailUser && gmailPass) {
+      const transporter = nodemailer.createTransport({
+        host: 'smtp.gmail.com',
+        port: 587,
+        secure: false,
+        auth: { user: gmailUser, pass: gmailPass },
+      })
+
+      await transporter.sendMail({
+        from: `Zunoora Bug Report <${gmailUser}>`,
+        to: 'matritsah4cker@gmail.com',
+        subject: `Bug Report (${payload.mode}) — ${new Date().toLocaleString()}`,
+        text: bodyText,
+      })
+    }
+
+    return { savedPath: filePath }
   })
 }

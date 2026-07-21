@@ -88,6 +88,14 @@ const electronAPI = {
 
   openPaymentUrl: (url: string): Promise<{ success: boolean; data?: unknown; error?: string }> =>
     ipcRenderer.invoke('payment:open-url', url),
+
+  submitBugReport: (data: {
+    mode: string
+    description: string
+    stackTrace?: string
+    userAgent?: string
+  }): Promise<{ success: boolean; data?: { savedPath: string }; error?: string }> =>
+    ipcRenderer.invoke('bug:report', data),
 }
 
 contextBridge.exposeInMainWorld('electronAPI', electronAPI)

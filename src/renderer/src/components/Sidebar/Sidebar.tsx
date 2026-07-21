@@ -136,11 +136,11 @@ export const Sidebar = ({ onSettingsOpen, onAccountOpen, onHistorySelect, onPric
         <div className="border-t border-zn-border my-1 mx-2" />
         <button
           onClick={() => useBugReportStore.getState().open('manual')}
-          title="Report Bug"
+          title={t('bugReport.reportBug')}
           className="flex w-full items-center gap-2.5 rounded-zn-btn px-3 py-2 text-xs text-zn-text-faint transition-all hover:bg-zn-elevated hover:text-zn-text-muted active:scale-[0.98]"
         >
           <Bug className="h-3.5 w-3.5 shrink-0" strokeWidth={1.5} />
-          {isExpanded && <span className="whitespace-nowrap">Report Bug</span>}
+          {isExpanded && <span className="whitespace-nowrap">{t('bugReport.reportBug')}</span>}
         </button>
       </div>
     </motion.aside>
