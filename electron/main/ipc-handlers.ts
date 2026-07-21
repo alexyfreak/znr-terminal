@@ -322,14 +322,38 @@ export function registerIpcHandlers(_win: BrowserWindow): void {
     description: string
     stackTrace?: string
     userAgent?: string
+    userFullName?: string
+    userId?: string
+    userRole?: string
+    schoolName?: string
+    schoolId?: string
+    creditsBalance?: number
+    creditsTier?: string
   }) => {
     const reportsDir = resolve(app.getPath('userData'), 'bug-reports')
     if (!existsSync(reportsDir)) mkdirSync(reportsDir, { recursive: true })
 
     const timestamp = new Date().toISOString().replace(/[:.]/g, '-')
+    const ctx = getCurrentContext()
+
+    const schoolAddress = ctx?.school?.address || ''
+    const schoolInfo = payload.schoolName
+      ? `${payload.schoolName}${schoolAddress ? ` (${schoolAddress})` : ''}`
+      : 'N/A'
+
     const bodyText =
-      `Description: ${payload.description}\n\n` +
-      (payload.stackTrace ? `Stack Trace:\n${payload.stackTrace}\n\n` : '') +
+      `── User Info ──\n` +
+      `Full Name: ${payload.userFullName || 'N/A'}\n` +
+      `User ID: ${payload.userId || 'N/A'}\n` +
+      `Role: ${payload.userRole || 'N/A'}\n` +
+      `School: ${schoolInfo}\n` +
+      `Credits: ${payload.creditsBalance ?? 'N/A'}\n` +
+      `Subscription: ${payload.creditsTier || 'N/A'}\n` +
+      `\n── Report ──\n` +
+      `Mode: ${payload.mode}\n` +
+      `Description: ${payload.description}\n` +
+      (payload.stackTrace ? `\nStack Trace:\n${payload.stackTrace}\n` : '') +
+      `\n── System ──\n` +
       `User Agent: ${payload.userAgent || 'N/A'}\n` +
       `Platform: ${process.platform}\n` +
       `App Version: ${app.getVersion()}`

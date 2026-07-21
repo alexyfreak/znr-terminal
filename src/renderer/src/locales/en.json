@@ -336,7 +336,8 @@
     "save": "Save",
     "delete": "Delete",
     "confirm": "Confirm",
-    "loading": "Loading..."
+    "loading": "Loading...",
+    "error": "An error occurred"
   },
   "admin": {
     "title": "Admin Settings",

@@ -1,4 +1,6 @@
 import { create } from 'zustand'
+import { useAccountStore } from './useAccountStore'
+import { useCreditsStore } from './useCreditsStore'
 
 interface BugReportState {
   isOpen: boolean
@@ -47,12 +49,22 @@ export const useBugReportStore = create<BugReportState>()((set, get) => ({
     set({ submitting: true, submitError: null })
 
     try {
+      const account = useAccountStore.getState()
+      const credits = useCreditsStore.getState()
+
       if (window.electronAPI?.submitBugReport) {
         const res = await window.electronAPI.submitBugReport({
           mode,
           description: description.trim(),
           stackTrace: error?.stack || stackTrace,
           userAgent: navigator.userAgent,
+          userFullName: account.userName || '',
+          userId: account.userId || '',
+          userRole: account.role || '',
+          schoolName: account.schoolName || '',
+          schoolId: account.schoolId || '',
+          creditsBalance: credits.balance,
+          creditsTier: credits.tier,
         })
         if (!res.success) throw new Error(res.error || 'Failed to submit')
       } else {

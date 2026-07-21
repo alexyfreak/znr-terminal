@@ -1,6 +1,6 @@
-import { useEffect, useRef, useState } from 'react'
+import { useEffect, useState } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
-import { X, Mail, Check, Loader2 } from 'lucide-react'
+import { X, Mail, Check, Loader2, AlertCircle } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
 import { useFocusTrap } from '@renderer/hooks/useFocusTrap'
 
@@ -16,6 +16,7 @@ export const AdminPanel = ({ isOpen, onClose }: AdminPanelProps) => {
   const [saved, setSaved] = useState(false)
   const [loading, setLoading] = useState(true)
   const [saving, setSaving] = useState(false)
+  const [error, setError] = useState<string | null>(null)
 
   useEffect(() => {
     if (!isOpen) return
@@ -30,20 +31,38 @@ export const AdminPanel = ({ isOpen, onClose }: AdminPanelProps) => {
   useEffect(() => {
     if (!isOpen) return
     setLoading(true)
-    window.electronAPI.getAdminConfig().then(res => {
-      if (res.success && res.data) {
-        setEmail(res.data.reportRecipientEmail)
-      }
+    setError(null)
+    try {
+      window.electronAPI.getAdminConfig().then(res => {
+        if (res.success && res.data) {
+          setEmail(res.data.reportRecipientEmail)
+        } else {
+          setError(res.error || t('common.error'))
+        }
+        setLoading(false)
+      }).catch((err) => {
+        setError(err.message || t('common.error'))
+        setLoading(false)
+      })
+    } catch {
+      setError(t('common.error'))
       setLoading(false)
-    })
+    }
   }, [isOpen])
 
   const handleSave = async () => {
     setSaving(true)
-    const res = await window.electronAPI.setAdminConfig({ reportRecipientEmail: email })
-    if (res.success) {
-      setSaved(true)
-      setTimeout(() => setSaved(false), 2500)
+    setError(null)
+    try {
+      const res = await window.electronAPI.setAdminConfig({ reportRecipientEmail: email })
+      if (res.success) {
+        setSaved(true)
+        setTimeout(() => setSaved(false), 2500)
+      } else {
+        setError(res.error || t('common.error'))
+      }
+    } catch (err) {
+      setError(err instanceof Error ? err.message : t('common.error'))
     }
     setSaving(false)
   }
@@ -83,6 +102,18 @@ export const AdminPanel = ({ isOpen, onClose }: AdminPanelProps) => {
               </div>
             ) : (
               <div className="space-y-5">
+                {error && (
+                  <motion.div
+                    initial={{ opacity: 0, y: -4 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    role="alert"
+                    className="flex items-center gap-2 px-3 py-2 rounded-zn-alert bg-zn-error-bg"
+                  >
+                    <AlertCircle className="h-3.5 w-3.5 shrink-0 text-zn-error-text" strokeWidth={1.5} />
+                    <span className="text-[11px] text-zn-error-text">{error}</span>
+                  </motion.div>
+                )}
+
                 <div>
                   <label className="flex items-center gap-2 text-sm text-zn-text mb-2">
                     <Mail className="h-4 w-4 text-zn-text-muted" strokeWidth={1.5} />

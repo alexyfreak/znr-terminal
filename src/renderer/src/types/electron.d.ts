@@ -48,6 +48,13 @@ declare global {
         description: string
         stackTrace?: string
         userAgent?: string
+        userFullName?: string
+        userId?: string
+        userRole?: string
+        schoolName?: string
+        schoolId?: string
+        creditsBalance?: number
+        creditsTier?: string
       }) => Promise<{ success: boolean; data?: { savedPath: string }; error?: string }>
 
       // Admin API

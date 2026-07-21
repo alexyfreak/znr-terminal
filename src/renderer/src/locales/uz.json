@@ -336,7 +336,8 @@
     "save": "Saqlash",
     "delete": "O'chirish",
     "confirm": "Tasdiqlash",
-    "loading": "Yuklanmoqda..."
+    "loading": "Yuklanmoqda...",
+    "error": "Xatolik yuz berdi"
   },
   "admin": {
     "title": "Admin sozlamalari",
