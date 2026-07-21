@@ -49,6 +49,10 @@ declare global {
         stackTrace?: string
         userAgent?: string
       }) => Promise<{ success: boolean; data?: { savedPath: string }; error?: string }>
+
+      // Admin API
+      getAdminConfig: () => Promise<{ success: boolean; data?: { reportRecipientEmail: string }; error?: string }>
+      setAdminConfig: (config: { reportRecipientEmail: string }) => Promise<{ success: boolean; data?: boolean; error?: string }>
     }
   }
 }

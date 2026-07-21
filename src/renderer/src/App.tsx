@@ -8,6 +8,7 @@ import { PricingPage } from './components/PricingPage'
 import { BuyCreditsPage } from './components/BuyCreditsPage'
 import { PaymentCheckout } from './components/PaymentCheckout'
 import { SettingsPanel } from './components/SettingsPanel'
+import { AdminPanel } from './components/AdminPanel/AdminPanel'
 import { AccountMenu } from './components/AccountMenu'
 import { AuthScreen } from './components/AuthScreen'
 import { ShablonBuilderPanel } from './components/ShablonBuilder'
@@ -26,6 +27,7 @@ import type { Tier, BillingPeriod } from './store/useCreditsStore'
 const App = () => {
   const { t } = useTranslation()
   const [showSettings, setShowSettings] = useState(false)
+  const [showAdmin, setShowAdmin] = useState(false)
   const [showAccount, setShowAccount] = useState(false)
   const [templates, setTemplates] = useState<Template[]>([])
   const [templatesLoading, setTemplatesLoading] = useState(false)
@@ -73,6 +75,7 @@ const App = () => {
         if (showBuyCredits) { setShowBuyCredits(false); return }
         if (isBuilderOpen) { closeBuilder(); return }
         if (showSettings) { setShowSettings(false); return }
+        if (showAdmin) { setShowAdmin(false); return }
         if (showAccount) { setShowAccount(false); return }
         if (isDocked) {
           setActiveId(null)
@@ -83,7 +86,7 @@ const App = () => {
     }
     window.addEventListener('keydown', handleKeyDown)
     return () => window.removeEventListener('keydown', handleKeyDown)
-  }, [showSettings, showAccount, showPricing, showBuyCredits, checkout, setDocked, setActiveId, isBuilderOpen, closeBuilder, openBuilder])
+  }, [showSettings, showAdmin, showAccount, showPricing, showBuyCredits, checkout, setDocked, setActiveId, isBuilderOpen, closeBuilder, openBuilder])
 
   useEffect(() => {
     if (!isLoggedIn) return
@@ -176,6 +179,7 @@ const App = () => {
     <div className="relative flex h-screen w-full overflow-hidden bg-zn-page text-zn-text">
       <Sidebar
         onSettingsOpen={() => setShowSettings(true)}
+        onAdminOpen={() => setShowAdmin(true)}
         onAccountOpen={() => setShowAccount(true)}
         onHistorySelect={handleHistorySelect}
         onPricingOpen={() => setShowPricing(true)}
@@ -230,6 +234,7 @@ const App = () => {
 
       <ShablonBuilderPanel isOpen={isBuilderOpen} onClose={() => closeBuilder()} />
       <SettingsPanel isOpen={showSettings} onClose={() => setShowSettings(false)} />
+      <AdminPanel isOpen={showAdmin} onClose={() => setShowAdmin(false)} />
       <AccountMenu isOpen={showAccount} onClose={() => setShowAccount(false)} />
       <BugReportModal />
 

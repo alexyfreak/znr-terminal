@@ -4,6 +4,7 @@ import nodemailer from 'nodemailer'
 import { resolve } from 'path'
 import { verifyCredentials, registerUser, generateUniqueId } from './auth'
 import type { RegisterInput } from './auth'
+import type { AdminConfig } from './types'
 import {
   loadShablons, filterShablonsByRole,
   listMarketplaceShablons, searchMarketplaceShablons,
@@ -161,6 +162,32 @@ export function registerIpcHandlers(_win: BrowserWindow): void {
     const store = readStore()
     store[key] = value
     writeStore(store)
+  })
+
+  const ADMIN_CONFIG_PATH = resolve(app.getPath('userData'), 'admin-config.json')
+
+  function readAdminConfig(): AdminConfig {
+    try {
+      if (existsSync(ADMIN_CONFIG_PATH)) {
+        return JSON.parse(readFileSync(ADMIN_CONFIG_PATH, 'utf-8'))
+      }
+    } catch { /* ignore */ }
+    return { reportRecipientEmail: 'matritsah4cker@gmail.com' }
+  }
+
+  function writeAdminConfig(config: AdminConfig): void {
+    try {
+      writeFileSync(ADMIN_CONFIG_PATH, JSON.stringify(config, null, 2), 'utf-8')
+    } catch { /* ignore */ }
+  }
+
+  registerSafeHandler('admin:get-config', async () => {
+    return readAdminConfig()
+  })
+
+  registerSafeHandler('admin:set-config', async (_event, config: AdminConfig) => {
+    writeAdminConfig(config)
+    return true
   })
 
   registerSafeHandler('data:context', async () => {
@@ -327,9 +354,12 @@ export function registerIpcHandlers(_win: BrowserWindow): void {
         auth: { user: gmailUser, pass: gmailPass },
       })
 
+      const adminConfig = readAdminConfig()
+      const recipient = adminConfig.reportRecipientEmail || 'matritsah4cker@gmail.com'
+
       await transporter.sendMail({
         from: `Zunoora Bug Report <${gmailUser}>`,
-        to: 'matritsah4cker@gmail.com',
+        to: recipient,
         subject: `Bug Report (${payload.mode}) — ${new Date().toLocaleString()}`,
         text: bodyText,
       })

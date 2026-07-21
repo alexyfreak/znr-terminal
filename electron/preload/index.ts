@@ -96,6 +96,13 @@ const electronAPI = {
     userAgent?: string
   }): Promise<{ success: boolean; data?: { savedPath: string }; error?: string }> =>
     ipcRenderer.invoke('bug:report', data),
+
+  // Admin API
+  getAdminConfig: (): Promise<{ success: boolean; data?: { reportRecipientEmail: string }; error?: string }> =>
+    ipcRenderer.invoke('admin:get-config'),
+
+  setAdminConfig: (config: { reportRecipientEmail: string }): Promise<{ success: boolean; data?: boolean; error?: string }> =>
+    ipcRenderer.invoke('admin:set-config', config),
 }
 
 contextBridge.exposeInMainWorld('electronAPI', electronAPI)

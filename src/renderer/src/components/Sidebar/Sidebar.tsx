@@ -3,7 +3,7 @@ import { useHistoryStore } from '@renderer/store/useHistoryStore'
 import { useSearchStore } from '@renderer/store/useSearchStore'
 import { useTranslation } from 'react-i18next'
 import { motion } from 'framer-motion'
-import { Settings, User, Plus, Clock, ArrowUpDown, PanelLeftClose, PanelLeft, Bug, Diamond, Zap } from 'lucide-react'
+import { Settings, User, Plus, Clock, ArrowUpDown, PanelLeftClose, PanelLeft, Bug, Diamond, Zap, Shield } from 'lucide-react'
 import { HistoryList } from './HistoryList'
 import { useBugReportStore } from '@renderer/store/useBugReportStore'
 import { useCreditsStore } from '@renderer/store/useCreditsStore'
@@ -13,13 +13,14 @@ const spring = { type: 'spring' as const, stiffness: 200, damping: 28 }
 
 interface SidebarProps {
   onSettingsOpen: () => void
+  onAdminOpen: () => void
   onAccountOpen: () => void
   onHistorySelect: (item: HistoryItem) => void
   onPricingOpen?: () => void
   onBuyCreditsOpen?: () => void
 }
 
-export const Sidebar = ({ onSettingsOpen, onAccountOpen, onHistorySelect, onPricingOpen, onBuyCreditsOpen }: SidebarProps) => {
+export const Sidebar = ({ onSettingsOpen, onAdminOpen, onAccountOpen, onHistorySelect, onPricingOpen, onBuyCreditsOpen }: SidebarProps) => {
   const { t } = useTranslation()
   const { isExpanded, toggle } = useSidebarStore()
   const { items, sortOrder, setSortOrder } = useHistoryStore()
@@ -132,6 +133,14 @@ export const Sidebar = ({ onSettingsOpen, onAccountOpen, onHistorySelect, onPric
         >
           <User className="h-3.5 w-3.5 shrink-0" strokeWidth={1.5} />
           {isExpanded && <span className="whitespace-nowrap">{t('sidebar.account')}</span>}
+        </button>
+        <button
+          onClick={onAdminOpen}
+          title={t('admin.title')}
+          className="flex w-full items-center gap-2.5 rounded-zn-btn px-3 py-2 text-xs text-zn-text-faint transition-all hover:bg-zn-elevated hover:text-zn-text active:scale-[0.98]"
+        >
+          <Shield className="h-3.5 w-3.5 shrink-0" strokeWidth={1.5} />
+          {isExpanded && <span className="whitespace-nowrap">{t('admin.title')}</span>}
         </button>
         <div className="border-t border-zn-border my-1 mx-2" />
         <button

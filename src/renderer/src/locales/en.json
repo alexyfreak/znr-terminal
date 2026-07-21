@@ -337,5 +337,11 @@
     "delete": "Delete",
     "confirm": "Confirm",
     "loading": "Loading..."
+  },
+  "admin": {
+    "title": "Admin Settings",
+    "reportRecipient": "Bug Report Recipient",
+    "reportRecipientHint": "All bug reports will be sent to this email address.",
+    "saved": "Saved!"
   }
 }

@@ -337,5 +337,11 @@
     "delete": "O'chirish",
     "confirm": "Tasdiqlash",
     "loading": "Yuklanmoqda..."
+  },
+  "admin": {
+    "title": "Admin sozlamalari",
+    "reportRecipient": "Xabar qabul qiluvchi email",
+    "reportRecipientHint": "Barcha xatolar shu manzilga yuboriladi.",
+    "saved": "Saqlangan!"
   }
 }
