@@ -1,6 +1,7 @@
 import { useSidebarStore } from '@renderer/store/useSidebarStore'
 import { useHistoryStore } from '@renderer/store/useHistoryStore'
 import { useSearchStore } from '@renderer/store/useSearchStore'
+import { useAccountStore } from '@renderer/store/useAccountStore'
 import { useTranslation } from 'react-i18next'
 import { motion } from 'framer-motion'
 import { Settings, User, Plus, Clock, ArrowUpDown, PanelLeftClose, PanelLeft, Bug, Diamond, Zap, Shield } from 'lucide-react'
@@ -26,6 +27,7 @@ export const Sidebar = ({ onSettingsOpen, onAdminOpen, onAccountOpen, onHistoryS
   const { items, sortOrder, setSortOrder } = useHistoryStore()
   const { clear, setDocked } = useSearchStore()
   const { balance, tier } = useCreditsStore()
+  const role = useAccountStore((s) => s.role)
 
   const handleNewChat = () => {
     clear()
@@ -134,14 +136,16 @@ export const Sidebar = ({ onSettingsOpen, onAdminOpen, onAccountOpen, onHistoryS
           <User className="h-3.5 w-3.5 shrink-0" strokeWidth={1.5} />
           {isExpanded && <span className="whitespace-nowrap">{t('sidebar.account')}</span>}
         </button>
-        <button
-          onClick={onAdminOpen}
-          title={t('admin.title')}
-          className="flex w-full items-center gap-2.5 rounded-zn-btn px-3 py-2 text-xs text-zn-text-faint transition-all hover:bg-zn-elevated hover:text-zn-text active:scale-[0.98]"
-        >
-          <Shield className="h-3.5 w-3.5 shrink-0" strokeWidth={1.5} />
-          {isExpanded && <span className="whitespace-nowrap">{t('admin.title')}</span>}
-        </button>
+        {role === 'admin' && (
+          <button
+            onClick={onAdminOpen}
+            title={t('admin.title')}
+            className="flex w-full items-center gap-2.5 rounded-zn-btn px-3 py-2 text-xs text-zn-text-faint transition-all hover:bg-zn-elevated hover:text-zn-text active:scale-[0.98]"
+          >
+            <Shield className="h-3.5 w-3.5 shrink-0" strokeWidth={1.5} />
+            {isExpanded && <span className="whitespace-nowrap">{t('admin.title')}</span>}
+          </button>
+        )}
         <div className="border-t border-zn-border my-1 mx-2" />
         <button
           onClick={() => useBugReportStore.getState().open('manual')}

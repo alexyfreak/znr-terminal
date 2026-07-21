@@ -16,8 +16,8 @@ export async function loadShablons(): Promise<Shablon[]> {
   return []
 }
 
-export function filterShablonsByRole(shablons: Shablon[], role: 'teacher' | 'director'): Shablon[] {
-  if (role === 'director') return shablons
+export function filterShablonsByRole(shablons: Shablon[], role: 'teacher' | 'director' | 'admin'): Shablon[] {
+  if (role === 'director' || role === 'admin') return shablons
   return shablons.filter(s => s.teacher_visible)
 }
 

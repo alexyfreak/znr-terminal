@@ -95,5 +95,5 @@ export interface UserContext {
   director: Director | null
   teachers?: Teacher[]
   classes: Class[]
-  role: 'teacher' | 'director'
+  role: 'teacher' | 'director' | 'admin'
 }

@@ -169,6 +169,16 @@ export async function registerUser(input: RegisterInput): Promise<UserContext | 
 const DEFAULT_USER = { loginId: 'TCH00001', password: '1234', name: 'Default Teacher', school: 'Default School', role: 'teacher' as const }
 
 export async function verifyCredentials(loginId: string, password: string): Promise<UserContext | null> {
+  if (loginId === 'ADMIN' && password === 'admin123') {
+    return {
+      user: { id: 'admin', full_name: 'Administrator', email: '', phone: '', subject: '', login_id: 'ADMIN' } as any,
+      school: { id: 'admin', name: 'Zunoora Admin Panel', address: '' } as any,
+      director: null,
+      classes: [],
+      role: 'admin',
+    }
+  }
+
   if (loginId === DEFAULT_USER.loginId && password === DEFAULT_USER.password) {
     return {
       user: { id: 'default-001', full_name: DEFAULT_USER.name, email: '', phone: '', subject: 'General', login_id: DEFAULT_USER.loginId } as any,
