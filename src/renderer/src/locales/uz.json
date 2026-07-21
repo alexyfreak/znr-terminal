@@ -46,6 +46,7 @@
   "account": {
     "title": "Hisob",
     "logout": "Chiqish",
+    "confirmLogout": "Chiqishni tasdiqlaysizmi?",
     "loggedInAs": "Kirish sifatida",
     "school": "Maktab",
     "role": "Rol",

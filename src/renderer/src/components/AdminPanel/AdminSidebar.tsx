@@ -1,7 +1,8 @@
-import { motion } from 'framer-motion'
+import { useState } from 'react'
+import { motion, AnimatePresence } from 'framer-motion'
 import { useTranslation } from 'react-i18next'
 import {
-  LayoutDashboard, Database, FileText, Settings, LogOut, Bug,
+  LayoutDashboard, Database, FileText, Settings, LogOut, Bug, AlertCircle,
 } from 'lucide-react'
 import { useAccountStore } from '@renderer/store/useAccountStore'
 
@@ -22,6 +23,12 @@ const items: { view: AdminView; icon: typeof LayoutDashboard; labelKey: string }
 export const AdminSidebar = ({ currentView, onNavigate }: AdminSidebarProps) => {
   const { t } = useTranslation()
   const logout = useAccountStore((s) => s.logout)
+  const [confirmLogout, setConfirmLogout] = useState(false)
+
+  const handleLogout = () => {
+    logout()
+    setConfirmLogout(false)
+  }
 
   return (
     <aside className="flex flex-col w-56 h-full bg-zn-surface border-r border-zn-border shrink-0 select-none">
@@ -50,13 +57,36 @@ export const AdminSidebar = ({ currentView, onNavigate }: AdminSidebarProps) => 
       </nav>
 
       <div className="border-t border-zn-border px-2 py-2 space-y-0.5">
-        <button
-          onClick={() => useAccountStore.getState().logout()}
-          className="flex w-full items-center gap-3 px-3 py-2.5 text-xs rounded-zn-btn text-zn-text-muted hover:text-zn-text hover:bg-zn-elevated/50 transition-all active:scale-[0.98]"
-        >
-          <LogOut className="h-4 w-4 shrink-0" strokeWidth={1.5} />
-          <span>{t('account.logout')}</span>
-        </button>
+        {confirmLogout ? (
+          <div className="px-3 py-2 space-y-2">
+            <p className="text-[10px] text-zn-text-muted flex items-center gap-1.5">
+              <AlertCircle className="h-3 w-3 shrink-0" strokeWidth={1.5} />
+              {t('account.confirmLogout')}
+            </p>
+            <div className="flex gap-2">
+              <button
+                onClick={handleLogout}
+                className="flex-1 px-2 py-1.5 text-[10px] font-medium rounded-zn-btn bg-zn-text text-zn-page hover:opacity-90 transition-all"
+              >
+                {t('account.logout')}
+              </button>
+              <button
+                onClick={() => setConfirmLogout(false)}
+                className="flex-1 px-2 py-1.5 text-[10px] rounded-zn-btn text-zn-text-muted hover:text-zn-text hover:bg-zn-elevated/50 transition-all"
+              >
+                {t('common.cancel')}
+              </button>
+            </div>
+          </div>
+        ) : (
+          <button
+            onClick={() => setConfirmLogout(true)}
+            className="flex w-full items-center gap-3 px-3 py-2.5 text-xs rounded-zn-btn text-zn-text-muted hover:text-zn-text hover:bg-zn-elevated/50 transition-all active:scale-[0.98]"
+          >
+            <LogOut className="h-4 w-4 shrink-0" strokeWidth={1.5} />
+            <span>{t('account.logout')}</span>
+          </button>
+        )}
       </div>
     </aside>
   )

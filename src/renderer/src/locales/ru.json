@@ -46,6 +46,7 @@
   "account": {
     "title": "Аккаунт",
     "logout": "Выйти",
+    "confirmLogout": "Вы уверены, что хотите выйти?",
     "loggedInAs": "Вошли как",
     "school": "Школа",
     "role": "Роль",

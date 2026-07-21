@@ -46,6 +46,7 @@
   "account": {
     "title": "Account",
     "logout": "Log out",
+    "confirmLogout": "Are you sure you want to log out?",
     "loggedInAs": "Logged in as",
     "school": "School",
     "role": "Role",
