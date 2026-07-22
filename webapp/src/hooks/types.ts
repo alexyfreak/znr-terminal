@@ -1,4 +1,5 @@
-export type Role = 'parent' | 'sinf_rahbar' | 'teacher' | 'director' | 'school' | 'pupil'
+export type Role = 'teacher' | 'admin' | 'director'
+export type Profile = 'teacher' | 'admin' | 'director' | 'parent'
 export type ArizaStatus = 'pending' | 'approved' | 'rejected'
 export type BildirgiType = 'reprimand' | 'praise'
 
@@ -66,5 +67,7 @@ export interface LoginResponse {
     full_name: string
     phone: string | null
   }
+  available_profiles?: Profile[]
+  has_class?: boolean
   children?: Child[]
 }

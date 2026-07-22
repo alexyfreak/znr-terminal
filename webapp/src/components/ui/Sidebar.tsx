@@ -12,15 +12,13 @@ const navItems: { key: PageKey; label: string; icon: typeof Home }[] = [
 ]
 
 export default function Sidebar({ active, onNavigate }: { active: PageKey; onNavigate: (k: PageKey) => void }) {
-  const { user, logout } = useAuth()
+  const { user, activeProfile, logout } = useAuth()
 
   const roleLabels: Record<string, string> = {
-    parent: 'Ota-ona',
-    sinf_rahbar: 'Sinf Rahbar',
     teacher: "O'qituvchi",
+    parent: 'Ota-ona',
     director: 'Direktor',
-    school: 'Maktab',
-    pupil: "O'quvchi",
+    admin: 'Admin',
   }
 
   return (
@@ -59,10 +57,10 @@ export default function Sidebar({ active, onNavigate }: { active: PageKey; onNav
 
       <div className="border-t border-zn-border p-4">
         <div className="mb-3 flex items-center gap-3">
-          <Avatar name={user?.full_name || 'U'} size="sm" />
+          <Avatar name={user?.full_name || 'U'} role={activeProfile || user?.role} size="sm" />
           <div className="min-w-0 flex-1">
             <p className="truncate text-sm font-semibold text-zn-text">{user?.full_name}</p>
-            <p className="text-[11px] text-zn-text-faint">{roleLabels[user?.role || ''] || user?.role}</p>
+            <p className="text-[11px] text-zn-text-faint">{roleLabels[activeProfile || user?.role || ''] || user?.role}</p>
           </div>
         </div>
         <button

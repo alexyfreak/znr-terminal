@@ -1,9 +1,11 @@
 import { useState, useCallback, createContext, useContext, type ReactNode } from 'react'
 import { requireSupabase } from './useSupabase'
-import type { User, Child, LoginResponse } from './types'
+import type { User, Child, Profile, LoginResponse } from './types'
 
 interface AuthState {
   user: User | null
+  availableProfiles: Profile[]
+  activeProfile: Profile | null
   isLoading: boolean
   error: string | null
 }
@@ -11,6 +13,7 @@ interface AuthState {
 interface AuthContextType extends AuthState {
   login: (userId: string, password: string) => Promise<void>
   logout: () => void
+  setProfile: (profile: Profile) => void
 }
 
 const AuthContext = createContext<AuthContextType | null>(null)
@@ -18,12 +21,14 @@ const AuthContext = createContext<AuthContextType | null>(null)
 export function AuthProvider({ children }: { children: ReactNode }) {
   const [state, setState] = useState<AuthState>({
     user: null,
+    availableProfiles: [],
+    activeProfile: null,
     isLoading: false,
     error: null,
   })
 
   const login = useCallback(async (userId: string, password: string) => {
-    setState({ user: null, isLoading: true, error: null })
+    setState({ user: null, availableProfiles: [], activeProfile: null, isLoading: true, error: null })
     try {
       const sb = requireSupabase()
       const { data, error } = await sb.rpc('login_user', {
@@ -36,9 +41,11 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       const result = data as LoginResponse
 
       if (!result.success) {
-        setState({ user: null, isLoading: false, error: result.error || 'Login failed' })
+        setState({ user: null, availableProfiles: [], activeProfile: null, isLoading: false, error: result.error || 'Login failed' })
         return
       }
+
+      const profiles = (result.available_profiles || [result.user!.role]) as Profile[]
 
       const user: User = {
         user_id: result.user!.user_id,
@@ -48,18 +55,22 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         children: result.children as Child[],
       }
 
-      setState({ user, isLoading: false, error: null })
+      setState({ user, availableProfiles: profiles, activeProfile: profiles[0], isLoading: false, error: null })
     } catch (err) {
-      setState({ user: null, isLoading: false, error: err instanceof Error ? err.message : 'Login failed' })
+      setState({ user: null, availableProfiles: [], activeProfile: null, isLoading: false, error: err instanceof Error ? err.message : 'Login failed' })
     }
   }, [])
 
   const logout = useCallback(() => {
-    setState({ user: null, isLoading: false, error: null })
+    setState({ user: null, availableProfiles: [], activeProfile: null, isLoading: false, error: null })
+  }, [])
+
+  const setProfile = useCallback((profile: Profile) => {
+    setState((prev) => ({ ...prev, activeProfile: profile }))
   }, [])
 
   return (
-    <AuthContext.Provider value={{ ...state, login, logout }}>
+    <AuthContext.Provider value={{ ...state, login, logout, setProfile }}>
       {children}
     </AuthContext.Provider>
   )

@@ -3,13 +3,15 @@ import { AuthProvider, useAuth } from '@/hooks/useAuth'
 import Auth from '@/pages/Auth'
 import { ParentHome, ParentArizas } from '@/pages/ParentDashboard'
 import { TeacherHome, TeacherArizas } from '@/pages/TeacherDashboard'
+import DirectorDashboard from '@/pages/DirectorDashboard'
+import AdminDashboard from '@/pages/AdminDashboard'
 import Chat from '@/pages/Chat'
 import Settings from '@/pages/Settings'
 import AppLayout from '@/components/layout/AppLayout'
 import type { PageKey } from '@/components/ui/Sidebar'
 
 function AppContent() {
-  const { user, isLoading } = useAuth()
+  const { user, activeProfile, isLoading } = useAuth()
   const [page, setPage] = useState<PageKey>('home')
 
   if (isLoading) {
@@ -27,18 +29,30 @@ function AppContent() {
     return <Auth />
   }
 
-  const isParent = user.role === 'parent'
+  const profile = activeProfile || user.role
 
   const renderContent = () => {
     switch (page) {
       case 'home':
-        return isParent
-          ? <ParentHome onNavigate={setPage} />
-          : <TeacherHome onNavigate={setPage} />
+        switch (profile) {
+          case 'parent':
+            return <ParentHome onNavigate={setPage} />
+          case 'teacher':
+            return <TeacherHome onNavigate={setPage} />
+          case 'director':
+            return <DirectorDashboard onNavigate={setPage} />
+          case 'admin':
+            return <AdminDashboard />
+          default:
+            return <TeacherHome onNavigate={setPage} />
+        }
       case 'arizas':
-        return isParent
-          ? <ParentArizas />
-          : <TeacherArizas />
+        switch (profile) {
+          case 'parent':
+            return <ParentArizas />
+          default:
+            return <TeacherArizas />
+        }
       case 'chat':
         return <Chat />
       case 'settings':
@@ -49,7 +63,7 @@ function AppContent() {
   }
 
   return (
-    <AppLayout page={page} onNavigate={setPage} role={user.role as 'parent' | 'sinf_rahbar'}>
+    <AppLayout page={page} onNavigate={setPage}>
       {renderContent()}
     </AppLayout>
   )

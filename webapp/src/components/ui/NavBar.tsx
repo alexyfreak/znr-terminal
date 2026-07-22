@@ -4,7 +4,6 @@ import type { PageKey } from './Sidebar'
 interface NavBarProps {
   active: PageKey
   onNavigate: (tab: PageKey) => void
-  role: 'parent' | 'sinf_rahbar'
 }
 
 const items: { key: PageKey; label: string; icon: typeof Home }[] = [
@@ -30,11 +29,7 @@ export default function NavBar({ active, onNavigate }: NavBarProps) {
               <div className="absolute -top-2 left-1/2 h-0.5 w-8 -translate-x-1/2 rounded-full bg-zn-info-accent" />
             )}
             <Icon size={22} className={isActive ? 'text-zn-info-accent' : 'text-zn-text-faint group-hover:text-zn-text-muted'} />
-            <span
-              className={`text-[10px] font-medium ${
-                isActive ? 'text-zn-text' : 'text-zn-text-faint'
-              }`}
-            >
+            <span className={`text-[10px] font-medium ${isActive ? 'text-zn-text' : 'text-zn-text-faint'}`}>
               {item.label}
             </span>
           </button>

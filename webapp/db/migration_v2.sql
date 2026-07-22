@@ -1,9 +1,9 @@
--- WebApp Users: all roles in one table with formatted IDs
+-- WebApp Users: 3 roles with formatted IDs
 CREATE TABLE IF NOT EXISTS webapp_users (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   user_id TEXT UNIQUE NOT NULL,
   password TEXT NOT NULL DEFAULT '123456',
-  role TEXT NOT NULL CHECK (role IN ('director', 'school', 'teacher', 'sinf_rahbar', 'parent', 'pupil')),
+  role TEXT NOT NULL CHECK (role IN ('teacher', 'admin', 'director')),
   full_name TEXT NOT NULL,
   phone TEXT,
   telegram_id TEXT,
@@ -94,7 +94,7 @@ CREATE POLICY "Users can read their messages" ON chat_messages
 CREATE POLICY "Users can insert messages" ON chat_messages
   FOR INSERT WITH CHECK (true);
 
--- Stored function for login (avoids exposing passwords in client)
+-- Stored function for login
 CREATE OR REPLACE FUNCTION login_user(p_user_id TEXT, p_password TEXT)
 RETURNS jsonb
 LANGUAGE plpgsql
@@ -103,27 +103,33 @@ AS $$
 DECLARE
   v_user webapp_users;
   v_children jsonb;
+  v_profiles TEXT[];
+  v_has_class BOOLEAN;
 BEGIN
   SELECT * INTO v_user FROM webapp_users WHERE user_id = p_user_id AND password = p_password;
-  
+
   IF v_user.id IS NULL THEN
     RETURN jsonb_build_object('success', false, 'error', 'Неверный ID или пароль');
   END IF;
 
-  -- Get children for parents / sinf_rahbar
-  IF v_user.role IN ('parent', 'sinf_rahbar') THEN
-    SELECT COALESCE(jsonb_agg(row_to_json(c)::jsonb), '[]'::jsonb) INTO v_children
-    FROM (
-      SELECT pupil_id, full_name, class_name
-      FROM children
-      WHERE CASE 
-        WHEN v_user.role = 'parent' THEN parent_id = p_user_id
-        ELSE sinf_rahbar_id = p_user_id
-      END
-    ) c;
-  ELSE
-    v_children := '[]'::jsonb;
+  -- availableProfiles: primary role always included
+  v_profiles := ARRAY[v_user.role];
+
+  -- Check if user has children (is a parent)
+  IF EXISTS (SELECT 1 FROM children WHERE parent_id = p_user_id) THEN
+    v_profiles := array_append(v_profiles, 'parent');
   END IF;
+
+  -- Check if user has a class (sinf_rahbar)
+  v_has_class := EXISTS (SELECT 1 FROM children WHERE sinf_rahbar_id = p_user_id);
+
+  -- Get children for parent profile
+  SELECT COALESCE(jsonb_agg(row_to_json(c)::jsonb), '[]'::jsonb) INTO v_children
+  FROM (
+    SELECT pupil_id, full_name, class_name
+    FROM children
+    WHERE parent_id = p_user_id
+  ) c;
 
   RETURN jsonb_build_object(
     'success', true,
@@ -133,6 +139,8 @@ BEGIN
       'full_name', v_user.full_name,
       'phone', v_user.phone
     ),
+    'available_profiles', v_profiles,
+    'has_class', v_has_class,
     'children', v_children
   );
 END;

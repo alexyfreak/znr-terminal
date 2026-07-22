@@ -1,44 +1,22 @@
 import { useState, useEffect } from 'react'
 import {
-  ClipboardList,
-  Check,
-  X,
-  AlertTriangle,
-  Award,
-  Plus,
-  Image,
-  User as UserIcon,
-  Clock,
-  Send,
+  ClipboardList, Check, X, AlertTriangle, Award, Plus, Image,
+  User as UserIcon, Clock, Send, BookOpen,
 } from 'lucide-react'
 import Button from '@/components/ui/Button'
 import StatusBadge from '@/components/ui/StatusBadge'
 import EmptyState from '@/components/ui/EmptyState'
 import Avatar from '@/components/ui/Avatar'
+import NoteGenerator from '@/components/NoteGenerator'
 import { useAuth } from '@/hooks/useAuth'
 import { useTeacherArizas, useAllChildren, useBildirgis, uploadFile } from '@/hooks/useData'
 import type { ArizaRequest, Child } from '@/hooks/types'
 import type { PageKey } from '@/components/ui/Sidebar'
 
-function RoleLabel({ role }: { role: string }) {
-  const labels: Record<string, string> = {
-    sinf_rahbar: 'Sinf Rahbar',
-    teacher: "O'qituvchi",
-    director: 'Direktor',
-    school: 'Maktab',
-    pupil: "O'quvchi",
-  }
-  return <span className="text-xs text-zn-text-muted">{labels[role] || role}</span>
-}
-
 function BildirgiForm({
-  allChildren,
-  teacherId,
-  onSubmit,
-  onCancel,
+  allChildren, teacherId, onSubmit, onCancel,
 }: {
-  allChildren: Child[]
-  teacherId: string
+  allChildren: Child[]; teacherId: string
   onSubmit: (data: { child_pupil_id: string; author_id: string; type: 'reprimand' | 'praise'; reason: string; image_url?: string }) => void
   onCancel: () => void
 }) {
@@ -68,7 +46,6 @@ function BildirgiForm({
           <X size={18} />
         </button>
       </div>
-
       <div>
         <label className="mb-1 block text-xs font-medium text-zn-text-muted">O'quvchi</label>
         <select value={childPupilId} onChange={(e) => setChildPupilId(e.target.value)}
@@ -78,7 +55,6 @@ function BildirgiForm({
           ))}
         </select>
       </div>
-
       <div>
         <label className="mb-1 block text-xs font-medium text-zn-text-muted">Tur</label>
         <div className="flex gap-3">
@@ -97,27 +73,22 @@ function BildirgiForm({
           ))}
         </div>
       </div>
-
       <div>
         <label className="mb-1 block text-xs font-medium text-zn-text-muted">Sabab</label>
         <textarea value={reason} onChange={(e) => setReason(e.target.value)} placeholder="Sababni yozing..." rows={3}
           className="w-full resize-none rounded-xl border border-white/8 bg-white/4 px-3 py-2.5 text-sm text-zn-text placeholder-zn-text-faint outline-none" required />
       </div>
-
       <div>
         <label className="mb-1 block text-xs font-medium text-zn-text-muted">Rasm (ixtiyoriy)</label>
         <input type="file" accept="image/*" onChange={(e) => setFile(e.target.files?.[0] || null)}
           className="w-full text-sm text-zn-text-muted file:mr-3 file:rounded-xl file:border-0 file:bg-white/8 file:px-4 file:py-2 file:text-sm file:text-zn-text file:cursor-pointer" />
       </div>
-
       <Button type="submit" fullWidth>Bildirgi yuborish</Button>
     </form>
   )
 }
 
-function ArizaModerationCard({
-  ariza, childName, onApprove, onReject,
-}: {
+function ArizaModerationCard({ ariza, childName, onApprove, onReject }: {
   ariza: ArizaRequest; childName: string
   onApprove: (id: string) => void; onReject: (id: string) => void
 }) {
@@ -136,7 +107,6 @@ function ArizaModerationCard({
         <StatusBadge status={ariza.status} />
       </div>
       <p className="mb-3 text-xs text-zn-text-faint ml-[42px]">{ariza.reason}</p>
-
       {ariza.file_url && (
         <a href={ariza.file_url} target="_blank" rel="noopener noreferrer"
           className="mb-3 flex items-center gap-2 rounded-xl bg-white/4 px-3 py-2 ml-[42px]">
@@ -144,7 +114,6 @@ function ArizaModerationCard({
           <span className="text-xs text-zn-info-accent">Faylni ko'rish</span>
         </a>
       )}
-
       {ariza.status === 'pending' && (
         <div className="flex gap-2 ml-[42px]">
           <button onClick={() => onApprove(ariza.id)}
@@ -164,11 +133,14 @@ function ArizaModerationCard({
 export function TeacherHome({ onNavigate }: { onNavigate: (p: PageKey) => void }) {
   const { user } = useAuth()
   const { arizas } = useTeacherArizas()
-  const { children } = useAllChildren(user?.role === 'sinf_rahbar' ? user?.user_id : undefined)
+  const { children: classChildren } = useAllChildren(user?.user_id)
+  const { children: allChildren } = useAllChildren()
   const { bildirgis } = useBildirgis()
 
   const pendingCount = arizas.filter((a) => a.status === 'pending').length
   const thisMonthBildirgi = bildirgis.length
+  const hasClass = classChildren.length > 0
+  const uniqueClasses = hasClass ? [...new Set(classChildren.map((c) => c.class_name))] : []
 
   const greeting = () => {
     const h = new Date().getHours()
@@ -189,7 +161,7 @@ export function TeacherHome({ onNavigate }: { onNavigate: (p: PageKey) => void }
         <h1 className="text-xl font-bold text-zn-text">
           {greeting()}, {user?.full_name?.split(' ')[0]}
         </h1>
-        <RoleLabel role={user?.role || ''} />
+        <span className="text-xs text-zn-text-muted">O'qituvchi paneli</span>
       </div>
 
       <div className="grid grid-cols-3 gap-2 px-4 pb-4">
@@ -204,7 +176,7 @@ export function TeacherHome({ onNavigate }: { onNavigate: (p: PageKey) => void }
           <div className="mb-2 flex h-8 w-8 items-center justify-center rounded-xl bg-blue-500/10">
             <Award size={16} className="text-zn-info-accent" />
           </div>
-          <p className="text-xl font-bold text-zn-text">{children.length}</p>
+          <p className="text-xl font-bold text-zn-text">{hasClass ? classChildren.length : allChildren.length}</p>
           <p className="text-[11px] text-zn-text-muted">O'quvchilar</p>
         </div>
         <div className="animate-slideUp animate-delay-200 rounded-2xl bg-white/4 p-3">
@@ -216,21 +188,41 @@ export function TeacherHome({ onNavigate }: { onNavigate: (p: PageKey) => void }
         </div>
       </div>
 
+      {hasClass && (
+        <div className="px-4 pb-4">
+          <h3 className="text-xs font-semibold text-zn-text-muted uppercase tracking-wider mb-2">Sinfim statistikasi</h3>
+          <div className="grid grid-cols-2 gap-2">
+            {uniqueClasses.map((cls) => {
+              const count = classChildren.filter((c) => c.class_name === cls).length
+              return (
+                <div key={cls} className="rounded-2xl bg-white/4 p-3">
+                  <BookOpen size={16} className="text-zn-info-accent mb-1" />
+                  <p className="text-sm font-bold text-zn-text">{cls}</p>
+                  <p className="text-xs text-zn-text-muted">{count} o'quvchi</p>
+                </div>
+              )
+            })}
+          </div>
+        </div>
+      )}
+
       <div className="grid grid-cols-2 gap-2 px-4 pb-4">
-        <button
-          onClick={() => onNavigate('arizas')}
-          className="flex items-center justify-center gap-2 rounded-2xl gradient-accent py-3 text-sm font-bold text-white shadow-lg shadow-blue-500/15 transition-all hover:brightness-110"
-        >
+        <button onClick={() => onNavigate('arizas')}
+          className="flex items-center justify-center gap-2 rounded-2xl gradient-accent py-3 text-sm font-bold text-white shadow-lg shadow-blue-500/15 transition-all hover:brightness-110">
           <Check size={16} />
           Arizalarni ko'rib chiqish
         </button>
-        <button
-          onClick={() => onNavigate('chat')}
-          className="flex items-center justify-center gap-2 rounded-2xl bg-white/8 py-3 text-sm font-semibold text-zn-text transition-colors hover:bg-white/10"
-        >
+        <button onClick={() => onNavigate('chat')}
+          className="flex items-center justify-center gap-2 rounded-2xl bg-white/8 py-3 text-sm font-semibold text-zn-text transition-colors hover:bg-white/10">
           <Send size={16} className="text-zn-info-accent" />
           Xabar yozish
         </button>
+      </div>
+
+      <div className="px-4 pb-4">
+        <div className="rounded-2xl border border-white/8 bg-white/4 p-4">
+          <NoteGenerator />
+        </div>
       </div>
 
       <div className="px-4 pb-1">
@@ -260,7 +252,7 @@ export function TeacherHome({ onNavigate }: { onNavigate: (p: PageKey) => void }
             </div>
           ))
         ) : (
-          bildirgis.slice(0, 5).map((b) => (
+          bildirgis.slice(0, 3).map((b) => (
             <div key={b.id} className="animate-slideUp flex items-start gap-3 rounded-2xl bg-white/4 px-4 py-3">
               <div className={`flex h-8 w-8 shrink-0 items-center justify-center rounded-full ${
                 b.type === 'praise' ? 'bg-green-500/10' : 'bg-red-500/10'
@@ -282,10 +274,10 @@ export function TeacherHome({ onNavigate }: { onNavigate: (p: PageKey) => void }
 export function TeacherArizas() {
   const { user } = useAuth()
   const { arizas, moderate } = useTeacherArizas()
-  const { children } = useAllChildren(user?.role === 'sinf_rahbar' ? user?.user_id : undefined)
+  const { children } = useAllChildren()
   const { bildirgis, create: createBildirgi } = useBildirgis()
   const [showBildirgiForm, setShowBildirgiForm] = useState(false)
-  const [subtab, setSubtab] = useState<'arizas' | 'bildirgis'>('arizas')
+  const [subtab, setSubtab] = useState<'arizas' | 'bildirgis' | 'documents'>('arizas')
 
   const handleApprove = async (id: string) => {
     if (!user) return
@@ -330,6 +322,12 @@ export function TeacherArizas() {
           }`}>
           Bildirgilar
         </button>
+        <button onClick={() => setSubtab('documents')}
+          className={`shrink-0 rounded-xl px-3.5 py-1.5 text-xs font-medium transition-all ${
+            subtab === 'documents' ? 'bg-white/10 text-zn-text' : 'bg-white/4 text-zn-text-muted hover:bg-white/7'
+          }`}>
+          Hujjatlar
+        </button>
       </div>
 
       {subtab === 'arizas' && (
@@ -348,7 +346,6 @@ export function TeacherArizas() {
               <p className="text-[10px] text-zn-text-muted">Rad etilgan</p>
             </div>
           </div>
-
           <div className="space-y-2 px-4">
             {arizas.length === 0 && (
               <EmptyState
@@ -359,11 +356,9 @@ export function TeacherArizas() {
             )}
             {arizas.map((a) => (
               <ArizaModerationCard
-                key={a.id}
-                ariza={a}
+                key={a.id} ariza={a}
                 childName={childName(a.child_pupil_id)}
-                onApprove={handleApprove}
-                onReject={handleReject}
+                onApprove={handleApprove} onReject={handleReject}
               />
             ))}
           </div>
@@ -374,25 +369,19 @@ export function TeacherArizas() {
         <>
           <div className="px-4 pb-3">
             {!showBildirgiForm ? (
-              <button
-                onClick={() => setShowBildirgiForm(true)}
-                className="flex w-full items-center justify-center gap-2 rounded-2xl gradient-accent py-3 text-sm font-bold text-white shadow-lg shadow-blue-500/15 transition-all hover:brightness-110"
-              >
+              <button onClick={() => setShowBildirgiForm(true)}
+                className="flex w-full items-center justify-center gap-2 rounded-2xl gradient-accent py-3 text-sm font-bold text-white shadow-lg shadow-blue-500/15 transition-all hover:brightness-110">
                 <Plus size={16} />
                 Yangi bildirgi yozish
               </button>
             ) : null}
           </div>
-
           {showBildirgiForm && user && (
             <BildirgiForm
-              allChildren={children}
-              teacherId={user.user_id}
-              onSubmit={handleBildirgi}
-              onCancel={() => setShowBildirgiForm(false)}
+              allChildren={children} teacherId={user.user_id}
+              onSubmit={handleBildirgi} onCancel={() => setShowBildirgiForm(false)}
             />
           )}
-
           <div className="space-y-1 px-4">
             {bildirgis.length === 0 && (
               <EmptyState
@@ -418,6 +407,12 @@ export function TeacherArizas() {
             ))}
           </div>
         </>
+      )}
+
+      {subtab === 'documents' && (
+        <div className="px-4">
+          <NoteGenerator />
+        </div>
       )}
     </div>
   )

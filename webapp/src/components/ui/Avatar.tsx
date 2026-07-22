@@ -14,12 +14,10 @@ const sizeMap = {
 }
 
 const statusColors: Record<string, string> = {
-  parent: 'bg-zn-info-accent text-black',
-  sinf_rahbar: 'bg-zn-warning-accent text-black',
   teacher: 'bg-zn-success-text text-black',
+  parent: 'bg-zn-info-accent text-black',
   director: 'bg-zn-tag-blue text-black',
-  school: 'bg-zn-tag-green text-black',
-  pupil: 'bg-zn-tag-orange text-black',
+  admin: 'bg-zn-tag-green text-black',
 }
 
 export default function Avatar({
