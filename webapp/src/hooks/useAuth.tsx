@@ -1,5 +1,5 @@
 import { useState, useCallback, createContext, useContext, type ReactNode } from 'react'
-import { requireSupabase } from './useSupabase'
+import { getSupabase } from './useSupabase'
 import type { User } from './types'
 
 export type { Role } from './types'
@@ -20,14 +20,30 @@ const AuthContext = createContext<AuthContextType | null>(null)
 export function AuthProvider({ children }: { children: ReactNode }) {
   const [state, setState] = useState<AuthState>({
     user: null,
-    isLoading: true,
+    isLoading: false,
     error: null,
   })
 
   const login = useCallback(async (telegramId: number, role: User['role']) => {
     setState({ user: null, isLoading: true, error: null })
     try {
-      const sb = requireSupabase()
+      const sb = getSupabase()
+
+      if (!sb) {
+        const mockUser: User = {
+          id: crypto.randomUUID(),
+          telegram_id: telegramId,
+          full_name: telegramId === 2000001 ? 'Dilorom Salimova' : 'Aliya Karimova',
+          phone: '+998901234567',
+          role,
+          avatar_url: null,
+          created_at: new Date().toISOString(),
+        }
+        await new Promise((r) => setTimeout(r, 400))
+        setState({ user: mockUser, isLoading: false, error: null })
+        return
+      }
+
       const { data, error } = await sb
         .from('users')
         .select('*')
