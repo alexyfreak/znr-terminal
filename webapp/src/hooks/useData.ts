@@ -2,6 +2,20 @@ import { useState, useEffect, useCallback } from 'react'
 import { requireSupabase } from './useSupabase'
 import type { Child, ArizaRequest, BildirgiRecord } from './types'
 
+const BOT_API = import.meta.env.VITE_BOT_API_URL || 'http://localhost:3001'
+
+async function triggerBotNotification(endpoint: string, payload: Record<string, unknown>) {
+  try {
+    await fetch(`${BOT_API}${endpoint}`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload),
+    })
+  } catch {
+    // Bot server unreachable — notification skipped
+  }
+}
+
 export function useChildren(parentId: string | undefined) {
   const [children, setChildren] = useState<Child[]>([])
   const [loading, setLoading] = useState(true)
@@ -94,6 +108,7 @@ export function useTeacherArizas() {
     const { data, error } = await sb.from('ariza_requests').update(updates).eq('id', id).select().single()
     if (!error && data) {
       setArizas((prev) => prev.map((a) => (a.id === id ? data as ArizaRequest : a)))
+      triggerBotNotification('/notify-ariza', { arizaId: id, status, rejectionReason })
     }
     return { data, error }
   }, [])
@@ -127,6 +142,7 @@ export function useBildirgis(studentId?: string) {
     const { data, error } = await sb.from('bildirgi_records').insert(input).select().single()
     if (!error && data) {
       setBildirgis((prev) => [data as BildirgiRecord, ...prev])
+      triggerBotNotification('/notify-bildirgi', { bildirgiId: data.id })
     }
     return { data, error }
   }, [])

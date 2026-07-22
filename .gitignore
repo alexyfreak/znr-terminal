@@ -54,3 +54,7 @@ app design/
 
 # Temporary Vite config (Electron project uses electron.vite.config.ts)
 vite.config.ts
+
+# Bot
+bot/node_modules/
+bot/.env
