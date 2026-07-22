@@ -165,11 +165,25 @@ export function useAllBildirgis() {
   return { bildirgis, loading }
 }
 
+const ALLOWED_IMAGE_TYPES = ['image/jpeg', 'image/png', 'image/webp', 'image/gif']
+const ALLOWED_DOC_TYPES = ['application/pdf']
+const MAX_FILE_SIZE = 10 * 1024 * 1024
+
 export async function uploadFile(file: File, bucket = 'uploads'): Promise<string | null> {
+  if (!ALLOWED_IMAGE_TYPES.includes(file.type) && !ALLOWED_DOC_TYPES.includes(file.type)) {
+    throw new Error('Only JPEG, PNG, WebP, GIF images and PDF files are allowed')
+  }
+  if (file.size > MAX_FILE_SIZE) {
+    throw new Error('File exceeds 10MB limit')
+  }
+
   const sb = requireSupabase()
   const ext = file.name.split('.').pop()
   const path = `${crypto.randomUUID()}.${ext}`
-  const { error } = await sb.storage.from(bucket).upload(path, file)
+  const { error } = await sb.storage.from(bucket).upload(path, file, {
+    cacheControl: '3600',
+    upsert: false,
+  })
   if (error) throw error
   const { data } = sb.storage.from(bucket).getPublicUrl(path)
   return data.publicUrl

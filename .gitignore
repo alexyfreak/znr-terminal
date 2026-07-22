@@ -41,6 +41,9 @@ SUPABASE_RLS_FIX.md
 .DS_Store
 Thumbs.db
 
+# Build artifacts
+*.tsbuildinfo
+
 # Test files
 __mocks__/
 tests/
