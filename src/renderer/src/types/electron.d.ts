@@ -62,6 +62,26 @@ declare global {
       setAdminConfig: (config: { reportRecipientEmail: string }) => Promise<{ success: boolean; data?: boolean; error?: string }>
       getAdminDashboard: () => Promise<{ success: boolean; data?: Record<string, unknown>; error?: string }>
       getAdminSchoolDetail: (schoolId: string) => Promise<{ success: boolean; data?: Record<string, unknown>; error?: string }>
+
+      // Admin DB CRUD
+      adminListTable: (params: {
+        table: string
+        search?: string
+        orderColumn?: string
+        orderDirection?: 'asc' | 'desc'
+        limit?: number
+        offset?: number
+      }) => Promise<{ success: boolean; data?: { rows: Record<string, unknown>[]; count: number }; error?: string }>
+
+      adminGetRow: (table: string, id: string) => Promise<{ success: boolean; data?: Record<string, unknown>; error?: string }>
+
+      adminCreateRow: (table: string, data: Record<string, unknown>) => Promise<{ success: boolean; data?: Record<string, unknown>; error?: string }>
+
+      adminUpdateRow: (table: string, id: string, data: Record<string, unknown>) => Promise<{ success: boolean; data?: Record<string, unknown>; error?: string }>
+
+      adminDeleteRow: (table: string, id: string) => Promise<{ success: boolean; data?: boolean; error?: string }>
+
+      adminListAll: (table: string) => Promise<{ success: boolean; data?: Record<string, unknown>[]; error?: string }>
     }
   }
 }

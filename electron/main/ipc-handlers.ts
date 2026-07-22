@@ -492,4 +492,106 @@ export function registerIpcHandlers(_win: BrowserWindow): void {
 
     return { savedPath: filePath }
   })
+
+  // ── Admin DB CRUD ──────────────────────────────────────────────
+
+  const ADMIN_TABLES = ['schools', 'teachers', 'directors', 'classes', 'shablons'] as const
+
+  function searchableCols(table: string): string[] {
+    switch (table) {
+      case 'schools':   return ['name', 'address', 'phone']
+      case 'teachers':  return ['login_id', 'full_name', 'email', 'phone', 'subject']
+      case 'directors': return ['login_id', 'full_name', 'email', 'phone']
+      case 'classes':   return ['name', 'academic_year']
+      case 'shablons':  return ['type', 'label', 'description', 'category']
+      default:          return []
+    }
+  }
+
+  registerSafeHandler('admin:list-table', async (_event, params: {
+    table: string
+    search?: string
+    orderColumn?: string
+    orderDirection?: 'asc' | 'desc'
+    limit?: number
+    offset?: number
+  }) => {
+    if (!supabase) throw new Error('Database not connected')
+    if (!ADMIN_TABLES.includes(params.table as any)) throw new Error('Invalid table')
+
+    let query = supabase.from(params.table).select('*', { count: 'exact' })
+
+    if (params.search) {
+      const term = `%${params.search}%`
+      const cols = searchableCols(params.table)
+      if (cols.length > 0) {
+        query = query.or(cols.map(c => `${c}.ilike.${term}`).join(','))
+      }
+    }
+
+    if (params.orderColumn) {
+      query = query.order(params.orderColumn, { ascending: params.orderDirection !== 'desc' })
+    } else {
+      query = query.order('created_at', { ascending: false, nullsFirst: false })
+    }
+
+    if (params.limit) {
+      const from = params.offset || 0
+      query = query.range(from, from + params.limit - 1)
+    }
+
+    const { data, error, count } = await query
+    if (error) throw new Error(error.message)
+    return { rows: data as Record<string, unknown>[] || [], count: count || 0 }
+  })
+
+  registerSafeHandler('admin:get-row', async (_event, table: string, id: string) => {
+    if (!supabase) throw new Error('Database not connected')
+    if (!ADMIN_TABLES.includes(table as any)) throw new Error('Invalid table')
+
+    const { data, error } = await supabase.from(table).select('*').eq('id', id).maybeSingle()
+    if (error) throw new Error(error.message)
+    if (!data) throw new Error('Row not found')
+    return data
+  })
+
+  registerSafeHandler('admin:create-row', async (_event, table: string, rowData: Record<string, unknown>) => {
+    if (!supabase) throw new Error('Database not connected')
+    if (!ADMIN_TABLES.includes(table as any)) throw new Error('Invalid table')
+
+    const { data, error } = await supabase.from(table).insert(rowData).select().maybeSingle()
+    if (error) throw new Error(error.message)
+    return data
+  })
+
+  registerSafeHandler('admin:update-row', async (_event, table: string, id: string, rowData: Record<string, unknown>) => {
+    if (!supabase) throw new Error('Database not connected')
+    if (!ADMIN_TABLES.includes(table as any)) throw new Error('Invalid table')
+
+    const { data, error } = await supabase.from(table).update(rowData).eq('id', id).select().maybeSingle()
+    if (error) throw new Error(error.message)
+    return data
+  })
+
+  registerSafeHandler('admin:delete-row', async (_event, table: string, id: string) => {
+    if (!supabase) throw new Error('Database not connected')
+    if (!ADMIN_TABLES.includes(table as any)) throw new Error('Invalid table')
+
+    const { error } = await supabase.from(table).delete().eq('id', id)
+    if (error) throw new Error(error.message)
+    return true
+  })
+
+  registerSafeHandler('admin:list-all', async (_event, table: string) => {
+    if (!supabase) throw new Error('Database not connected')
+    if (!ADMIN_TABLES.includes(table as any)) throw new Error('Invalid table')
+
+    const nameCol = table === 'schools' ? 'name' : 'full_name'
+    const { data, error } = await supabase
+      .from(table)
+      .select(`id, ${nameCol}`)
+      .order(nameCol, { ascending: true })
+    if (error) throw new Error(error.message)
+    return data as Record<string, unknown>[] || []
+  })
 }

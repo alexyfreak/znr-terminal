@@ -338,7 +338,8 @@
     "delete": "O'chirish",
     "confirm": "Tasdiqlash",
     "loading": "Yuklanmoqda...",
-    "error": "Xatolik yuz berdi"
+    "error": "Xatolik yuz berdi",
+    "retry": "Qayta urinish"
   },
   "admin": {
     "title": "Admin sozlamalari",
@@ -363,6 +364,61 @@
     "lastLogin": "Oxirgi kirish",
     "teachers": "O'qituvchilar",
     "directors": "Direktorlar",
-    "comingSoon": "Ushbu bo'lim tez orada."
+    "comingSoon": "Ushbu bo'lim tez orada.",
+    "db": {
+      "schools": "Maktablar",
+      "teachers": "O'qituvchilar",
+      "directors": "Direktorlar",
+      "classes": "Sinflar",
+      "shablons": "Shablonlar",
+      "search": "Yozuvlarni qidirish...",
+      "addRecord": "Yozuv qo'shish",
+      "editRecord": "Yozuvni tahrirlash",
+      "deleteRecord": "Yozuvni o'chirish",
+      "deleteConfirm": "Bu yozuvni o'chirishni tasdiqlaysizmi? Bu amalni ortga qaytarib bo'lmaydi.",
+      "save": "Saqlash",
+      "cancel": "Bekor qilish",
+      "delete": "O'chirish",
+      "loading": "Yuklanmoqda...",
+      "noResults": "Hech qanday yozuv topilmadi.",
+      "noResultsHint": "Qidiruvni o'zgartiring yoki yangi yozuv qo'shing.",
+      "rowsPerPage": "Sahifadagi qatorlar",
+      "of": "dan",
+      "page": "Sahifa",
+      "fields": {
+        "name": "Nomi",
+        "address": "Manzil",
+        "phone": "Telefon",
+        "loginId": "Login ID",
+        "fullName": "To'liq ism",
+        "position": "Lavozim",
+        "subject": "Fan",
+        "email": "Email",
+        "age": "Yosh",
+        "school": "Maktab",
+        "lastLogin": "Oxirgi kirish",
+        "createdAt": "Yaratilgan vaqt",
+        "updatedAt": "Yangilangan vaqt",
+        "teacherVisible": "O'qituvchi ko'radi",
+        "category": "Kategoriya",
+        "published": "Nashr etilgan",
+        "version": "Versiya",
+        "type": "Tur",
+        "label": "Nom",
+        "description": "Tavsif",
+        "academicYear": "O'quv yili",
+        "formTeacher": "Sinf rahbari",
+        "keywords": "Kalit so'zlar",
+        "directorId": "Direktor",
+        "actions": "Amallar"
+      },
+      "errors": {
+        "fetchFailed": "Ma'lumotlarni yuklashda xatolik.",
+        "createFailed": "Yozuv yaratishda xatolik.",
+        "updateFailed": "Yozuvni yangilashda xatolik.",
+        "deleteFailed": "Yozuvni o'chirishda xatolik.",
+        "invalidJson": "JSON formati noto'g'ri."
+      }
+    }
   }
 }

@@ -117,6 +117,32 @@ const electronAPI = {
 
   getAdminSchoolDetail: (schoolId: string): Promise<{ success: boolean; data?: Record<string, unknown>; error?: string }> =>
     ipcRenderer.invoke('admin:school-detail', schoolId),
+
+  // Admin DB CRUD
+  adminListTable: (params: {
+    table: string
+    search?: string
+    orderColumn?: string
+    orderDirection?: 'asc' | 'desc'
+    limit?: number
+    offset?: number
+  }): Promise<{ success: boolean; data?: { rows: Record<string, unknown>[]; count: number }; error?: string }> =>
+    ipcRenderer.invoke('admin:list-table', params),
+
+  adminGetRow: (table: string, id: string): Promise<{ success: boolean; data?: Record<string, unknown>; error?: string }> =>
+    ipcRenderer.invoke('admin:get-row', table, id),
+
+  adminCreateRow: (table: string, data: Record<string, unknown>): Promise<{ success: boolean; data?: Record<string, unknown>; error?: string }> =>
+    ipcRenderer.invoke('admin:create-row', table, data),
+
+  adminUpdateRow: (table: string, id: string, data: Record<string, unknown>): Promise<{ success: boolean; data?: Record<string, unknown>; error?: string }> =>
+    ipcRenderer.invoke('admin:update-row', table, id, data),
+
+  adminDeleteRow: (table: string, id: string): Promise<{ success: boolean; data?: boolean; error?: string }> =>
+    ipcRenderer.invoke('admin:delete-row', table, id),
+
+  adminListAll: (table: string): Promise<{ success: boolean; data?: Record<string, unknown>[]; error?: string }> =>
+    ipcRenderer.invoke('admin:list-all', table),
 }
 
 contextBridge.exposeInMainWorld('electronAPI', electronAPI)

@@ -338,7 +338,8 @@
     "delete": "Delete",
     "confirm": "Confirm",
     "loading": "Loading...",
-    "error": "An error occurred"
+    "error": "An error occurred",
+    "retry": "Retry"
   },
   "admin": {
     "title": "Admin Settings",
@@ -363,6 +364,61 @@
     "lastLogin": "Last Login",
     "teachers": "Teachers",
     "directors": "Directors",
-    "comingSoon": "This section is coming soon."
+    "comingSoon": "This section is coming soon.",
+    "db": {
+      "schools": "Schools",
+      "teachers": "Teachers",
+      "directors": "Directors",
+      "classes": "Classes",
+      "shablons": "Templates",
+      "search": "Search records...",
+      "addRecord": "Add Record",
+      "editRecord": "Edit Record",
+      "deleteRecord": "Delete Record",
+      "deleteConfirm": "Are you sure you want to delete this record? This action cannot be undone.",
+      "save": "Save",
+      "cancel": "Cancel",
+      "delete": "Delete",
+      "loading": "Loading...",
+      "noResults": "No records found.",
+      "noResultsHint": "Try adjusting your search or add a new record.",
+      "rowsPerPage": "Rows per page",
+      "of": "of",
+      "page": "Page",
+      "fields": {
+        "name": "Name",
+        "address": "Address",
+        "phone": "Phone",
+        "loginId": "Login ID",
+        "fullName": "Full Name",
+        "position": "Position",
+        "subject": "Subject",
+        "email": "Email",
+        "age": "Age",
+        "school": "School",
+        "lastLogin": "Last Login",
+        "createdAt": "Created At",
+        "updatedAt": "Updated At",
+        "teacherVisible": "Teacher Visible",
+        "category": "Category",
+        "published": "Published",
+        "version": "Version",
+        "type": "Type",
+        "label": "Label",
+        "description": "Description",
+        "academicYear": "Academic Year",
+        "formTeacher": "Form Teacher",
+        "keywords": "Keywords",
+        "directorId": "Director",
+        "actions": "Actions"
+      },
+      "errors": {
+        "fetchFailed": "Failed to load data.",
+        "createFailed": "Failed to create record.",
+        "updateFailed": "Failed to update record.",
+        "deleteFailed": "Failed to delete record.",
+        "invalidJson": "Invalid JSON format."
+      }
+    }
   }
 }
