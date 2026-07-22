@@ -1,0 +1,9 @@
+{
+  "dbFilePath": "/home/zunosh/webapp/db",
+  "mode": "local",
+  "apiBaseUrl": "",
+  "journalFolderPath": "",
+  "journalTableName": "",
+  "cfAccessClientId": "",
+  "cfAccessClientSecret": ""
+}

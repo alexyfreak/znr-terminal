@@ -1,0 +1,7 @@
+[project]
+project_id = "zunosh"
+[api]
+enabled = true
+port = 54321
+[auth]
+enabled = true

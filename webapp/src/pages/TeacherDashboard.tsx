@@ -7,174 +7,18 @@ import {
   Award,
   Plus,
   Image,
+  User as UserIcon,
+  Clock,
+  Send,
 } from 'lucide-react'
-import Screen from '@/components/ui/Screen'
-import Header from '@/components/ui/Header'
 import Button from '@/components/ui/Button'
 import StatusBadge from '@/components/ui/StatusBadge'
-import NavBar from '@/components/ui/NavBar'
+import EmptyState from '@/components/ui/EmptyState'
+import Avatar from '@/components/ui/Avatar'
 import { useAuth } from '@/hooks/useAuth'
 import { useTeacherArizas, useAllChildren, useBildirgis, uploadFile } from '@/hooks/useData'
 import type { ArizaRequest, Child } from '@/hooks/types'
-
-function ArizaModerationCard({
-  ariza,
-  childName,
-  onApprove,
-  onReject,
-}: {
-  ariza: ArizaRequest
-  childName: string
-  onApprove: (id: string) => void
-  onReject: (id: string) => void
-}) {
-  return (
-    <div className="rounded-zn-popover border border-zn-border bg-zn-surface p-4">
-      <div className="mb-3 flex items-center justify-between">
-        <div>
-          <p className="text-sm font-semibold text-zn-text">{childName}</p>
-          <p className="text-xs text-zn-text-muted">{ariza.date_from} → {ariza.date_to}</p>
-        </div>
-        <StatusBadge status={ariza.status} />
-      </div>
-      <p className="mb-3 text-xs text-zn-text-faint">{ariza.reason}</p>
-
-      {ariza.file_url && (
-        <a
-          href={ariza.file_url}
-          target="_blank"
-          rel="noopener noreferrer"
-          className="mb-3 flex items-center gap-2 rounded-zn-input bg-zn-elevated px-3 py-2"
-        >
-          <Image size={16} className="text-zn-info-accent" />
-          <span className="text-xs text-zn-info-accent">Faylni ko'rish</span>
-        </a>
-      )}
-
-      {ariza.status === 'pending' && (
-        <div className="flex gap-2">
-          <button
-            onClick={() => onApprove(ariza.id)}
-            className="flex flex-1 items-center justify-center gap-1.5 rounded-zn-btn bg-zn-success-bg py-2.5 text-sm font-semibold text-zn-success-text"
-          >
-            <Check size={16} />
-            Tasdiqlash
-          </button>
-          <button
-            onClick={() => onReject(ariza.id)}
-            className="flex flex-1 items-center justify-center gap-1.5 rounded-zn-btn bg-zn-error-bg py-2.5 text-sm font-semibold text-zn-error-text"
-          >
-            <X size={16} />
-            Rad etish
-          </button>
-        </div>
-      )}
-    </div>
-  )
-}
-
-function BildirgiForm({
-  allChildren,
-  teacherId,
-  onSubmit,
-}: {
-  allChildren: Child[]
-  teacherId: string
-  onSubmit: (data: {
-    child_pupil_id: string
-    author_id: string
-    type: 'reprimand' | 'praise'
-    reason: string
-    image_url?: string
-  }) => void
-}) {
-  const [childPupilId, setChildPupilId] = useState('')
-  const [type, setType] = useState<'reprimand' | 'praise'>('praise')
-  const [reason, setReason] = useState('')
-  const [file, setFile] = useState<File | null>(null)
-
-  useEffect(() => {
-    if (allChildren.length > 0 && !childPupilId) {
-      setChildPupilId(allChildren[0].pupil_id)
-    }
-  }, [allChildren, childPupilId])
-
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault()
-    if (!childPupilId || !reason) return
-    let image_url: string | undefined
-    if (file) {
-      try { image_url = (await uploadFile(file)) ?? undefined } catch { /* ignore */ }
-    }
-    onSubmit({ child_pupil_id: childPupilId, author_id: teacherId, type, reason, image_url })
-    setReason('')
-    setFile(null)
-  }
-
-  return (
-    <form onSubmit={handleSubmit} className="space-y-4 px-4 py-4">
-      <div>
-        <label className="mb-1 block text-xs font-medium text-zn-text-muted">O'quvchi</label>
-        <select
-          value={childPupilId}
-          onChange={(e) => setChildPupilId(e.target.value)}
-          className="w-full rounded-zn-input bg-zn-elevated px-4 py-3 text-sm text-zn-text"
-        >
-          {allChildren.map((s) => (
-            <option key={s.pupil_id} value={s.pupil_id}>{s.full_name} ({s.class_name})</option>
-          ))}
-        </select>
-      </div>
-
-      <div>
-        <label className="mb-1 block text-xs font-medium text-zn-text-muted">Tur</label>
-        <div className="flex gap-3">
-          {(['praise', 'reprimand'] as const).map((t) => (
-            <button
-              key={t}
-              type="button"
-              onClick={() => setType(t)}
-              className={`flex flex-1 items-center justify-center gap-2 rounded-zn-btn border-2 py-2.5 text-sm font-semibold transition ${
-                type === t
-                  ? t === 'praise'
-                    ? 'border-zn-success-text bg-zn-success-bg text-zn-success-text'
-                    : 'border-zn-error-text bg-zn-error-bg text-zn-error-text'
-                  : 'border-transparent bg-zn-elevated text-zn-text-muted'
-              }`}
-            >
-              {t === 'praise' ? <Award size={16} /> : <AlertTriangle size={16} />}
-              {t === 'praise' ? 'Taqsin' : 'Tanbeh'}
-            </button>
-          ))}
-        </div>
-      </div>
-
-      <div>
-        <label className="mb-1 block text-xs font-medium text-zn-text-muted">Sabab</label>
-        <textarea
-          value={reason}
-          onChange={(e) => setReason(e.target.value)}
-          placeholder="Sababni yozing..."
-          rows={3}
-          className="w-full resize-none rounded-zn-input bg-zn-elevated px-4 py-3 text-sm text-zn-text placeholder-zn-text-faint"
-          required
-        />
-      </div>
-
-      <div>
-        <label className="mb-1 block text-xs font-medium text-zn-text-muted">Rasm (ixtiyoriy)</label>
-        <input
-          type="file"
-          accept="image/*"
-          onChange={(e) => setFile(e.target.files?.[0] || null)}
-          className="w-full text-sm text-zn-text-muted file:mr-3 file:rounded-zn-btn file:border-0 file:bg-zn-surface file:px-4 file:py-2 file:text-sm file:text-zn-text"
-        />
-      </div>
-
-      <Button type="submit" fullWidth>Bildirgi yuborish</Button>
-    </form>
-  )
-}
+import type { PageKey } from '@/components/ui/Sidebar'
 
 function RoleLabel({ role }: { role: string }) {
   const labels: Record<string, string> = {
@@ -187,15 +31,261 @@ function RoleLabel({ role }: { role: string }) {
   return <span className="text-xs text-zn-text-muted">{labels[role] || role}</span>
 }
 
-export default function TeacherDashboard({ onOpenChat }: { onOpenChat: () => void }) {
+function BildirgiForm({
+  allChildren,
+  teacherId,
+  onSubmit,
+  onCancel,
+}: {
+  allChildren: Child[]
+  teacherId: string
+  onSubmit: (data: { child_pupil_id: string; author_id: string; type: 'reprimand' | 'praise'; reason: string; image_url?: string }) => void
+  onCancel: () => void
+}) {
+  const [childPupilId, setChildPupilId] = useState('')
+  const [type, setType] = useState<'reprimand' | 'praise'>('praise')
+  const [reason, setReason] = useState('')
+  const [file, setFile] = useState<File | null>(null)
+
+  useEffect(() => {
+    if (allChildren.length > 0 && !childPupilId) setChildPupilId(allChildren[0].pupil_id)
+  }, [allChildren, childPupilId])
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault()
+    if (!childPupilId || !reason) return
+    let image_url: string | undefined
+    if (file) { try { image_url = (await uploadFile(file)) ?? undefined } catch { /* ignore */ } }
+    onSubmit({ child_pupil_id: childPupilId, author_id: teacherId, type, reason, image_url })
+    setReason(''); setFile(null)
+  }
+
+  return (
+    <form onSubmit={handleSubmit} className="animate-slideDown space-y-4 rounded-2xl border border-white/8 bg-white/4 p-4 mx-4 mb-4">
+      <div className="flex items-center justify-between">
+        <p className="text-sm font-semibold text-zn-text">Yangi bildirgi</p>
+        <button type="button" onClick={onCancel} className="rounded-full p-1 text-zn-text-faint hover:text-zn-text-muted">
+          <X size={18} />
+        </button>
+      </div>
+
+      <div>
+        <label className="mb-1 block text-xs font-medium text-zn-text-muted">O'quvchi</label>
+        <select value={childPupilId} onChange={(e) => setChildPupilId(e.target.value)}
+          className="w-full rounded-xl border border-white/8 bg-white/4 px-3 py-2.5 text-sm text-zn-text">
+          {allChildren.map((s) => (
+            <option key={s.pupil_id} value={s.pupil_id}>{s.full_name} ({s.class_name})</option>
+          ))}
+        </select>
+      </div>
+
+      <div>
+        <label className="mb-1 block text-xs font-medium text-zn-text-muted">Tur</label>
+        <div className="flex gap-3">
+          {(['praise', 'reprimand'] as const).map((t) => (
+            <button key={t} type="button" onClick={() => setType(t)}
+              className={`flex flex-1 items-center justify-center gap-2 rounded-xl border-2 py-2.5 text-sm font-semibold transition ${
+                type === t
+                  ? t === 'praise'
+                    ? 'border-zn-success-text bg-green-500/10 text-zn-success-text'
+                    : 'border-zn-error-text bg-red-500/10 text-zn-error-text'
+                  : 'border-transparent bg-white/4 text-zn-text-muted'
+              }`}>
+              {t === 'praise' ? <Award size={16} /> : <AlertTriangle size={16} />}
+              {t === 'praise' ? 'Taqsin' : 'Tanbeh'}
+            </button>
+          ))}
+        </div>
+      </div>
+
+      <div>
+        <label className="mb-1 block text-xs font-medium text-zn-text-muted">Sabab</label>
+        <textarea value={reason} onChange={(e) => setReason(e.target.value)} placeholder="Sababni yozing..." rows={3}
+          className="w-full resize-none rounded-xl border border-white/8 bg-white/4 px-3 py-2.5 text-sm text-zn-text placeholder-zn-text-faint outline-none" required />
+      </div>
+
+      <div>
+        <label className="mb-1 block text-xs font-medium text-zn-text-muted">Rasm (ixtiyoriy)</label>
+        <input type="file" accept="image/*" onChange={(e) => setFile(e.target.files?.[0] || null)}
+          className="w-full text-sm text-zn-text-muted file:mr-3 file:rounded-xl file:border-0 file:bg-white/8 file:px-4 file:py-2 file:text-sm file:text-zn-text file:cursor-pointer" />
+      </div>
+
+      <Button type="submit" fullWidth>Bildirgi yuborish</Button>
+    </form>
+  )
+}
+
+function ArizaModerationCard({
+  ariza, childName, onApprove, onReject,
+}: {
+  ariza: ArizaRequest; childName: string
+  onApprove: (id: string) => void; onReject: (id: string) => void
+}) {
+  return (
+    <div className="animate-slideUp rounded-2xl border border-white/6 bg-white/4 p-4">
+      <div className="mb-2 flex items-start justify-between gap-2">
+        <div className="min-w-0">
+          <div className="flex items-center gap-2">
+            <Avatar name={childName} size="sm" />
+            <div>
+              <p className="text-sm font-semibold text-zn-text">{childName}</p>
+              <p className="text-xs text-zn-text-muted">{ariza.date_from} → {ariza.date_to}</p>
+            </div>
+          </div>
+        </div>
+        <StatusBadge status={ariza.status} />
+      </div>
+      <p className="mb-3 text-xs text-zn-text-faint ml-[42px]">{ariza.reason}</p>
+
+      {ariza.file_url && (
+        <a href={ariza.file_url} target="_blank" rel="noopener noreferrer"
+          className="mb-3 flex items-center gap-2 rounded-xl bg-white/4 px-3 py-2 ml-[42px]">
+          <Image size={14} className="text-zn-info-accent" />
+          <span className="text-xs text-zn-info-accent">Faylni ko'rish</span>
+        </a>
+      )}
+
+      {ariza.status === 'pending' && (
+        <div className="flex gap-2 ml-[42px]">
+          <button onClick={() => onApprove(ariza.id)}
+            className="flex flex-1 items-center justify-center gap-1.5 rounded-xl bg-green-500/15 py-2.5 text-sm font-semibold text-zn-success-text transition-colors hover:bg-green-500/25">
+            <Check size={16} /> Tasdiqlash
+          </button>
+          <button onClick={() => onReject(ariza.id)}
+            className="flex flex-1 items-center justify-center gap-1.5 rounded-xl bg-red-500/15 py-2.5 text-sm font-semibold text-zn-error-text transition-colors hover:bg-red-500/25">
+            <X size={16} /> Rad etish
+          </button>
+        </div>
+      )}
+    </div>
+  )
+}
+
+export function TeacherHome({ onNavigate }: { onNavigate: (p: PageKey) => void }) {
+  const { user } = useAuth()
+  const { arizas } = useTeacherArizas()
+  const { children } = useAllChildren(user?.role === 'sinf_rahbar' ? user?.user_id : undefined)
+  const { bildirgis } = useBildirgis()
+
+  const pendingCount = arizas.filter((a) => a.status === 'pending').length
+  const thisMonthBildirgi = bildirgis.length
+
+  const greeting = () => {
+    const h = new Date().getHours()
+    if (h < 12) return 'Xayrli tong'
+    if (h < 18) return 'Xayrli kun'
+    return 'Xayrli kech'
+  }
+
+  return (
+    <div className="animate-fadeIn pb-6">
+      <div className="px-4 pt-6 pb-4">
+        <div className="mb-1 flex items-center gap-2">
+          <div className="flex h-7 w-7 items-center justify-center rounded-full gradient-warning">
+            <UserIcon size={14} className="text-black" />
+          </div>
+          <p className="text-xs font-medium text-zn-text-muted">{new Date().toLocaleDateString('uz-UZ', { weekday: 'long', day: 'numeric', month: 'long' })}</p>
+        </div>
+        <h1 className="text-xl font-bold text-zn-text">
+          {greeting()}, {user?.full_name?.split(' ')[0]}
+        </h1>
+        <RoleLabel role={user?.role || ''} />
+      </div>
+
+      <div className="grid grid-cols-3 gap-2 px-4 pb-4">
+        <div className="animate-slideUp rounded-2xl bg-white/4 p-3">
+          <div className="mb-2 flex h-8 w-8 items-center justify-center rounded-xl bg-orange-500/10">
+            <ClipboardList size={16} className="text-zn-warning-text" />
+          </div>
+          <p className={`text-xl font-bold ${pendingCount > 0 ? 'text-zn-warning-text' : 'text-zn-text'}`}>{pendingCount}</p>
+          <p className="text-[11px] text-zn-text-muted">Kutilayotgan</p>
+        </div>
+        <div className="animate-slideUp animate-delay-100 rounded-2xl bg-white/4 p-3">
+          <div className="mb-2 flex h-8 w-8 items-center justify-center rounded-xl bg-blue-500/10">
+            <Award size={16} className="text-zn-info-accent" />
+          </div>
+          <p className="text-xl font-bold text-zn-text">{children.length}</p>
+          <p className="text-[11px] text-zn-text-muted">O'quvchilar</p>
+        </div>
+        <div className="animate-slideUp animate-delay-200 rounded-2xl bg-white/4 p-3">
+          <div className="mb-2 flex h-8 w-8 items-center justify-center rounded-xl bg-green-500/10">
+            <Award size={16} className="text-zn-success-text" />
+          </div>
+          <p className="text-xl font-bold text-zn-text">{thisMonthBildirgi}</p>
+          <p className="text-[11px] text-zn-text-muted">Bildirgilar</p>
+        </div>
+      </div>
+
+      <div className="grid grid-cols-2 gap-2 px-4 pb-4">
+        <button
+          onClick={() => onNavigate('arizas')}
+          className="flex items-center justify-center gap-2 rounded-2xl gradient-accent py-3 text-sm font-bold text-white shadow-lg shadow-blue-500/15 transition-all hover:brightness-110"
+        >
+          <Check size={16} />
+          Arizalarni ko'rib chiqish
+        </button>
+        <button
+          onClick={() => onNavigate('chat')}
+          className="flex items-center justify-center gap-2 rounded-2xl bg-white/8 py-3 text-sm font-semibold text-zn-text transition-colors hover:bg-white/10"
+        >
+          <Send size={16} className="text-zn-info-accent" />
+          Xabar yozish
+        </button>
+      </div>
+
+      <div className="px-4 pb-1">
+        <div className="flex items-center justify-between">
+          <h3 className="text-xs font-semibold text-zn-text-muted uppercase tracking-wider">
+            {pendingCount > 0 ? 'Kutilayotgan arizalar' : 'Oxirgi bildirgilar'}
+          </h3>
+          <span className="text-[11px] text-zn-text-faint">Bugun</span>
+        </div>
+      </div>
+
+      <div className="space-y-1 px-4">
+        {pendingCount > 0 ? (
+          arizas.filter((a) => a.status === 'pending').slice(0, 3).map((a) => (
+            <div key={a.id} className="animate-slideUp flex items-start gap-3 rounded-2xl bg-white/4 px-4 py-3">
+              <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-orange-500/10">
+                <ClipboardList size={14} className="text-zn-warning-text" />
+              </div>
+              <div className="min-w-0 flex-1">
+                <p className="text-sm font-semibold text-zn-text">{a.reason}</p>
+                <div className="mt-0.5 flex items-center gap-2">
+                  <Clock size={10} className="text-zn-text-faint" />
+                  <p className="text-[11px] text-zn-text-faint">{new Date(a.created_at).toLocaleDateString()}</p>
+                </div>
+              </div>
+              <StatusBadge status="pending" />
+            </div>
+          ))
+        ) : (
+          bildirgis.slice(0, 5).map((b) => (
+            <div key={b.id} className="animate-slideUp flex items-start gap-3 rounded-2xl bg-white/4 px-4 py-3">
+              <div className={`flex h-8 w-8 shrink-0 items-center justify-center rounded-full ${
+                b.type === 'praise' ? 'bg-green-500/10' : 'bg-red-500/10'
+              }`}>
+                {b.type === 'praise' ? <Award size={14} className="text-zn-success-text" /> : <AlertTriangle size={14} className="text-zn-error-text" />}
+              </div>
+              <div className="min-w-0 flex-1">
+                <p className="text-sm font-semibold text-zn-text">{b.reason}</p>
+                <p className="text-[11px] text-zn-text-faint mt-0.5">{new Date(b.created_at).toLocaleDateString()}</p>
+              </div>
+            </div>
+          ))
+        )}
+      </div>
+    </div>
+  )
+}
+
+export function TeacherArizas() {
   const { user } = useAuth()
   const { arizas, moderate } = useTeacherArizas()
   const { children } = useAllChildren(user?.role === 'sinf_rahbar' ? user?.user_id : undefined)
   const { bildirgis, create: createBildirgi } = useBildirgis()
-  const [tab, setTab] = useState<'home' | 'ariza' | 'chat' | 'profile'>('home')
   const [showBildirgiForm, setShowBildirgiForm] = useState(false)
-
-  const pendingCount = arizas.filter((a) => a.status === 'pending').length
+  const [subtab, setSubtab] = useState<'arizas' | 'bildirgis'>('arizas')
 
   const handleApprove = async (id: string) => {
     if (!user) return
@@ -208,11 +298,7 @@ export default function TeacherDashboard({ onOpenChat }: { onOpenChat: () => voi
   }
 
   const handleBildirgi = async (data: {
-    child_pupil_id: string
-    author_id: string
-    type: 'reprimand' | 'praise'
-    reason: string
-    image_url?: string
+    child_pupil_id: string; author_id: string; type: 'reprimand' | 'praise'; reason: string; image_url?: string
   }) => {
     await createBildirgi(data)
     setShowBildirgiForm(false)
@@ -220,121 +306,119 @@ export default function TeacherDashboard({ onOpenChat }: { onOpenChat: () => voi
 
   const childName = (childPupilId: string) => children.find((c) => c.pupil_id === childPupilId)?.full_name || childPupilId
 
-  const content = () => {
-    switch (tab) {
-      case 'home':
-        return (
-          <>
-            <div className="px-4 pt-4 pb-2">
-              <p className="text-sm font-semibold text-zn-text">{user?.full_name}</p>
-              <RoleLabel role={user?.role || ''} />
-            </div>
-            <div className="grid grid-cols-2 gap-3 px-4 pb-4 pt-2">
-              <div className="rounded-zn-popover bg-zn-surface p-4">
-                <ClipboardList size={20} className="mb-2 text-zn-warning-accent" />
-                <p className="text-2xl font-bold text-zn-text">{pendingCount}</p>
-                <p className="text-xs text-zn-text-muted">Kutilayotgan arizalar</p>
-              </div>
-              <div className="rounded-zn-popover bg-zn-surface p-4">
-                <Award size={20} className="mb-2 text-zn-info-accent" />
-                <p className="text-2xl font-bold text-zn-text">{children.length}</p>
-                <p className="text-xs text-zn-text-muted">O'quvchilar</p>
-              </div>
-            </div>
-
-            <div className="flex items-center justify-between px-4 py-2">
-              <h3 className="font-sans text-sm font-semibold text-zn-text-muted uppercase tracking-wider">Sinf statistikasi</h3>
-            </div>
-
-            <div className="space-y-2 px-4 pb-6">
-              <div className="flex items-center justify-between rounded-zn-input bg-zn-surface px-4 py-3">
-                <span className="text-sm text-zn-text">Davomat (o'rtacha)</span>
-                <span className="text-sm font-semibold text-zn-success-text">94%</span>
-              </div>
-              <div className="flex items-center justify-between rounded-zn-input bg-zn-surface px-4 py-3">
-                <span className="text-sm text-zn-text">Shu oydagi bildirgilar</span>
-                <span className="text-sm font-semibold text-zn-text">{bildirgis.length}</span>
-              </div>
-            </div>
-
-            {bildirgis.length > 0 && (
-              <>
-                <div className="px-4 pb-2">
-                  <h3 className="font-sans text-sm font-semibold text-zn-text-muted uppercase tracking-wider">Oxirgi yozuvlar</h3>
-                </div>
-                <div className="space-y-1 px-4 pb-6">
-                  {bildirgis.slice(0, 20).map((b) => (
-                    <div key={b.id} className="flex items-center gap-3 rounded-zn-input bg-zn-surface px-4 py-3">
-                      {b.type === 'praise' ? (
-                        <Award size={16} className="text-zn-success-text" />
-                      ) : (
-                        <AlertTriangle size={16} className="text-zn-error-text" />
-                      )}
-                      <div className="min-w-0 flex-1">
-                        <p className="text-sm text-zn-text">{b.reason}</p>
-                        <p className="text-xs text-zn-text-muted">{childName(b.child_pupil_id)}</p>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              </>
-            )}
-          </>
-        )
-
-      case 'ariza':
-        return (
-          <>
-            <div className="flex items-center justify-between px-4 py-3">
-              <h2 className="font-sans text-sm font-semibold text-zn-text-muted uppercase tracking-wider">Arizalarni boshqarish</h2>
-              <button
-                onClick={() => setShowBildirgiForm(!showBildirgiForm)}
-                className="flex items-center gap-1 rounded-zn-btn bg-zn-surface px-3 py-1.5 text-xs font-medium text-zn-text"
-              >
-                <Plus size={14} />
-                {showBildirgiForm ? 'Yopish' : 'Bildirgi'}
-              </button>
-            </div>
-
-            {showBildirgiForm && user && (
-              <BildirgiForm allChildren={children} teacherId={user.user_id} onSubmit={handleBildirgi} />
-            )}
-
-            <div className="space-y-3 px-4 pb-6">
-              {arizas.length === 0 && (
-                <p className="text-sm text-zn-text-faint text-center py-4">Arizalar mavjud emas</p>
-              )}
-              {arizas.map((a) => (
-                <ArizaModerationCard
-                  key={a.id}
-                  ariza={a}
-                  childName={childName(a.child_pupil_id)}
-                  onApprove={handleApprove}
-                  onReject={handleReject}
-                />
-              ))}
-            </div>
-          </>
-        )
-
-      case 'chat':
-        onOpenChat()
-        return null
-
-      default:
-        return (
-          <div className="flex flex-1 items-center justify-center">
-            <p className="text-sm text-zn-text-muted">Sozlamalar</p>
-          </div>
-        )
-    }
-  }
+  const pendingCount = arizas.filter((a) => a.status === 'pending').length
+  const approvedCount = arizas.filter((a) => a.status === 'approved').length
+  const rejectedCount = arizas.filter((a) => a.status === 'rejected').length
 
   return (
-    <Screen>
-      <Header title={user?.role === 'sinf_rahbar' ? 'Sinf Rahbar' : user?.role === 'director' ? 'Direktor' : "O'qituvchi"} onChat={onOpenChat} />
-      <div className="flex-1 overflow-y-auto">{content()}</div>
-      <NavBar active={tab} onNavigate={setTab} role="sinf_rahbar" />
-    </Screen>
+    <div className="animate-fadeIn pb-6">
+      <div className="px-4 pt-6 pb-3">
+        <h1 className="text-lg font-bold text-zn-text">Arizalar va bildirgilar</h1>
+      </div>
+
+      <div className="flex gap-1.5 px-4 pb-3 overflow-x-auto no-scrollbar">
+        <button onClick={() => setSubtab('arizas')}
+          className={`shrink-0 rounded-xl px-3.5 py-1.5 text-xs font-medium transition-all ${
+            subtab === 'arizas' ? 'bg-white/10 text-zn-text' : 'bg-white/4 text-zn-text-muted hover:bg-white/7'
+          }`}>
+          Arizalar
+          {pendingCount > 0 && <span className="ml-1.5 rounded-full bg-zn-warning-bg px-1.5 py-0.5 text-[10px] text-zn-warning-text">{pendingCount}</span>}
+        </button>
+        <button onClick={() => setSubtab('bildirgis')}
+          className={`shrink-0 rounded-xl px-3.5 py-1.5 text-xs font-medium transition-all ${
+            subtab === 'bildirgis' ? 'bg-white/10 text-zn-text' : 'bg-white/4 text-zn-text-muted hover:bg-white/7'
+          }`}>
+          Bildirgilar
+        </button>
+      </div>
+
+      {subtab === 'arizas' && (
+        <>
+          <div className="grid grid-cols-3 gap-2 px-4 pb-4">
+            <div className="rounded-2xl bg-white/4 p-2.5 text-center">
+              <p className="text-lg font-bold text-zn-warning-text">{pendingCount}</p>
+              <p className="text-[10px] text-zn-text-muted">Kutilmoqda</p>
+            </div>
+            <div className="rounded-2xl bg-white/4 p-2.5 text-center">
+              <p className="text-lg font-bold text-zn-success-text">{approvedCount}</p>
+              <p className="text-[10px] text-zn-text-muted">Tasdiqlangan</p>
+            </div>
+            <div className="rounded-2xl bg-white/4 p-2.5 text-center">
+              <p className="text-lg font-bold text-zn-error-text">{rejectedCount}</p>
+              <p className="text-[10px] text-zn-text-muted">Rad etilgan</p>
+            </div>
+          </div>
+
+          <div className="space-y-2 px-4">
+            {arizas.length === 0 && (
+              <EmptyState
+                icon={<ClipboardList size={28} />}
+                title="Arizalar mavjud emas"
+                description="Ota-onalar tomonidan yuborilgan arizalar bu yerda ko'rsatiladi"
+              />
+            )}
+            {arizas.map((a) => (
+              <ArizaModerationCard
+                key={a.id}
+                ariza={a}
+                childName={childName(a.child_pupil_id)}
+                onApprove={handleApprove}
+                onReject={handleReject}
+              />
+            ))}
+          </div>
+        </>
+      )}
+
+      {subtab === 'bildirgis' && (
+        <>
+          <div className="px-4 pb-3">
+            {!showBildirgiForm ? (
+              <button
+                onClick={() => setShowBildirgiForm(true)}
+                className="flex w-full items-center justify-center gap-2 rounded-2xl gradient-accent py-3 text-sm font-bold text-white shadow-lg shadow-blue-500/15 transition-all hover:brightness-110"
+              >
+                <Plus size={16} />
+                Yangi bildirgi yozish
+              </button>
+            ) : null}
+          </div>
+
+          {showBildirgiForm && user && (
+            <BildirgiForm
+              allChildren={children}
+              teacherId={user.user_id}
+              onSubmit={handleBildirgi}
+              onCancel={() => setShowBildirgiForm(false)}
+            />
+          )}
+
+          <div className="space-y-1 px-4">
+            {bildirgis.length === 0 && (
+              <EmptyState
+                icon={<Award size={28} />}
+                title="Bildirgilar mavjud emas"
+                description="Yozilgan bildirgilar bu yerda ko'rsatiladi"
+                action={{ label: 'Bildirgi yozish', onClick: () => setShowBildirgiForm(true) }}
+              />
+            )}
+            {bildirgis.map((b) => (
+              <div key={b.id} className="animate-slideUp flex items-start gap-3 rounded-2xl bg-white/4 px-4 py-3">
+                <div className={`flex h-8 w-8 shrink-0 items-center justify-center rounded-full ${
+                  b.type === 'praise' ? 'bg-green-500/10' : 'bg-red-500/10'
+                }`}>
+                  {b.type === 'praise' ? <Award size={14} className="text-zn-success-text" /> : <AlertTriangle size={14} className="text-zn-error-text" />}
+                </div>
+                <div className="min-w-0 flex-1">
+                  <p className="text-sm font-semibold text-zn-text">{b.reason}</p>
+                  <p className="text-xs text-zn-text-muted">{childName(b.child_pupil_id)}</p>
+                  <p className="text-[11px] text-zn-text-faint">{new Date(b.created_at).toLocaleDateString()}</p>
+                </div>
+              </div>
+            ))}
+          </div>
+        </>
+      )}
+    </div>
   )
 }
