@@ -16,24 +16,24 @@ export function useChat(userId: string, _userRole: string) {
     const sb = requireSupabase()
     const { data: msgs } = await sb
       .from('chat_messages')
-      .select('*, sender:users!sender_id(full_name, role), receiver:users!receiver_id(full_name, role)')
-      .or(`sender_id.eq.${userId},receiver_id.eq.${userId}`)
+      .select('*, sender:webapp_users!sender_id(full_name, role), receiver:webapp_users!recipient_id(full_name, role)')
+      .or(`sender_id.eq.${userId},recipient_id.eq.${userId}`)
       .order('created_at', { ascending: false })
 
     if (!msgs) return
 
     const seen = new Map<string, ChatContact>()
     for (const m of msgs) {
-      const otherId = m.sender_id === userId ? m.receiver_id : m.sender_id
+      const otherId = m.sender_id === userId ? m.recipient_id : m.sender_id
       if (seen.has(otherId)) continue
       const other = m.sender_id === userId ? m.receiver : m.sender
       seen.set(otherId, {
         id: otherId,
         full_name: other?.full_name || 'Unknown',
         role: (other?.role || 'parent') as ChatContact['role'],
-        last_message: m.text || undefined,
+        last_message: m.message || undefined,
         last_time: new Date(m.created_at).toLocaleTimeString('uz-UZ', { hour: '2-digit', minute: '2-digit' }),
-        unread: m.sender_id !== userId && !m.is_read ? 1 : 0,
+        unread: 0,
       })
     }
     setContacts(Array.from(seen.values()))
@@ -46,7 +46,7 @@ export function useChat(userId: string, _userRole: string) {
     const { data, error } = await sb
       .from('chat_messages')
       .select('*')
-      .or(`and(sender_id.eq.${userId},receiver_id.eq.${contactId}),and(sender_id.eq.${contactId},receiver_id.eq.${userId})`)
+      .or(`and(sender_id.eq.${userId},recipient_id.eq.${contactId}),and(sender_id.eq.${contactId},recipient_id.eq.${userId})`)
       .order('created_at', { ascending: true })
 
     if (!error && data) setMessages(data as ChatMessage[])
@@ -73,7 +73,7 @@ export function useChat(userId: string, _userRole: string) {
         () => { fetchContacts(); if (activeContact) fetchMessages(activeContact.id) },
       )
       .on('postgres_changes',
-        { event: '*', schema: 'public', table: 'chat_messages', filter: `receiver_id=eq.${userId}` },
+        { event: '*', schema: 'public', table: 'chat_messages', filter: `recipient_id=eq.${userId}` },
         () => { fetchContacts(); if (activeContact) fetchMessages(activeContact.id) },
       )
       .subscribe()
@@ -96,8 +96,8 @@ export function useChat(userId: string, _userRole: string) {
     const sb = requireSupabase()
     const { data, error } = await sb.from('chat_messages').insert({
       sender_id: userId,
-      receiver_id: activeContact.id,
-      text: text.trim(),
+      recipient_id: activeContact.id,
+      message: text.trim(),
     }).select().single()
 
     if (!error && data) {

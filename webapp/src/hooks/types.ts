@@ -1,46 +1,41 @@
-export type Role = 'parent' | 'sinf_rahbar'
+export type Role = 'parent' | 'sinf_rahbar' | 'teacher' | 'director' | 'school' | 'pupil'
 export type ArizaStatus = 'pending' | 'approved' | 'rejected'
-export type BildirgiType = 'violation' | 'praise'
+export type BildirgiType = 'reprimand' | 'praise'
 
 export interface User {
-  id: string
-  telegram_id: number
+  user_id: string
+  role: Role
   full_name: string
   phone: string | null
-  role: Role
-  avatar_url: string | null
-  created_at: string
+  children?: Child[]
 }
 
 export interface Child {
-  id: string
-  parent_id: string
+  pupil_id: string
   full_name: string
   class_name: string
-  created_at: string
 }
 
 export interface ArizaRequest {
   id: string
-  child_id: string
   parent_id: string
-  teacher_id: string | null
+  child_pupil_id: string
+  reason: string
   date_from: string
   date_to: string
-  reason_text: string
-  doctor_paper_url: string | null
+  file_url: string | null
   status: ArizaStatus
-  rejection_reason: string | null
+  reviewed_by: string | null
+  reviewed_at: string | null
   created_at: string
 }
 
 export interface BildirgiRecord {
   id: string
-  student_id: string
-  teacher_id: string
+  author_id: string
   type: BildirgiType
-  title: string
-  description: string | null
+  child_pupil_id: string
+  reason: string
   image_url: string | null
   created_at: string
 }
@@ -48,10 +43,8 @@ export interface BildirgiRecord {
 export interface ChatMessage {
   id: string
   sender_id: string
-  receiver_id: string
-  text: string | null
-  attachment_url: string | null
-  is_read: boolean
+  recipient_id: string
+  message: string | null
   created_at: string
 }
 
@@ -62,4 +55,16 @@ export interface ChatContact {
   last_message?: string
   last_time?: string
   unread: number
+}
+
+export interface LoginResponse {
+  success: boolean
+  error?: string
+  user?: {
+    user_id: string
+    role: Role
+    full_name: string
+    phone: string | null
+  }
+  children?: Child[]
 }

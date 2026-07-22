@@ -17,7 +17,7 @@ function ChatList({
         <div className="flex flex-1 items-center justify-center pt-20">
           <div className="text-center">
             <MessageCircle size={40} className="mx-auto mb-3 text-zn-text-faint" />
-            <p className="text-sm text-zn-text-muted">No conversations yet</p>
+            <p className="text-sm text-zn-text-muted">Xabarlar mavjud emas</p>
           </div>
         </div>
       )}
@@ -59,7 +59,7 @@ function ChatThread({
   onBack,
 }: {
   contact: ChatContact
-  messages: { id: string; sender_id: string; text: string | null; created_at: string }[]
+  messages: { id: string; sender_id: string; message: string | null; created_at: string }[]
   onSend: (text: string) => void
   onBack: () => void
 }) {
@@ -89,7 +89,7 @@ function ChatThread({
 
       <div className="flex-1 space-y-2 overflow-y-auto px-4 py-4">
         {messages.map((m) => {
-          const isMine = m.sender_id === user?.id
+          const isMine = m.sender_id === user?.user_id
           return (
             <div key={m.id} className={`flex ${isMine ? 'justify-end' : 'justify-start'}`}>
               <div
@@ -97,7 +97,7 @@ function ChatThread({
                   isMine ? 'bg-zn-info-accent text-black' : 'bg-zn-surface text-zn-text'
                 }`}
               >
-                <p className="text-sm">{m.text}</p>
+                <p className="text-sm">{m.message}</p>
                 <div className={`mt-0.5 flex items-center justify-end gap-1 ${isMine ? 'text-black/60' : 'text-zn-text-faint'}`}>
                   <span className="text-[10px]">{new Date(m.created_at).toLocaleTimeString('uz-UZ', { hour: '2-digit', minute: '2-digit' })}</span>
                   {isMine && <CheckCheck size={12} />}
@@ -111,7 +111,7 @@ function ChatThread({
       <form onSubmit={handleSubmit} className="safe-bottom flex items-center gap-2 border-t border-zn-border px-4 py-3">
         <input
           name="message"
-          placeholder="Write a message..."
+          placeholder="Xabar yozing..."
           autoFocus
           className="min-w-0 flex-1 rounded-zn-input bg-zn-elevated px-4 py-2.5 text-sm text-zn-text placeholder-zn-text-faint outline-none"
         />
@@ -126,7 +126,7 @@ function ChatThread({
 export default function Chat({ onClose }: { onClose: () => void }) {
   const { user } = useAuth()
   const { contacts, activeContact, messages, openChat, goBack, sendMessage } = useChat(
-    user?.id || '',
+    user?.user_id || '',
     user?.role || 'parent',
   )
 
@@ -145,7 +145,7 @@ export default function Chat({ onClose }: { onClose: () => void }) {
             <button onClick={onClose} className="rounded-zn-btn p-1 text-zn-text-muted">
               <ChevronLeft size={22} />
             </button>
-            <h1 className="font-sans text-lg font-semibold text-zn-text">Messages</h1>
+            <h1 className="font-sans text-lg font-semibold text-zn-text">Xabarlar</h1>
           </div>
           <ChatList contacts={contacts} onSelect={openChat} />
         </>

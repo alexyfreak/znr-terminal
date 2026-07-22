@@ -1,8 +1,6 @@
 import { useState, useCallback, createContext, useContext, type ReactNode } from 'react'
-import { getSupabase } from './useSupabase'
-import type { User } from './types'
-
-export type { Role } from './types'
+import { requireSupabase } from './useSupabase'
+import type { User, Child, LoginResponse } from './types'
 
 interface AuthState {
   user: User | null
@@ -11,7 +9,7 @@ interface AuthState {
 }
 
 interface AuthContextType extends AuthState {
-  login: (telegramId: number, role: User['role']) => Promise<void>
+  login: (userId: string, password: string) => Promise<void>
   logout: () => void
 }
 
@@ -24,47 +22,33 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     error: null,
   })
 
-  const login = useCallback(async (telegramId: number, role: User['role']) => {
+  const login = useCallback(async (userId: string, password: string) => {
     setState({ user: null, isLoading: true, error: null })
     try {
-      const sb = getSupabase()
-
-      if (!sb) {
-        const mockUser: User = {
-          id: crypto.randomUUID(),
-          telegram_id: telegramId,
-          full_name: telegramId === 2000001 ? 'Dilorom Salimova' : 'Aliya Karimova',
-          phone: '+998901234567',
-          role,
-          avatar_url: null,
-          created_at: new Date().toISOString(),
-        }
-        await new Promise((r) => setTimeout(r, 400))
-        setState({ user: mockUser, isLoading: false, error: null })
-        return
-      }
-
-      const { data, error } = await sb
-        .from('users')
-        .select('*')
-        .eq('telegram_id', telegramId)
-        .maybeSingle()
+      const sb = requireSupabase()
+      const { data, error } = await sb.rpc('login_user', {
+        p_user_id: userId.trim().toUpperCase(),
+        p_password: password,
+      })
 
       if (error) throw error
 
-      if (data) {
-        setState({ user: data as User, isLoading: false, error: null })
-      } else {
-        const name = telegramId === 2000001 ? 'Dilorom Salimova' : 'Aliya Karimova'
-        const phone = '+998901234567'
-        const { data: created, error: createErr } = await sb
-          .from('users')
-          .insert({ telegram_id: telegramId, full_name: name, phone, role })
-          .select()
-          .single()
-        if (createErr) throw createErr
-        setState({ user: created as User, isLoading: false, error: null })
+      const result = data as LoginResponse
+
+      if (!result.success) {
+        setState({ user: null, isLoading: false, error: result.error || 'Login failed' })
+        return
       }
+
+      const user: User = {
+        user_id: result.user!.user_id,
+        role: result.user!.role,
+        full_name: result.user!.full_name,
+        phone: result.user!.phone,
+        children: result.children as Child[],
+      }
+
+      setState({ user, isLoading: false, error: null })
     } catch (err) {
       setState({ user: null, isLoading: false, error: err instanceof Error ? err.message : 'Login failed' })
     }

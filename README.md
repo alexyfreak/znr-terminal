@@ -1,395 +1,197 @@
-# Zunoora Desktop
+# Zunoora — School Document Management Platform
 
-> 🇺🇿 Uzbekistan teacher document assistant — Electron desktop application for generating official school documents
-
-Zunoora is a desktop application built with Electron, React, and TypeScript that helps teachers and school administrators in Uzbekistan create standardized official documents quickly and efficiently.
+> 🇺🇿 Uzbekistan's digital school workflow platform — connecting parents, teachers, and administrators.
 
 [![License](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE.md)
-[![Electron](https://img.shields.io/badge/Electron-43.0.0-47848F.svg)](https://www.electronjs.org/)
-[![React](https://img.shields.io/badge/React-19.2.7-61DAFB.svg)](https://reactjs.org/)
-[![TypeScript](https://img.shields.io/badge/TypeScript-5.5.0-3178C6.svg)](https://www.typescriptlang.org/)
+[![Vercel](https://img.shields.io/badge/deployed-Vercel-000000.svg)](https://zunoora-webapp.vercel.app)
+[![Supabase](https://img.shields.io/badge/backend-Supabase-3ECF8E.svg)](https://supabase.com)
+[![React](https://img.shields.io/badge/React-19-61DAFB.svg)](https://react.dev)
+[![TypeScript](https://img.shields.io/badge/TypeScript-5.5-3178C6.svg)](https://www.typescriptlang.org/)
+[![Telegram](https://img.shields.io/badge/bot-Telegram-26A5E1.svg)](https://t.me/zunoorabot)
 
 ---
 
-## ✨ Features
+## The Problem
 
-### 📄 Document Generation
-- **50+ Official Document Templates**: Pre-built templates for common school documents (applications, orders, reports, certificates, etc.)
-- **Smart Field Auto-Fill**: Automatically fills user and school information
-- **Multi-Step Forms**: Guided workflows for complex documents
-- **Live Preview**: See your document before exporting
-- **DOCX Export**: Generate Microsoft Word documents ready for printing
+Uzbekistan's schools run on paper. Leave requests, disciplinary records, report cards — every document requires a parent to physically visit the school, wait in line, and fill out forms by hand. Teachers spend hours on paperwork instead of teaching. There is no audit trail, no real-time communication, and no centralized record.
 
-### 🎨 Template Builder
-- **Visual Template Editor**: Create custom document templates with syntax highlighting
-- **Field Management**: Define custom fields with validation rules
-- **Step-by-Step Wizard**: Multi-step wizard for complex document types
-- **Marketplace**: Share and discover templates created by other users (coming soon)
+## The Solution
 
-### 🔐 User Management
-- **School-Based Authentication**: Login with school ID and PIN
-- **Role-Based Access**: Different features for teachers and directors
-- **Multi-User Support**: Manage multiple teachers and classes per school
+**Zunoora** digitizes the entire parent-teacher administrative workflow through a Telegram WebApp — zero installation, instant access for every parent in Uzbekistan (78%+ Telegram penetration).
 
-### 🎯 User Experience
-- **Spotlight Search** (⌘K / Ctrl+K): Quick access to all document types
-- **Document History**: Track and re-export previously created documents
-- **Dark/Light Themes**: Comfortable viewing in any environment
-- **Bilingual Interface**: Uzbek and English language support
+### Phase 1 — Live Features
+
+| Feature | Description |
+|---|---|
+| **ID-based Login** | Unified login for all roles: Parents (PRT00001), Sinf Rahbars (STCH00001), Teachers (TCH00001), Directors (DRK00001), Schools (SCH00001) |
+| **Digital Arizalar** | Parents submit leave requests with doctor papers — approved or rejected by teachers in real time |
+| **Bildirgi System** | Teachers issue praises & reprimands with photo evidence — instantly visible to parents |
+| **Real-time Chat** | Encrypted messaging between parents and teachers via Supabase Realtime |
+| **Multi-child Dashboard** | Parents with multiple children switch seamlessly between profiles |
+| **Role-based Access** | Each role sees exactly what they need — no more, no less |
+
+### Phase 2 — Upcoming
+
+- Attendance tracking with monthly analytics
+- Grade reports and progress cards
+- School-wide announcements and notifications
+- Director dashboard with school-wide statistics
+- Automated PDF report generation
+- Multi-language support (Uzbek, Russian, English)
 
 ---
 
-## 🏗️ Project Structure
+## Architecture
 
 ```
-znr-terminal/
-├── electron/                    # Electron main process
-│   ├── main/
-│   │   ├── index.ts            # Application entry point
-│   │   ├── auth.ts             # Authentication logic
-│   │   ├── db.ts               # Supabase client & types
-│   │   ├── docx.ts             # DOCX generation
-│   │   ├── ipc-handlers.ts     # IPC communication handlers
-│   │   ├── renderer.ts         # Template rendering engine
-│   │   └── templates.ts        # Template CRUD operations
-│   └── preload/
-│       └── index.ts            # Preload script (IPC bridge)
-│
-├── src/                        # React renderer process
-│   ├── renderer/
-│   │   ├── src/
-│   │   │   ├── components/     # React components
-│   │   │   │   ├── AccountMenu/
-│   │   │   │   ├── DocumentFulfillmentCard/  # Document creation flow
-│   │   │   │   ├── FieldCollector/           # Dynamic form generator
-│   │   │   │   ├── Search/                   # Spotlight search
-│   │   │   │   ├── SettingsPanel/
-│   │   │   │   ├── ShablonBuilder/           # Template builder
-│   │   │   │   ├── Sidebar/
-│   │   │   │   └── VersionPicker/
-│   │   │   ├── store/          # Zustand state management
-│   │   │   │   ├── useAccountStore.ts
-│   │   │   │   ├── useHistoryStore.ts
-│   │   │   │   ├── useSearchStore.ts
-│   │   │   │   ├── useShablonBuilderStore.ts
-│   │   │   │   └── useThemeStore.ts
-│   │   │   ├── i18n/           # Internationalization
-│   │   │   ├── styles/         # Global styles
-│   │   │   ├── App.tsx         # Main app component
-│   │   │   └── main.tsx        # React entry point
-│   │   └── index.html
-│   └── types/                  # TypeScript type definitions
-│
-├── build/                      # Build resources (icons, etc.)
-├── out/                        # Compiled output (gitignored)
-├── release/                    # Built installers (gitignored)
-├── node_modules/               # Dependencies (gitignored)
-│
-├── .env                        # Environment variables (gitignored)
-├── .gitignore
-├── electron-builder.json       # Electron builder configuration
-├── electron.vite.config.ts     # Electron Vite configuration
-├── package.json
-├── tsconfig.json
-├── tailwind.config.js
-├── LICENSE.md
-├── SUPABASE_RLS_FIX.md        # Supabase RLS setup guide
-└── README.md
+┌────────────────────────────────────────────┐
+│              Telegram (Client)              │
+│  ┌──────────────────────────────────────┐  │
+│  │         Zunoora WebApp               │  │
+│  │  ┌──────┐ ┌──────┐ ┌─────────────┐ │  │
+│  │  │ Auth │ │Forms │ │ Real-time   │ │  │
+│  │  │(ID+PW)│ │Ariza │ │ Chat       │ │  │
+│  │  │      │ │Bildirgi│ │            │ │  │
+│  │  └──────┘ └──────┘ └─────────────┘ │  │
+│  └──────────────────────────────────────┘  │
+└────────────────────────────────────────────┘
+                     │
+              Vite + React + TS
+                     │
+         ┌───────────────────────────┐
+         │     Supabase              │
+         │  ┌─────────┐ ┌────────┐  │
+         │  │Postgres │ │Realtime│  │
+         │  │+ RLS    │ │Pub/Sub │  │
+         │  └─────────┘ └────────┘  │
+         └───────────────────────────┘
+                     │
+         ┌───────────────────────────┐
+         │   Telegram Bot (Telegraf) │
+         │  Push notifications       │
+         └───────────────────────────┘
 ```
-
----
-
-## 🚀 Getting Started
-
-### Prerequisites
-
-- **Node.js** >= 18.x
-- **npm** >= 9.x or **yarn** >= 1.22
-- **Supabase Account** (free at [supabase.com](https://supabase.com))
-
-### Installation
-
-```bash
-git clone https://github.com/alexyfreak/zunoora.git
-cd zunoora
-npm install
-npm run setup
-npm run dev
-```
-
-The `setup` script will prompt you for your Supabase credentials, then:
-- Create all required database tables (`schools`, `teachers`, `directors`, `classes`, `shablons`, `user_shablons`)
-- Enable Row Level Security with default policies
-- Insert sample data (school, director, teacher, classes)
-- Seed 50+ document templates
-- Save your credentials to `.env`
-
-> **Need a Supabase account?** Create one free at [supabase.com](https://supabase.com) and start a new project.  
-> Get your API credentials from: `https://supabase.com/dashboard/project/YOUR_PROJECT/settings/api`
-
-> **For automated setup** (no manual SQL pasting), generate a Personal Access Token at:  
-> `https://supabase.com/dashboard/account/tokens`
-
-### Manual Setup (Alternative)
-
-If you prefer to set up the database manually, follow [SETUP.md](./SETUP.md) instead of running `npm run setup`.
-
----
-
-## 🛠️ Development
-
-### Available Scripts
-
-| Command | Description |
-|---------|-------------|
-| `npm run setup` | One-command Supabase setup (tables, seed data, .env) |
-| `npm run dev` | Start development server with hot reload |
-| `npm run build` | Build the application for production |
-| `npm run preview` | Preview the production build |
-| `npm run package:win` | Package for Windows (NSIS installer) |
-| `npm run package:dir` | Package without installer (portable) |
 
 ### Tech Stack
 
-**Frontend**
-- [React 19](https://react.dev/) - UI library
-- [TypeScript](https://www.typescriptlang.org/) - Type safety
-- [Tailwind CSS 4](https://tailwindcss.com/) - Styling
-- [Framer Motion](https://www.framer.com/motion/) - Animations
-- [Zustand](https://zustand-demo.pmnd.rs/) - State management
-- [Lucide React](https://lucide.dev/) - Icons
-- [i18next](https://www.i18next.com/) - Internationalization
-
-**Backend / Desktop**
-- [Electron 43](https://www.electronjs.org/) - Desktop framework
-- [Electron Vite](https://electron-vite.org/) - Build tool
-- [Supabase](https://supabase.com/) - Backend & database
-- [docx](https://docx.js.org/) - DOCX generation
-
-### Project Architecture
-
-```
-┌─────────────────────────────────────────────────────────┐
-│                    Electron Main Process                 │
-│  ┌──────────────┐  ┌──────────────┐  ┌──────────────┐ │
-│  │     Auth     │  │   Templates  │  │     DOCX     │ │
-│  │   (login)    │  │   (CRUD)     │  │  (generate)  │ │
-│  └──────────────┘  └──────────────┘  └──────────────┘ │
-│           │                 │                 │          │
-│           └─────────────────┴─────────────────┘          │
-│                          │                               │
-│                   IPC Handlers                           │
-└─────────────────────────────────────────────────────────┘
-                           │
-                    ═══════════════
-                           │
-┌─────────────────────────────────────────────────────────┐
-│                  Electron Renderer Process               │
-│                                                           │
-│  ┌──────────────────────────────────────────────────┐  │
-│  │                    React App                      │  │
-│  │  ┌────────────┐  ┌────────────┐  ┌────────────┐ │  │
-│  │  │  Spotlight │  │  Document  │  │  Template  │ │  │
-│  │  │   Search   │  │  Fulfillment│  │  Builder   │ │  │
-│  │  └────────────┘  └────────────┘  └────────────┘ │  │
-│  │                                                   │  │
-│  │  ┌────────────────────────────────────────────┐ │  │
-│  │  │         Zustand State Stores                │ │  │
-│  │  │  (Account, History, Search, Theme, etc.)    │ │  │
-│  │  └────────────────────────────────────────────┘ │  │
-│  └──────────────────────────────────────────────────┘  │
-└─────────────────────────────────────────────────────────┘
-                           │
-                    ═══════════════
-                           │
-                      ┌─────────┐
-                      │ Supabase│
-                      │ Database│
-                      └─────────┘
-```
-
-### Database Schema
-
-The application uses Supabase with the following main tables:
-
-**`schools`**
-```sql
-CREATE TABLE schools (
-  id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
-  name TEXT NOT NULL,
-  address TEXT,
-  phone TEXT
-);
-```
-
-**`teachers`**
-```sql
-CREATE TABLE teachers (
-  id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
-  full_name TEXT NOT NULL,
-  login_id TEXT UNIQUE NOT NULL,
-  pin_hash TEXT,
-  position TEXT,
-  subject TEXT,
-  school_id UUID REFERENCES schools(id),
-  phone TEXT
-);
-```
-
-**`directors`**
-```sql
-CREATE TABLE directors (
-  id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
-  full_name TEXT NOT NULL,
-  login_id TEXT UNIQUE NOT NULL,
-  pin_hash TEXT,
-  school_id UUID REFERENCES schools(id),
-  position TEXT
-);
-```
-
-**`classes`**
-```sql
-CREATE TABLE classes (
-  id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
-  name TEXT NOT NULL,
-  school_id UUID REFERENCES schools(id),
-  form_teacher_id UUID REFERENCES teachers(id),
-  academic_year TEXT
-);
-```
-
-**`shablons`** (Document Templates)
-```sql
-CREATE TABLE shablons (
-  id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
-  type TEXT NOT NULL,
-  label TEXT NOT NULL,
-  description TEXT,
-  keywords TEXT[],
-  teacher_visible BOOLEAN DEFAULT true,
-  schema JSONB NOT NULL,
-  template TEXT NOT NULL,
-  fields JSONB,
-  steps JSONB,
-  category TEXT,
-  author_id UUID,
-  published BOOLEAN DEFAULT false,
-  version INTEGER DEFAULT 1,
-  created_at TIMESTAMPTZ DEFAULT NOW(),
-  updated_at TIMESTAMPTZ DEFAULT NOW()
-);
-```
-
-**`user_shablons`**
-```sql
-CREATE TABLE user_shablons (
-  user_id UUID NOT NULL,
-  shablon_id UUID REFERENCES shablons(id),
-  PRIMARY KEY (user_id, shablon_id)
-);
-```
-
-**Important**: Remember to set up Row Level Security (RLS) policies for these tables to control access appropriately.
+| Layer | Technology |
+|---|---|
+| Frontend | React 19, TypeScript, Tailwind CSS v4 |
+| Build | Vite 7 |
+| Database | PostgreSQL via Supabase |
+| Auth | Custom ID + password (stored function) |
+| Real-time | Supabase Realtime (Postgres subscriptions) |
+| Notifications | Telegram Bot API (Telegraf) |
+| Storage | Supabase Storage (files, images) |
+| Hosting | Vercel (production) |
+| ID Format | PRT00001, STCH00001, TCH00001, DRK00001, SCH00001 |
 
 ---
 
-## 📦 Building & Distribution
+## Database Schema
 
-### Build for Windows
+### `webapp_users`
+Single table for all roles with formatted IDs and passwords.
+
+| Column | Type | Example |
+|---|---|---|
+| user_id | TEXT (PK) | PRT00001 |
+| password | TEXT | parent123 |
+| role | TEXT | parent, sinf_rahbar, teacher, director, school, pupil |
+| full_name | TEXT | Abdullayev Rustamjon Xalilovich |
+| phone | TEXT | +998911234561 |
+
+### `children`
+Links pupils to parents and sinf rahbars.
+
+| Column | Type | Example |
+|---|---|---|
+| pupil_id | TEXT (PK) | PPL000001 |
+| full_name | TEXT | Abdullayev Sherzod Rustam o'g'li |
+| class_name | TEXT | 9-A |
+| parent_id | TEXT (FK) | PRT00001 |
+| sinf_rahbar_id | TEXT (FK) | STCH00001 |
+
+### `ariza_requests`, `bildirgi_records`, `chat_messages`
+Workflow tables with status tracking, file attachments, and real-time messaging.
+
+---
+
+## Getting Started
+
+### Prerequisites
+- Node.js >= 18
+- A Supabase project (free tier works)
+
+### Setup
 
 ```bash
-npm run package:win
+git clone https://github.com/alexyfreak/zunoora.git
+cd zunoora/webapp
+cp .env.example .env  # Add your Supabase credentials
+npm install
+npm run dev           # Local dev at localhost:5173
 ```
 
-This creates a Windows installer in the `release/` directory:
-- `Zunoora-Setup-{version}.exe` - NSIS installer
+### Database
 
-### Build Options
-
-Edit `electron-builder.json` to customize:
-- App name and icon
-- Installer type (NSIS, Squirrel, portable)
-- Auto-update configuration
-- Code signing certificates
+Run the migration in your Supabase dashboard SQL editor:
+1. `webapp/db/migration_v2.sql` — tables, RLS, login function
+2. `webapp/db/seed.sql` — test data (5 parents, 5 sinf rahbar, 20 pupils)
 
 ---
 
-## 🐛 Known Issues & Fixes
+## Test Accounts
 
-### Issue: Templates not appearing in document creator
-
-**Cause**: Templates in database need proper field definitions.
-
-**Solution**: Ensure your templates have either populated `fields` arrays or `schema.required/optional` arrays in the database.
-
-### Issue: Authentication errors
-
-**Cause**: Missing or incorrect Supabase credentials.
-
-**Solution**: 
-1. Check your `.env` file has correct `SUPABASE_URL` and `SUPABASE_ANON_KEY`
-2. Verify your Supabase project is active
-3. Ensure RLS policies allow the operations you're trying to perform
+| ID | Password | Role |
+|---|---|---|
+| PRT00001 | parent123 | Parent (4 children in 9-A) |
+| STCH00001 | sinf123 | Sinf Rahbar (9-A class) |
+| TCH00001 | tch123 | Teacher |
+| DRK00001 | dir123 | Director |
+| SCH00001 | school123 | School |
+| PPL000001 | pupil123 | Pupil |
 
 ---
 
-## 🤝 Contributing
+## Deployment
 
-Contributions are welcome! Please follow these steps:
+The webapp is deployed on **Vercel**: [zunoora-webapp.vercel.app](https://zunoora-webapp.vercel.app)
 
-1. Fork the repository
-2. Create a feature branch (`git checkout -b feature/amazing-feature`)
-3. Commit your changes (`git commit -m 'Add amazing feature'`)
-4. Push to the branch (`git push origin feature/amazing-feature`)
-5. Open a Pull Request
+```bash
+cd webapp
+npx vercel --prod
+```
 
-### Coding Standards
-
-- Use TypeScript for all new code
-- Follow existing code style (Prettier/ESLint configured)
-- Write meaningful commit messages
-- Add comments for complex logic
-- Test your changes thoroughly
+The **Telegram bot** (`@zunoorabot`) serves the WebApp and sends push notifications for ariza approvals and bildirgi updates.
 
 ---
 
-## 📝 License
+## Development
 
-This project is licensed under the MIT License - see the [LICENSE.md](LICENSE.md) file for details.
+```bash
+# WebApp
+cd webapp && npm run dev
 
----
-
-## 🙏 Acknowledgments
-
-- [Electron](https://www.electronjs.org/) - Desktop app framework
-- [React](https://react.dev/) - UI library
-- [Supabase](https://supabase.com/) - Backend infrastructure
-- [Tailwind CSS](https://tailwindcss.com/) - Styling framework
-- [Framer Motion](https://www.framer.com/motion/) - Animation library
+# Bot
+cd bot && node index.js
+```
 
 ---
 
-## 📧 Contact
+## Business Model
 
-**Zunoora Team** - matritsah4cker@gmail.com
-
-**Project Repository**: [https://github.com/alexyfreak/zunoora](https://github.com/alexyfreak/zunoora)
+Zunoora targets Uzbekistan's **10,000+ schools**, **500,000+ teachers**, and **6M+ parents**. Phase 1 validates product-market fit with the core workflow loop: leave requests + disciplinary records. Expansion phases add paid tier features: analytics, bulk PDF generation, and SMS/Telegram broadcast tools for schools.
 
 ---
 
-## 🗺️ Roadmap
+## Contact
 
-- [x] Core document generation
-- [x] Template builder
-- [x] User authentication
-- [x] Document history
-- [ ] Template marketplace
-- [ ] Cloud sync
-- [ ] Mobile companion app
-- [ ] Bulk document generation
-- [ ] Advanced analytics
+**Zunoora Team** — matritsah4cker@gmail.com  
+**WebApp**: [zunoora-webapp.vercel.app](https://zunoora-webapp.vercel.app)  
+**Bot**: [@zunoorabot](https://t.me/zunoorabot)  
+**GitHub**: [github.com/alexyfreak/zunoora](https://github.com/alexyfreak/zunoora)  
 
 ---
 
-**Made with ❤️ for teachers in Uzbekistan**
+*Made with ❤️ for Uzbekistan's education system.*

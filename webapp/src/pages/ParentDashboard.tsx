@@ -8,16 +8,14 @@ import Button from '@/components/ui/Button'
 import StatusBadge from '@/components/ui/StatusBadge'
 import NavBar from '@/components/ui/NavBar'
 
-export type ArizaStatus = 'pending' | 'approved' | 'rejected'
-
 function ChildSelector({
   children,
   selected,
   onChange,
 }: {
-  children: { id: string; full_name: string; class_name: string }[]
-  selected: { id: string; full_name: string; class_name: string }
-  onChange: (c: { id: string; full_name: string; class_name: string }) => void
+  children: { pupil_id: string; full_name: string; class_name: string }[]
+  selected: { pupil_id: string; full_name: string; class_name: string }
+  onChange: (c: { pupil_id: string; full_name: string; class_name: string }) => void
 }) {
   const [open, setOpen] = useState(false)
 
@@ -45,13 +43,13 @@ function ChildSelector({
           <div className="absolute left-4 right-4 top-full z-20 mt-1 overflow-hidden rounded-zn-popover bg-zn-surface shadow-2xl">
             {children.map((c) => (
               <button
-                key={c.id}
+                key={c.pupil_id}
                 onClick={() => {
                   onChange(c)
                   setOpen(false)
                 }}
                 className={`flex w-full items-center gap-3 px-4 py-3 text-left ${
-                  c.id === selected.id ? 'bg-zn-elevated' : ''
+                  c.pupil_id === selected.pupil_id ? 'bg-zn-elevated' : ''
                 }`}
               >
                 <div className="flex h-9 w-9 items-center justify-center rounded-full bg-zn-elevated">
@@ -71,11 +69,11 @@ function ChildSelector({
 }
 
 function ArizaForm({
-  selectedChildId,
+  selectedChildPupilId,
   onSubmit,
 }: {
-  selectedChildId: string
-  onSubmit: (data: { child_id: string; date_from: string; date_to: string; reason_text: string; doctor_paper_url?: string }) => void
+  selectedChildPupilId: string
+  onSubmit: (data: { child_pupil_id: string; date_from: string; date_to: string; reason: string; file_url?: string }) => void
 }) {
   const [dateFrom, setDateFrom] = useState('')
   const [dateTo, setDateTo] = useState('')
@@ -87,15 +85,15 @@ function ArizaForm({
     e.preventDefault()
     if (!dateFrom || !dateTo || !reason) return
     setUploading(true)
-    let doctor_paper_url: string | undefined
+    let file_url: string | undefined
     if (file) {
       try {
-        doctor_paper_url = (await uploadFile(file)) ?? undefined
+        file_url = (await uploadFile(file)) ?? undefined
       } catch {
-        // Upload failed, submit without file
+        // Upload failed
       }
     }
-    onSubmit({ child_id: selectedChildId, date_from: dateFrom, date_to: dateTo, reason_text: reason, doctor_paper_url })
+    onSubmit({ child_pupil_id: selectedChildPupilId, date_from: dateFrom, date_to: dateTo, reason, file_url })
     setDateFrom('')
     setDateTo('')
     setReason('')
@@ -106,7 +104,7 @@ function ArizaForm({
   return (
     <form onSubmit={handleSubmit} className="space-y-4 px-4 py-4">
       <div>
-        <label className="mb-1 block text-xs font-medium text-zn-text-muted">Date from</label>
+        <label className="mb-1 block text-xs font-medium text-zn-text-muted">Sanadan</label>
         <input
           type="date"
           value={dateFrom}
@@ -116,7 +114,7 @@ function ArizaForm({
         />
       </div>
       <div>
-        <label className="mb-1 block text-xs font-medium text-zn-text-muted">Date to</label>
+        <label className="mb-1 block text-xs font-medium text-zn-text-muted">Sanagacha</label>
         <input
           type="date"
           value={dateTo}
@@ -126,18 +124,18 @@ function ArizaForm({
         />
       </div>
       <div>
-        <label className="mb-1 block text-xs font-medium text-zn-text-muted">Reason</label>
+        <label className="mb-1 block text-xs font-medium text-zn-text-muted">Sabab</label>
         <textarea
           value={reason}
           onChange={(e) => setReason(e.target.value)}
-          placeholder="Describe the reason..."
+          placeholder="Sababni yozing..."
           rows={3}
           className="w-full resize-none rounded-zn-input bg-zn-elevated px-4 py-3 text-sm text-zn-text placeholder-zn-text-faint"
           required
         />
       </div>
       <div>
-        <label className="mb-1 block text-xs font-medium text-zn-text-muted">Doctor paper (optional)</label>
+        <label className="mb-1 block text-xs font-medium text-zn-text-muted">Shifokor ma'lumotnomasi (ixtiyoriy)</label>
         <input
           type="file"
           accept="image/*,.pdf"
@@ -146,7 +144,7 @@ function ArizaForm({
         />
       </div>
       <Button type="submit" fullWidth disabled={uploading}>
-        {uploading ? 'Uploading...' : 'Submit Ariza'}
+        {uploading ? 'Yuklanmoqda...' : 'Ariza yuborish'}
       </Button>
     </form>
   )
@@ -154,11 +152,11 @@ function ArizaForm({
 
 export default function ParentDashboard({ onOpenChat }: { onOpenChat: () => void }) {
   const { user } = useAuth()
-  const { children } = useChildren(user?.id)
-  const { arizas, create: createAriza } = useArizas(user?.id)
+  const { children } = useChildren(user?.user_id)
+  const { arizas, create: createAriza } = useArizas(user?.user_id)
   const { bildirgis } = useBildirgis()
 
-  const [selectedChild, setSelectedChild] = useState<{ id: string; full_name: string; class_name: string } | null>(null)
+  const [selectedChild, setSelectedChild] = useState<{ pupil_id: string; full_name: string; class_name: string } | null>(null)
   const [showForm, setShowForm] = useState(false)
   const [tab, setTab] = useState<'home' | 'ariza' | 'chat' | 'profile'>('home')
 
@@ -169,20 +167,20 @@ export default function ParentDashboard({ onOpenChat }: { onOpenChat: () => void
   }, [children, selectedChild])
 
   const handleNewAriza = useCallback(async (data: {
-    child_id: string
+    child_pupil_id: string
     date_from: string
     date_to: string
-    reason_text: string
-    doctor_paper_url?: string
+    reason: string
+    file_url?: string
   }) => {
     await createAriza(data)
     setShowForm(false)
   }, [createAriza])
 
-  const childBildirgis = bildirgis.filter((b) => b.student_id === selectedChild?.id)
-  const childArizas = arizas.filter((a) => a.child_id === selectedChild?.id)
+  const childBildirgis = bildirgis.filter((b) => b.child_pupil_id === selectedChild?.pupil_id)
+  const childArizas = arizas.filter((a) => a.child_pupil_id === selectedChild?.pupil_id)
   const praises = childBildirgis.filter((b) => b.type === 'praise')
-  const violations = childBildirgis.filter((b) => b.type === 'violation')
+  const violations = childBildirgis.filter((b) => b.type === 'reprimand')
 
   const content = () => {
     switch (tab) {
@@ -190,32 +188,32 @@ export default function ParentDashboard({ onOpenChat }: { onOpenChat: () => void
         return (
           <>
             <div className="px-4 pb-1 pt-4">
-              <h2 className="font-sans text-sm font-semibold text-zn-text-muted uppercase tracking-wider">Overview</h2>
+              <h2 className="font-sans text-sm font-semibold text-zn-text-muted uppercase tracking-wider">Umumiy</h2>
             </div>
             <div className="flex gap-3 px-4 pb-4">
               <div className="flex-1 rounded-zn-popover bg-zn-surface p-4">
                 <Calendar size={20} className="mb-2 text-zn-info-accent" />
                 <p className="text-2xl font-bold text-zn-text">96%</p>
-                <p className="text-xs text-zn-text-muted">Attendance</p>
+                <p className="text-xs text-zn-text-muted">Davomat</p>
               </div>
               <div className="flex-1 rounded-zn-popover bg-zn-surface p-4">
                 <Award size={20} className="mb-2 text-zn-success-text" />
                 <p className="text-2xl font-bold text-zn-text">{praises.length}</p>
-                <p className="text-xs text-zn-text-muted">Praises</p>
+                <p className="text-xs text-zn-text-muted">Taqsinlar</p>
               </div>
               <div className="flex-1 rounded-zn-popover bg-zn-surface p-4">
                 <AlertTriangle size={20} className="mb-2 text-zn-warning-text" />
                 <p className="text-2xl font-bold text-zn-text">{violations.length}</p>
-                <p className="text-xs text-zn-text-muted">Violations</p>
+                <p className="text-xs text-zn-text-muted">Tanbehlar</p>
               </div>
             </div>
 
             <div className="px-4 pb-2">
-              <h3 className="font-sans text-sm font-semibold text-zn-text-muted uppercase tracking-wider">Recent Bildirgi</h3>
+              <h3 className="font-sans text-sm font-semibold text-zn-text-muted uppercase tracking-wider">Oxirgi bildirgilar</h3>
             </div>
             <div className="space-y-1 px-4 pb-6">
               {childBildirgis.length === 0 && (
-                <p className="text-sm text-zn-text-faint text-center py-4">No records yet</p>
+                <p className="text-sm text-zn-text-faint text-center py-4">Hozircha yozuv mavjud emas</p>
               )}
               {childBildirgis.map((b) => (
                 <div key={b.id} className="flex items-start gap-3 rounded-zn-input bg-zn-surface px-4 py-3">
@@ -231,8 +229,7 @@ export default function ParentDashboard({ onOpenChat }: { onOpenChat: () => void
                     )}
                   </div>
                   <div className="min-w-0 flex-1">
-                    <p className="text-sm font-semibold text-zn-text">{b.title}</p>
-                    {b.description && <p className="text-xs text-zn-text-muted">{b.description}</p>}
+                    <p className="text-sm font-semibold text-zn-text">{b.reason}</p>
                     <p className="mt-0.5 text-[11px] text-zn-text-faint">{new Date(b.created_at).toLocaleDateString()}</p>
                   </div>
                 </div>
@@ -245,28 +242,28 @@ export default function ParentDashboard({ onOpenChat }: { onOpenChat: () => void
         return (
           <>
             <div className="flex items-center justify-between px-4 py-3">
-              <h2 className="font-sans text-sm font-semibold text-zn-text-muted uppercase tracking-wider">My Arizas</h2>
+              <h2 className="font-sans text-sm font-semibold text-zn-text-muted uppercase tracking-wider">Mening arizalarim</h2>
               <button
                 onClick={() => setShowForm(!showForm)}
                 className="flex items-center gap-1 rounded-zn-btn bg-zn-surface px-3 py-1.5 text-xs font-medium text-zn-text"
               >
                 <Plus size={14} />
-                {showForm ? 'Close' : 'New'}
+                {showForm ? 'Yopish' : 'Yangi'}
               </button>
             </div>
 
             {showForm && selectedChild && (
-              <ArizaForm selectedChildId={selectedChild.id} onSubmit={handleNewAriza} />
+              <ArizaForm selectedChildPupilId={selectedChild.pupil_id} onSubmit={handleNewAriza} />
             )}
 
             <div className="space-y-2 px-4 pb-6">
               {childArizas.length === 0 && (
-                <p className="text-sm text-zn-text-faint text-center py-4">No ariza requests</p>
+                <p className="text-sm text-zn-text-faint text-center py-4">Arizalar mavjud emas</p>
               )}
               {childArizas.map((a) => (
                 <div key={a.id} className="rounded-zn-popover bg-zn-surface p-4">
                   <div className="mb-2 flex items-center justify-between">
-                    <p className="text-sm font-semibold text-zn-text">{a.reason_text}</p>
+                    <p className="text-sm font-semibold text-zn-text">{a.reason}</p>
                     <StatusBadge status={a.status} />
                   </div>
                   <p className="text-xs text-zn-text-muted">{a.date_from} → {a.date_to}</p>
@@ -283,7 +280,7 @@ export default function ParentDashboard({ onOpenChat }: { onOpenChat: () => void
       default:
         return (
           <div className="flex flex-1 items-center justify-center">
-            <p className="text-sm text-zn-text-muted">Profile settings</p>
+            <p className="text-sm text-zn-text-muted">Sozlamalar</p>
           </div>
         )
     }
