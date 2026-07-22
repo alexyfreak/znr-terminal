@@ -37,3 +37,8 @@ vitest.config.ts
 # Agent prompt files (local AI config)
 claude-*.md
 SKILL.md
+
+# Local dev config
+.serena/
+.obsidian/
+supabase/
