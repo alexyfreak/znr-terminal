@@ -1,8 +1,8 @@
 import { useState } from 'react'
 import { useAuth } from '@/hooks/useAuth'
 import { useChat } from '@/hooks/useChat'
-import type { ChatContact } from '@/hooks/types'
-import { MessageCircle, ChevronLeft, Send, CheckCheck, Search } from 'lucide-react'
+import type { ChatContact, ChatMessage } from '@/hooks/types'
+import { MessageCircle, ChevronLeft, Send, Check, CheckCheck, Search, Plus, X } from 'lucide-react'
 import Avatar from '@/components/ui/Avatar'
 import EmptyState from '@/components/ui/EmptyState'
 
@@ -16,20 +16,102 @@ function RoleLabel({ role }: { role: string }) {
   return <span className="text-[11px] text-zn-text-faint">{labels[role] || role}</span>
 }
 
-function ChatList({
-  contacts, onSelect,
+function NewChatModal({
+  allUsers,
+  onSelect,
+  onClose,
 }: {
-  contacts: ChatContact[]; onSelect: (c: ChatContact) => void
+  allUsers: { id: string; full_name: string; role: string }[]
+  onSelect: (id: string) => void
+  onClose: () => void
 }) {
   const [search, setSearch] = useState('')
+  const filtered = search
+    ? allUsers.filter((u) => u.full_name.toLowerCase().includes(search.toLowerCase()) || u.id.toLowerCase().includes(search.toLowerCase()))
+    : allUsers
+
+  return (
+    <>
+      <div className="fixed inset-0 z-30 bg-black/60" onClick={onClose} />
+      <div className="fixed inset-x-4 top-[15%] z-40 mx-auto max-w-md animate-slideDown overflow-hidden rounded-2xl border border-white/8 bg-[#0C0C0C] shadow-2xl">
+        <div className="flex items-center justify-between border-b border-white/8 px-4 py-3">
+          <h3 className="text-sm font-bold text-zn-text">Yangi suhbat</h3>
+          <button onClick={onClose} className="rounded-full p-1 text-zn-text-faint hover:text-zn-text">
+            <X size={18} />
+          </button>
+        </div>
+        <div className="px-4 py-3">
+          <div className="relative">
+            <Search size={16} className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-zn-text-faint" />
+            <input value={search} onChange={(e) => setSearch(e.target.value)}
+              placeholder="Ism yoki ID bo'yicha qidirish..."
+              className="w-full rounded-xl border border-white/8 bg-white/4 py-2.5 pl-10 pr-4 text-sm text-zn-text placeholder-zn-text-faint outline-none"
+            />
+          </div>
+        </div>
+        <div className="max-h-72 space-y-0.5 overflow-y-auto px-2 pb-3">
+          {filtered.length === 0 && (
+            <p className="py-6 text-center text-xs text-zn-text-faint">Hech narsa topilmadi</p>
+          )}
+          {filtered.map((u) => (
+            <button key={u.id} onClick={() => onSelect(u.id)}
+              className="flex w-full items-center gap-3 rounded-xl px-3 py-2.5 text-left transition-colors hover:bg-white/4">
+              <Avatar name={u.full_name} role={u.role} size="sm" />
+              <div className="min-w-0 flex-1">
+                <p className="text-sm font-semibold text-zn-text truncate">{u.full_name}</p>
+                <p className="text-[11px] text-zn-text-faint">{u.id} · <RoleLabel role={u.role} /></p>
+              </div>
+            </button>
+          ))}
+        </div>
+      </div>
+    </>
+  )
+}
+
+function ChatList({
+  contacts, allUsers, onSelect,
+}: {
+  contacts: ChatContact[]
+  allUsers: { id: string; full_name: string; role: string }[]
+  onSelect: (c: ChatContact) => void
+}) {
+  const [search, setSearch] = useState('')
+  const [showNewChat, setShowNewChat] = useState(false)
+
   const filtered = search
     ? contacts.filter((c) => c.full_name.toLowerCase().includes(search.toLowerCase()))
     : contacts
 
+  const handleNewChatSelect = (userId: string) => {
+    const found = contacts.find((c) => c.id === userId)
+    if (found) {
+      onSelect(found)
+    } else {
+      const user = allUsers.find((u) => u.id === userId)
+      if (user) {
+        onSelect({
+          id: user.id,
+          full_name: user.full_name,
+          role: user.role as ChatContact['role'],
+          unread: 0,
+        })
+      }
+    }
+    setShowNewChat(false)
+  }
+
   return (
     <div className="flex flex-1 flex-col overflow-hidden">
       <div className="px-4 pt-6 pb-3">
-        <h1 className="text-lg font-bold text-zn-text">Xabarlar</h1>
+        <div className="flex items-center justify-between">
+          <h1 className="text-lg font-bold text-zn-text">Xabarlar</h1>
+          <button onClick={() => setShowNewChat(true)}
+            className="flex items-center gap-1.5 rounded-xl gradient-accent px-3 py-1.5 text-xs font-bold text-white shadow-lg shadow-blue-500/15 transition-all hover:brightness-110">
+            <Plus size={14} />
+            Yangi
+          </button>
+        </div>
         {contacts.length > 0 && (
           <div className="relative mt-3">
             <Search size={16} className="pointer-events-none absolute left-3.5 top-1/2 -translate-y-1/2 text-zn-text-faint" />
@@ -40,12 +122,18 @@ function ChatList({
           </div>
         )}
       </div>
+
+      {showNewChat && (
+        <NewChatModal allUsers={allUsers} onSelect={handleNewChatSelect} onClose={() => setShowNewChat(false)} />
+      )}
+
       <div className="flex-1 space-y-0.5 overflow-y-auto px-4 pb-4">
         {contacts.length === 0 && (
           <div className="pt-10">
             <EmptyState icon={<MessageCircle size={28} />}
               title="Xabarlar mavjud emas"
-              description="Suhbatni boshlash uchun dashboarddan xabar yozishingiz mumkin"
+              description="Yangi suhbat boshlash uchun yuqoridagi tugmani bosing"
+              action={{ label: 'Yangi suhbat', onClick: () => setShowNewChat(true) }}
             />
           </div>
         )}
@@ -80,23 +168,31 @@ function ChatList({
   )
 }
 
+function MessageStatus({ message, userId }: { message: ChatMessage; userId: string }) {
+  const isMine = message.sender_id === userId
+  if (!isMine) return null
+
+  if (message.read) {
+    return <CheckCheck size={12} className="text-zn-info-accent" />
+  }
+  return <Check size={12} className="text-white/60" />
+}
+
 function ChatThread({
   contact, messages, onSend, onBack,
 }: {
   contact: ChatContact
-  messages: { id: string; sender_id: string; message: string | null; created_at: string }[]
+  messages: ChatMessage[]
   onSend: (text: string) => void; onBack: () => void
 }) {
   const { user } = useAuth()
+  const [input, setInput] = useState('')
 
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()
-    const form = e.currentTarget
-    const input = form.querySelector<HTMLInputElement>('[name="message"]')
-    if (input?.value) {
-      onSend(input.value)
-      input.value = ''
-    }
+    if (!input.trim()) return
+    onSend(input)
+    setInput('')
   }
 
   return (
@@ -124,7 +220,7 @@ function ChatThread({
                   isMine ? 'text-white/60' : 'text-zn-text-faint'
                 }`}>
                   <span className="text-[10px]">{new Date(m.created_at).toLocaleTimeString('uz-UZ', { hour: '2-digit', minute: '2-digit' })}</span>
-                  {isMine && <CheckCheck size={12} />}
+                  {isMine && <MessageStatus message={m} userId={user?.user_id || ''} />}
                 </div>
               </div>
             </div>
@@ -132,10 +228,12 @@ function ChatThread({
         })}
       </div>
       <form onSubmit={handleSubmit} className="safe-bottom flex items-center gap-2 border-t border-white/8 px-4 py-3">
-        <input name="message" placeholder="Xabar yozing..." autoFocus
+        <input value={input} onChange={(e) => setInput(e.target.value)}
+          placeholder="Xabar yozing..." autoFocus
           className="min-w-0 flex-1 rounded-2xl border border-white/8 bg-white/4 px-4 py-2.5 text-sm text-zn-text placeholder-zn-text-faint outline-none transition-all focus:border-white/20"
         />
-        <button type="submit" className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full gradient-accent shadow-lg shadow-blue-500/15 transition-all hover:brightness-110">
+        <button type="submit" disabled={!input.trim()}
+          className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full gradient-accent shadow-lg shadow-blue-500/15 transition-all hover:brightness-110 disabled:opacity-40">
           <Send size={16} className="text-white" />
         </button>
       </form>
@@ -145,7 +243,7 @@ function ChatThread({
 
 export default function Chat() {
   const { user, activeProfile } = useAuth()
-  const { contacts, activeContact, messages, openChat, goBack, sendMessage } = useChat(
+  const { contacts, allUsers, activeContact, messages, openChat, goBack, sendMessage, startConversation } = useChat(
     user?.user_id || '',
     activeProfile || user?.role || 'teacher',
   )
@@ -155,7 +253,15 @@ export default function Chat() {
       {activeContact ? (
         <ChatThread contact={activeContact} messages={messages} onSend={sendMessage} onBack={goBack} />
       ) : (
-        <ChatList contacts={contacts} onSelect={openChat} />
+        <ChatList
+          contacts={contacts}
+          allUsers={allUsers}
+          onSelect={(c) => {
+            const found = contacts.find((ct) => ct.id === c.id)
+            if (found) openChat(found)
+            else startConversation(c.id)
+          }}
+        />
       )}
     </div>
   )

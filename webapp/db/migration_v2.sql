@@ -83,6 +83,7 @@ CREATE TABLE IF NOT EXISTS chat_messages (
   sender_id TEXT REFERENCES webapp_users(user_id),
   recipient_id TEXT REFERENCES webapp_users(user_id),
   message TEXT NOT NULL,
+  read BOOLEAN DEFAULT false,
   created_at TIMESTAMPTZ DEFAULT NOW()
 );
 
@@ -93,6 +94,9 @@ CREATE POLICY "Users can read their messages" ON chat_messages
 
 CREATE POLICY "Users can insert messages" ON chat_messages
   FOR INSERT WITH CHECK (true);
+
+CREATE POLICY "Users can mark messages as read" ON chat_messages
+  FOR UPDATE USING (recipient_id = current_setting('app.user_id', true));
 
 -- Stored function for login
 CREATE OR REPLACE FUNCTION login_user(p_user_id TEXT, p_password TEXT)

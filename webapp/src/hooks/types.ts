@@ -46,6 +46,7 @@ export interface ChatMessage {
   sender_id: string
   recipient_id: string
   message: string | null
+  read: boolean
   created_at: string
 }
 

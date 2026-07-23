@@ -9,6 +9,7 @@ export function useChat(userId: string, _userRole: string) {
   const [activeContact, setActiveContact] = useState<ChatContact | null>(null)
   const [messages, setMessages] = useState<ChatMessage[]>([])
   const [isLoading, setIsLoading] = useState(false)
+  const [allUsers, setAllUsers] = useState<{ id: string; full_name: string; role: string }[]>([])
   const channelRef = useRef<ReturnType<ReturnType<typeof requireSupabase>['channel']> | null>(null)
 
   const fetchContacts = useCallback(async () => {
@@ -30,13 +31,46 @@ export function useChat(userId: string, _userRole: string) {
       seen.set(otherId, {
         id: otherId,
         full_name: other?.full_name || 'Unknown',
-        role: (other?.role || 'parent') as ChatContact['role'],
+        role: (other?.role || 'teacher') as ChatContact['role'],
         last_message: m.message || undefined,
         last_time: new Date(m.created_at).toLocaleTimeString('uz-UZ', { hour: '2-digit', minute: '2-digit' }),
         unread: 0,
       })
     }
     setContacts(Array.from(seen.values()))
+  }, [userId])
+
+  const fetchAllUsers = useCallback(async () => {
+    if (!userId) return
+    const sb = requireSupabase()
+    const { data } = await sb
+      .from('webapp_users')
+      .select('user_id, full_name, role')
+      .neq('user_id', userId)
+    if (data) {
+      setAllUsers(
+        data.map((u: { user_id: string; full_name: string; role: string }) => ({
+          id: u.user_id,
+          full_name: u.full_name,
+          role: u.role,
+        })),
+      )
+    }
+  }, [userId])
+
+  useEffect(() => {
+    fetchAllUsers()
+  }, [fetchAllUsers])
+
+  const markAsRead = useCallback(async (contactId: string) => {
+    if (!userId) return
+    const sb = requireSupabase()
+    await sb
+      .from('chat_messages')
+      .update({ read: true })
+      .eq('sender_id', contactId)
+      .eq('recipient_id', userId)
+      .is('read', false)
   }, [userId])
 
   const fetchMessages = useCallback(async (contactId: string) => {
@@ -51,7 +85,8 @@ export function useChat(userId: string, _userRole: string) {
 
     if (!error && data) setMessages(data as ChatMessage[])
     setIsLoading(false)
-  }, [userId])
+    markAsRead(contactId)
+  }, [userId, markAsRead])
 
   useEffect(() => {
     fetchContacts()
@@ -105,6 +140,24 @@ export function useChat(userId: string, _userRole: string) {
     }
   }, [activeContact, userId])
 
+  const startConversation = useCallback(async (targetUserId: string) => {
+    const existing = contacts.find((c) => c.id === targetUserId)
+    if (existing) {
+      setActiveContact(existing)
+      return
+    }
+    const user = allUsers.find((u) => u.id === targetUserId)
+    if (!user) return
+    const newContact: ChatContact = {
+      id: user.id,
+      full_name: user.full_name,
+      role: user.role as ChatContact['role'],
+      unread: 0,
+    }
+    setContacts((prev) => [newContact, ...prev])
+    setActiveContact(newContact)
+  }, [contacts, allUsers])
+
   const openChat = useCallback((contact: ChatContact) => {
     setActiveContact(contact)
   }, [])
@@ -114,5 +167,5 @@ export function useChat(userId: string, _userRole: string) {
     setMessages([])
   }, [])
 
-  return { contacts, activeContact, messages, isLoading, openChat, goBack, sendMessage }
+  return { contacts, activeContact, messages, isLoading, allUsers, openChat, goBack, sendMessage, startConversation }
 }
