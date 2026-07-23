@@ -42,3 +42,5 @@ SKILL.md
 .serena/
 .obsidian/
 supabase/
+.vercel
+.env*
