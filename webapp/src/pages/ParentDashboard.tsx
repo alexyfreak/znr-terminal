@@ -147,12 +147,6 @@ export function ParentHome({ onNavigate }: { onNavigate: (p: PageKey) => void })
 
   const { bildirgis } = useBildirgis(selectedChild?.pupil_id)
 
-  useEffect(() => {
-    if (selectedChild) {
-      setFilter('all')
-    }
-  }, [selectedChild])
-
   const childBildirgis = bildirgis.filter((b) => b.child_pupil_id === selectedChild?.pupil_id)
   const praises = childBildirgis.filter((b) => b.type === 'praise')
   const violations = childBildirgis.filter((b) => b.type === 'reprimand')
@@ -271,6 +265,8 @@ export function ParentArizas() {
   const { user } = useAuth()
   const { children } = useChildren(user?.user_id)
   const [selectedChild, setSelectedChild] = useState<{ pupil_id: string; full_name: string; class_name: string } | null>(null)
+  const [showForm, setShowForm] = useState(false)
+  const [filter, setFilter] = useState<'all' | 'pending' | 'approved' | 'rejected'>('all')
 
   useEffect(() => {
     if (children.length > 0 && !selectedChild) setSelectedChild(children[0])
