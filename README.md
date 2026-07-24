@@ -188,7 +188,7 @@ Zunoora targets Uzbekistan's **10,000+ schools**, **500,000+ teachers**, and **6
 ## Contact
 
 **Zunoora Team** — matritsah4cker@gmail.com  
-**WebApp**: [zunoora-webapp.vercel.app](https://zunoora-webapp.vercel.app)  
+**WebApp**: [zunoora.vercel.app](https://zunoora.vercel.app/)  
 **Bot**: [@zunoorabot](https://t.me/zunoorabot)  
 **GitHub**: [github.com/alexyfreak/zunoora](https://github.com/alexyfreak/zunoora)  
 
