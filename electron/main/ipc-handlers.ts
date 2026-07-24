@@ -81,8 +81,11 @@ export function registerIpcHandlers(_win: BrowserWindow): void {
     if (!loginId || loginId.trim().length === 0) {
       throw new Error('Login ID bo\'sh bo\'lishi mumkin emas')
     }
-    if (!password || password.trim().length < 1) {
+    if (!password || password.length < 1) {
       throw new Error('Parol kiritilmagan')
+    }
+    if (password.length > 128) {
+      throw new Error('Parol juda uzun')
     }
     const id = loginId.trim().toUpperCase()
     if (!checkLoginRateLimit(id)) {
@@ -416,6 +419,24 @@ export function registerIpcHandlers(_win: BrowserWindow): void {
 
   registerSafeHandler('payment:open-url', async (_event, url: string) => {
     shell.openExternal(url)
+  })
+
+  registerSafeHandler('payment:check-status', async (_event, txnId: string, method: 'payme' | 'click') => {
+    try {
+      if (method === 'payme') {
+        const { checkPaymeReceipt } = await import('./payment')
+        const receiptId = txnId
+        const result = await checkPaymeReceipt(receiptId)
+        return { success: true, data: { paid: result.paid } }
+      } else {
+        const { checkClickInvoice } = await import('./payment')
+        const invoiceId = txnId
+        const result = await checkClickInvoice(invoiceId)
+        return { success: true, data: { paid: result.paid } }
+      }
+    } catch (error) {
+      return { success: false, error: error instanceof Error ? error.message : 'Unknown error' }
+    }
   })
 
   registerSafeHandler('bug:report', async (_event, payload: {

@@ -30,6 +30,15 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const login = useCallback(async (userId: string, password: string) => {
     setState({ user: null, availableProfiles: [], activeProfile: null, isLoading: true, error: null })
     try {
+      if (!userId || userId.trim().length === 0) {
+        throw new Error('Login ID cannot be empty')
+      }
+      if (!password || password.length < 1) {
+        throw new Error('Password cannot be empty')
+      }
+      if (password.length > 128) {
+        throw new Error('Password is too long')
+      }
       const sb = requireSupabase()
       const { data, error } = await sb.rpc('login_user', {
         p_user_id: userId.trim().toUpperCase(),

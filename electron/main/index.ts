@@ -42,18 +42,18 @@ async function createWindow(): Promise<void> {
     mainWindow.loadFile(resolve(__dirname, '../renderer/index.html'))
   }
 
-  // Allow opening DevTools with Ctrl+Shift+I or F12
-  const mw = mainWindow!
-  mw.webContents.on('before-input-event', (event, input) => {
-    if (input.control && input.shift && input.key.toLowerCase() === 'i') {
-      mw.webContents.toggleDevTools()
-      event.preventDefault()
-    }
-    if (input.key === 'F12') {
-      mw.webContents.toggleDevTools()
-      event.preventDefault()
-    }
-  })
+  // Only allow DevTools in dev mode
+  if (process.env.VITE_DEV_SERVER_URL) {
+    mainWindow.webContents.openDevTools() // Open DevTools in dev mode
+  } else {
+    // Disable DevTools in production - prevent any keyboard shortcut
+    const mw = mainWindow!
+    mw.webContents.on('before-input-event', (event, input) => {
+      if ((input.control && input.shift && input.key.toLowerCase() === 'i') || input.key === 'F12') {
+        event.preventDefault()
+      }
+    })
+  }
 
   mainWindow.on('closed', () => {
     mainWindow = null

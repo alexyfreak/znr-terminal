@@ -24,6 +24,7 @@ export const PaymentCheckout = ({ type, onClose, onSuccess, credits, priceUzs = 
   const [paymentUrl, setPaymentUrl] = useState<string>('')
   const [externalId, setExternalId] = useState<string>('')
   const [confirming, setConfirming] = useState(false)
+  const [checkingPayment, setCheckingPayment] = useState(false)
   const pollRef = useRef<ReturnType<typeof setInterval> | null>(null)
 
   useEffect(() => {
@@ -66,11 +67,32 @@ export const PaymentCheckout = ({ type, onClose, onSuccess, credits, priceUzs = 
           if (url && window.electronAPI?.openPaymentUrl) {
             window.electronAPI.openPaymentUrl(url)
           }
+          startPaymentPolling(data.externalId || data.transactionId, selectedMethod)
         }
       }
     } catch {
       setStep('error')
     }
+  }
+
+  const startPaymentPolling = async (txnId: string, method: PaymentMethod) => {
+    const maxAttempts = 30
+    const intervalMs = 2000
+
+    pollRef.current = setInterval(async () => {
+      try {
+        if (window.electronAPI?.checkPaymentStatus) {
+          const result = await window.electronAPI.checkPaymentStatus(txnId, method)
+          if (result?.success && result.data?.paid) {
+            clearInterval(pollRef.current!)
+            pollRef.current = null
+            confirmAndFinish()
+          }
+        }
+      } catch {
+        // Continue polling on error
+      }
+    }, intervalMs)
   }
 
   const confirmAndFinish = () => {
@@ -85,11 +107,24 @@ export const PaymentCheckout = ({ type, onClose, onSuccess, credits, priceUzs = 
   const handleConfirmPayment = async () => {
     setConfirming(true)
     try {
-      confirmAndFinish()
+      // Start checking payment status manually
+      setCheckingPayment(true)
+      if (externalId && method && window.electronAPI?.checkPaymentStatus) {
+        const result = await window.electronAPI.checkPaymentStatus(externalId, method)
+        if (result?.success && result.data?.paid) {
+          confirmAndFinish()
+        } else {
+          // Payment not confirmed yet, show a message
+          alert(t('paymentCheckout.paymentPending'))
+        }
+      } else {
+        confirmAndFinish()
+      }
     } catch {
       setStep('error')
     } finally {
       setConfirming(false)
+      setCheckingPayment(false)
     }
   }
 

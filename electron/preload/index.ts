@@ -89,6 +89,9 @@ const electronAPI = {
   openPaymentUrl: (url: string): Promise<{ success: boolean; data?: unknown; error?: string }> =>
     ipcRenderer.invoke('payment:open-url', url),
 
+  checkPaymentStatus: (txnId: string, method: 'payme' | 'click'): Promise<{ success: boolean; data?: { paid: boolean }; error?: string }> =>
+    ipcRenderer.invoke('payment:check-status', txnId, method),
+
   submitBugReport: (data: {
     mode: string
     description: string

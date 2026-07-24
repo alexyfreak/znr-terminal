@@ -97,6 +97,7 @@ export function useChat(userId: string, _userRole: string) {
 
     if (channelRef.current) {
       sb.removeChannel(channelRef.current)
+      channelRef.current = null
     }
 
     if (!userId) return
@@ -116,9 +117,20 @@ export function useChat(userId: string, _userRole: string) {
     channelRef.current = channel
 
     return () => {
-      sb.removeChannel(channel)
+      if (channelRef.current) {
+        sb.removeChannel(channelRef.current)
+        channelRef.current = null
+      }
     }
   }, [userId, activeContact, fetchContacts, fetchMessages])
+
+  useEffect(() => {
+    if (!userId) {
+      setContacts([])
+      setActiveContact(null)
+      setMessages([])
+    }
+  }, [userId])
 
   useEffect(() => {
     if (activeContact) {
@@ -144,6 +156,7 @@ export function useChat(userId: string, _userRole: string) {
     const existing = contacts.find((c) => c.id === targetUserId)
     if (existing) {
       setActiveContact(existing)
+      setMessages([])
       return
     }
     const user = allUsers.find((u) => u.id === targetUserId)
@@ -156,16 +169,18 @@ export function useChat(userId: string, _userRole: string) {
     }
     setContacts((prev) => [newContact, ...prev])
     setActiveContact(newContact)
+    setMessages([])
   }, [contacts, allUsers])
 
   const openChat = useCallback((contact: ChatContact) => {
     setActiveContact(contact)
-  }, [])
+    setMessages([])
+  }, [setActiveContact, setMessages])
 
   const goBack = useCallback(() => {
     setActiveContact(null)
     setMessages([])
-  }, [])
+  }, [setActiveContact, setMessages])
 
   return { contacts, activeContact, messages, isLoading, allUsers, openChat, goBack, sendMessage, startConversation }
 }

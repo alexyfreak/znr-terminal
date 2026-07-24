@@ -149,7 +149,7 @@ export function useBildirgis(childPupilId?: string) {
       triggerBotNotification('/notify-bildirgi', { bildirgiId: data.id })
     }
     return { data, error }
-  }, [])
+  }, [childPupilId])
 
   return { bildirgis, loading, create }
 }

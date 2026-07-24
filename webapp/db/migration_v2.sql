@@ -12,9 +12,11 @@ CREATE TABLE IF NOT EXISTS webapp_users (
 
 ALTER TABLE webapp_users ENABLE ROW LEVEL SECURITY;
 
+DROP POLICY IF EXISTS "Users can read own data" ON webapp_users;
 CREATE POLICY "Users can read own data" ON webapp_users
   FOR SELECT USING (true);
 
+DROP POLICY IF EXISTS "Users can update own data" ON webapp_users;
 CREATE POLICY "Users can update own data" ON webapp_users
   FOR UPDATE USING (user_id = current_setting('app.user_id', true));
 
@@ -32,6 +34,7 @@ CREATE TABLE IF NOT EXISTS children (
 
 ALTER TABLE children ENABLE ROW LEVEL SECURITY;
 
+DROP POLICY IF EXISTS "Anyone can read children" ON children;
 CREATE POLICY "Anyone can read children" ON children
   FOR SELECT USING (true);
 
@@ -52,9 +55,11 @@ CREATE TABLE IF NOT EXISTS ariza_requests (
 
 ALTER TABLE ariza_requests ENABLE ROW LEVEL SECURITY;
 
+DROP POLICY IF EXISTS "Anyone can read arizas" ON ariza_requests;
 CREATE POLICY "Anyone can read arizas" ON ariza_requests
   FOR SELECT USING (true);
 
+DROP POLICY IF EXISTS "Parents can insert arizas" ON ariza_requests;
 CREATE POLICY "Parents can insert arizas" ON ariza_requests
   FOR INSERT WITH CHECK (true);
 
@@ -71,9 +76,11 @@ CREATE TABLE IF NOT EXISTS bildirgi_records (
 
 ALTER TABLE bildirgi_records ENABLE ROW LEVEL SECURITY;
 
+DROP POLICY IF EXISTS "Anyone can read bildirgis" ON bildirgi_records;
 CREATE POLICY "Anyone can read bildirgis" ON bildirgi_records
   FOR SELECT USING (true);
 
+DROP POLICY IF EXISTS "Teachers can insert bildirgis" ON bildirgi_records;
 CREATE POLICY "Teachers can insert bildirgis" ON bildirgi_records
   FOR INSERT WITH CHECK (true);
 
@@ -89,12 +96,15 @@ CREATE TABLE IF NOT EXISTS chat_messages (
 
 ALTER TABLE chat_messages ENABLE ROW LEVEL SECURITY;
 
+DROP POLICY IF EXISTS "Users can read their messages" ON chat_messages;
 CREATE POLICY "Users can read their messages" ON chat_messages
   FOR SELECT USING (sender_id = current_setting('app.user_id', true) OR recipient_id = current_setting('app.user_id', true));
 
+DROP POLICY IF EXISTS "Users can insert messages" ON chat_messages;
 CREATE POLICY "Users can insert messages" ON chat_messages
   FOR INSERT WITH CHECK (true);
 
+DROP POLICY IF EXISTS "Users can mark messages as read" ON chat_messages;
 CREATE POLICY "Users can mark messages as read" ON chat_messages
   FOR UPDATE USING (recipient_id = current_setting('app.user_id', true));
 
